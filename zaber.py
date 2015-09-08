@@ -11,15 +11,15 @@ def parse_commandline():
 
     parser.add_option("-n","--steps",default=1000,type=int)
     parser.add_option("-d","--device",default=1,type=int)
-    parser.add_option("-c","--currentpos",default=0,type=int)
+    parser.add_option("-c","--currentpos",default=0,type=float)
     parser.add_option("-p","--position",default=0,type=float)
     parser.add_option("-u","--units", default='mm')
     parser.add_option("--doSteps", action="store_true",default=False)
     parser.add_option("--doHome", action="store_true",default=False)
     parser.add_option("--doPosition", action="store_true",default=False)
     parser.add_option("--doGetPosition", action="store_true",default=False)
-    parser.add_option("--doPositionMM", action="store_true",default=False)
     parser.add_option("--doSetCurrent", action="store_true",default=False)
+    parser.add_option("-v","--verbose", action="store_true",default=False)
 
     opts, args = parser.parse_args()
 
@@ -62,7 +62,8 @@ try:
 except:
    print("Error opening com port. Quitting.")
    sys.exit(0)
-print("Opening " + ser.portstr)
+if opts.verbose:
+    print("Opening " + ser.portstr)
 
 #zabertomm = 75.0/604724.0
 zabertomm = 0.124023438 / 1000.0
@@ -91,16 +92,18 @@ if opts.doHome:
     #print "Sleeping for 60s..."
     #time.sleep(10)
 
-    print "Moving to home..."
+    if opts.verbose:
+        print "Moving to home..."
     command = 1
     data = 0
     #print('Sending instruction. Device: %i, Command: %i, Data: %i' % (device, command, data))
     send(device, command, data)
     print "Sleeping for 60s..."
-    time.sleep(10)
+    time.sleep(5)
 
 if opts.doSetCurrent:
-    print "Setting to %d..."%opts.currentpos
+    if opts.verbose:
+        print "Setting to %d..."%opts.currentpos
     command = 45
     if opts.units == "mm":
         data = int(opts.currentpos / zabertomm) 
@@ -108,11 +111,12 @@ if opts.doSetCurrent:
         data = opts.currentpos
     #print('Sending instruction. Device: %i, Command: %i, Data: %i' % (device, command, data))
     send(device, command, data)
-    time.sleep(10) # wait for 1 second
+    time.sleep(5) # wait for 1 second
 
 if opts.doPosition:
 
-    print "Getting position..."
+    if opts.verbose:
+        print "Getting position..."
     command = 60
     data = 0
     #print('Sending instruction. Device: %i, Command: %i, Data: %i' % (device, command, data))                                                                
@@ -129,8 +133,9 @@ if opts.doPosition:
     if opts.units == "mm":
         pos = pos * zabertomm
 
-    print "Position: %.3f"%pos
-    print "Moving to position %.3f from %.3f..."%(opts.position,pos)
+    if opts.verbose:
+        print "Position: %.3f"%pos
+        print "Moving to position %.3f from %.3f..."%(opts.position,pos)
     command = 21
 
     data = opts.position - pos
@@ -139,23 +144,24 @@ if opts.doPosition:
 
     #print('Sending instruction. Device: %i, Command: %i, Data: %i' % (device, command, data))
     send(device, command, data)
-    time.sleep(10) # wait for 1 second
+    time.sleep(5) # wait for 1 second
     reply = receive()
 
 if opts.doSteps:
-    print "Moving in steps..."
+    if opts.verbose:
+        print "Moving in steps..."
     command = 21
     data = opts.steps
     if opts.units == "mm":
         data = data / zabertomm
     #print('Sending instruction. Device: %i, Command: %i, Data: %i' % (device, command, data))     
     send(device, command, data)
-    time.sleep(10) # wait for 1 second                                        
+    time.sleep(5) # wait for 1 second                                        
     reply = receive()
 
-
 if opts.doGetPosition:
-    print "Getting position..."
+    if opts.verbose:
+        print "Getting position..."
     command = 60
     data = 0
     #print('Sending instruction. Device: %i, Command: %i, Data: %i' % (device, command, data))
@@ -173,7 +179,8 @@ if opts.doGetPosition:
         pos = pos * zabertomm
     print "Position: %.3f"%pos
 
-print("Closing " + ser.portstr)
+if opts.verbose:
+    print("Closing " + ser.portstr)
 ser.close() 
 
 

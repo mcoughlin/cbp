@@ -5,7 +5,7 @@ from __future__ import print_function
 import logging, optparse, time, datetime
 import numpy as np
 from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR, error
-import ephem
+#import ephem
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,8 @@ def parse_commandline():
     parser.add_option("-c","--coordinates",default="altaz")
     parser.add_option("--doPosition", action="store_true",default=False)
     parser.add_option("--doGetPosition", action="store_true",default=False)
-
+    parser.add_option("--doSSH", action="store_true",default=False)
+  
     opts, args = parser.parse_args()
 
     return opts
@@ -355,12 +356,14 @@ for (p=0;p<PropCnt;++p)
 
 
 if __name__ == "__main__":
-    HOST, PORT = "localhost", 3040
-    xconn = SkyXConnection(host=HOST,port=PORT)
-    #print(xconn.sky6ObjectInformation("Saturn"))
-
     # Parse command line
     opts = parse_commandline()
+
+    if opts.doSSH:
+        HOST, PORT = "10.251.227.120", 3040
+    else:
+        HOST, PORT = "localhost", 3040
+    xconn = SkyXConnection(host=HOST,port=PORT)
 
     target = "Sun"
     #target = "Moon"
@@ -383,10 +386,10 @@ if __name__ == "__main__":
     if opts.doGetPosition:
         if opts.coordinates == "altaz":
             alt,az = xconn.getcurrentaltaz()
-            print("Current Altitude: %.5f Azimuth: %.5f"%(alt,az))
+            print("Altitude: %.5f\nAzimuth: %.5f"%(alt,az))
         else:
             ra,dec = xconn.getcurrentradec()
-            print("Current RA: %.5f Declination: %.5f"%(ra,dec))
+            print("RA: %.5f\nDeclination: %.5f"%(ra,dec))
 
         #utc = time.time()
         #utc_timestamp = datetime.datetime.utcfromtimestamp(utc)

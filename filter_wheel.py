@@ -24,8 +24,7 @@ def parse_commandline():
 opts = parse_commandline()
 
 fws = FLI.filter_wheel.USBFilterWheel.find_devices()
-print fws
-fw0 = fws[0]
+fw0 = fws[1]
 
 if opts.mask > 4 or opts.mask < 0:
     raise Exception("Mask position must be integer 0-4")
@@ -38,8 +37,8 @@ if opts.doGetPosition:
     mask = pos/5
     filt = np.mod(pos,5)
 
-    print "Current Mask Position: %d"%mask
-    print "Current Filter Position: %d"%filt
+    print "Mask: %d"%mask
+    print "Filter: %d"%filt
 
 if opts.doPosition:
     position = 5 * opts.mask + opts.filter
@@ -49,7 +48,7 @@ if opts.doPosition:
     mask = pos/5
     filt = np.mod(pos,5)
 
-    print "Current Mask Position: %d"%mask
-    print "Current Filter Position: %d"%filt
+    print "Mask: %d"%mask
+    print "Filter: %d"%filt
 
 
