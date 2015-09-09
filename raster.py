@@ -80,7 +80,7 @@ if not os.path.isdir(plotDir):
     os.mkdir(plotDir)
 
 logNumber = len(glob.glob(os.path.join(logDir,'raster_log_*')))
-logNumber = 3
+#logNumber = 5
 logFile = os.path.join(os.path.join(logDir,'raster_log_%d.txt'%logNumber))
 
 if opts.doRaster:
