@@ -13,19 +13,22 @@ def parse_commandline():
 
     parser.add_option("-m","--motorNum",default=1,type=int)
     parser.add_option("-n","--numSteps",default=0,type=int)
-    parser.add_option("-p","--phi",default=0.0,type=float)
-    parser.add_option("-t","--theta",default=0.0,type=float)
+    parser.add_option("-p","--phi",default=0.0001,type=float)
+    parser.add_option("-t","--theta",default=-0.0001,type=float)
+    parser.add_option("-d","--threshold",default=1000,type=float)
     parser.add_option("-c","--compile", action="store_true",default=False)
     parser.add_option("--doSteps", action="store_true",default=False)
     parser.add_option("--doAngle", action="store_true",default=False)
+    parser.add_option("--doGetPositionDiff", action="store_true",default=False)
     parser.add_option("--doGetPosition", action="store_true",default=False)
+    parser.add_option("--doLevel", action="store_true",default=False)
 
     opts, args = parser.parse_args()
 
     return opts
 
 def run_stepper(steps,motorNum):
-    shutter_command = "picocom -b 57600 /dev/ttyACM0"
+    shutter_command = "picocom -b 57600 /dev/ttyACM.MLS"
     child = pexpect.spawn (shutter_command)
     loop = True
     while loop:
@@ -63,14 +66,19 @@ def receiving(ser):
 
 def get_LVDT():
 
-    PORT = '/dev/ttyACM1'
+    PORT = '/dev/ttyACM.ADS'
     BAUD_RATE = 9600
     ser2 = serial.Serial(PORT, BAUD_RATE)
     conversion = 16777215.0 / 2.048
 
     success = 0
+    numlines = 5
+    linenum = 0
     while success == 0:
         line = receiving(ser2)
+        if linenum < numlines:
+            linenum = linenum + 1
+            continue
         line = line.replace("\n","").replace("\r","")
         lineSplit = line.split(" ")
         lineSplit = filter(None,lineSplit)
@@ -91,15 +99,45 @@ def get_LVDT():
 # Parse command line
 opts = parse_commandline()
 
+conversion = 16777215.0 / 2.048
+
 if opts.compile:
     steps_command = "cd /home/pi/Arduino/stepper/; ./compile.sh"
     os.system(steps_command)
 
-    steps_command = "cd /home/pi/Arduino/ISE/; ./compile.sh"
+    steps_command = "cd /home/pi/Arduino/ADS/; ./compile.sh"
     os.system(steps_command)
+
+if opts.doGetPositionDiff:
+    stepper_1_old, stepper_2_old = get_LVDT()
+    #print "LVDT_1: %.5f"%stepper_1_old
+    #print "LVDT_2: %.5f"%stepper_2_old
+
+if opts.doLevel:
+    stepper_1_old, stepper_2_old = get_LVDT()
+    print "LVDT_1: %.5f"%stepper_1_old
+    print "LVDT_2: %.5f"%stepper_2_old
+
+    stepper_1_goal = -0.00080
+    stepper_2_goal = -0.00078
+
+    m1 = int((stepper_1_goal-stepper_1_old)*conversion)
+    m2 = int((stepper_2_goal-stepper_2_old)*conversion)
+
+    if np.absolute(m1) > opts.threshold:
+        raise Exception("Number of steps (motor 1): %d exceeds threshold: %d ... please revise\n."%(m1,opts.threshold))
+    if np.absolute(m2) > opts.threshold:
+        raise Exception("Number of steps (motor 2): %d exceeds threshold: %d ... please revise\n."%(m2,opts.threshold))
+
+    run_stepper(m1,1)
+    run_stepper(m2,2)
 
 if opts.doSteps:
     print "Running the stepper motor ..."
+
+    if np.absolute(opts.numSteps) > opts.threshold:
+        raise Exception("Number of steps: %d exceeds threshold: %d ... please revise\n."%(opts.numSteps,opts.threshold))
+
     run_stepper(opts.numSteps,opts.motorNum)
 
 if opts.doAngle:
@@ -108,21 +146,39 @@ if opts.doAngle:
     y = 3*np.tan(opts.phi*2*np.pi/360.0)    
 
     # convert to motor
-    z = z*1000.0 
-    y = y*1000.0
+    z = 5.5*z*conversion 
+    y = 5.5*y*conversion
 
-    print z, y
+    m1 = int(0.75*y + z)
+    m2 = int(0.75*y - z)
 
-    m1 = int(z/2.0) + int(y/2.0)
-    m2 = int(z/2.0) - int(y/2.0)
-
-    print m1
-    print m2
+    if np.absolute(m1) > opts.threshold:
+        raise Exception("Number of steps (motor 1): %d exceeds threshold: %d ... please revise\n."%(m1,opts.threshold))
+    if np.absolute(m2) > opts.threshold:        
+        raise Exception("Number of steps (motor 2): %d exceeds threshold: %d ... please revise\n."%(m2,opts.threshold))
 
     run_stepper(m1,1)
-    run_stepper(m2,1)
+    run_stepper(m2,2)
 
 if opts.doGetPosition:
-    stepper_1, stepper_2 = get_LVDT()
-    print "LVDT_1: %.5f"%stepper_1
-    print "LVDT_2: %.5f"%stepper_2
+    stepper_1_new, stepper_2_new = get_LVDT()
+    print "LVDT_1: %.8f"%stepper_1_new
+    print "LVDT_2: %.8f"%stepper_2_new
+
+    if opts.doGetPositionDiff:
+        diff1 = stepper_1_new-stepper_1_old
+        diff2 = stepper_2_new-stepper_2_old
+
+        print "LVDT_1 Diff: %.8f"%(diff1)
+        print "LVDT_2 Diff: %.8f"%(diff2)
+
+        avediff = (diff1 + diff2) / 2.0
+        diffdiff = (diff2 - diff1) / 2.0 
+
+        theta = np.arctan(diffdiff/3.412) * 360.0/(2*np.pi)
+        phi = np.arctan(avediff/3) * 360.0/(2*np.pi)
+
+        print "LVDT Theta: %.8f"%(theta)
+        print "LVDT Phi: %.8f"%(phi)
+
+

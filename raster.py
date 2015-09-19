@@ -6,7 +6,9 @@ import optparse
 
 import matplotlib
 #matplotlib.rc('text', usetex=True)
-matplotlib.use('TkAgg')
+hostname = os.uname()[1]
+if not hostname == "raspberrypi":
+    matplotlib.use('TkAgg')
 matplotlib.rcParams.update({'font.size': 16})
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D, art3d
@@ -41,21 +43,21 @@ def parse_commandline():
     parser.add_option("--zmax",default=100000,type=int)
     parser.add_option("--dz",default=10000,type=float)
 
-    parser.add_option("--thetamin",default=-1.0,type=float)
-    parser.add_option("--thetamax",default=1.0,type=float)
-    parser.add_option("--dtheta",default=1.0,type=float)
+    parser.add_option("--thetamin",default=-0.00001,type=float)
+    parser.add_option("--thetamax",default=0.00001,type=float)
+    parser.add_option("--dtheta",default=0.00001,type=float)
     
-    parser.add_option("--phimin",default=-1.0,type=float)
-    parser.add_option("--phimax",default=1.0,type=float)
-    parser.add_option("--dphi",default=1.0,type=float)
+    parser.add_option("--phimin",default=-0.00001,type=float)
+    parser.add_option("--phimax",default=0.00001,type=float)
+    parser.add_option("--dphi",default=0.00001,type=float)
 
-    parser.add_option("--altmin",default=45.0,type=float)
-    parser.add_option("--altmax",default=55.0,type=float)
-    parser.add_option("--dalt",default=5.0,type=float)
+    parser.add_option("--altmin",default=29.0,type=float)
+    parser.add_option("--altmax",default=31.0,type=float)
+    parser.add_option("--dalt",default=1.0,type=float)
 
-    parser.add_option("--azmin",default=0.0,type=float)
-    parser.add_option("--azmax",default=5.0,type=float)
-    parser.add_option("--daz",default=10.0,type=float)
+    parser.add_option("--azmin",default=299.0,type=float)
+    parser.add_option("--azmax",default=301.0,type=float)
+    parser.add_option("--daz",default=1.0,type=float)
 
     parser.add_option("--doRaster", action="store_true",default=False)
     parser.add_option("-r","--rasterType",default="XY")
@@ -69,19 +71,28 @@ def parse_commandline():
 # Parse command line
 opts = parse_commandline()
 
-baseDir = '/Users/allsky/Desktop/CBP'
-if not os.path.isdir(baseDir):
-    os.mkdir(baseDir)
-logDir = os.path.join(baseDir,'logs')
-if not os.path.isdir(logDir):
-    os.mkdir(logDir)
-plotDir = os.path.join(baseDir,'plots')
-if not os.path.isdir(plotDir):
-    os.mkdir(plotDir)
+types = ["XY","Radial","Focuser","TipTilt","AltAz"]
+if not opts.rasterType in types:
+    raise Exception("%s is not a valid raster type... please choose from %s..."%(opts.rasterType,",".join(types)))
 
-logNumber = len(glob.glob(os.path.join(logDir,'raster_log_*')))
-#logNumber = 5
-logFile = os.path.join(os.path.join(logDir,'raster_log_%d.txt'%logNumber))
+if opts.doLog:
+    if not hostname == "raspberrypi":
+        baseDir = '/Users/allsky/Desktop/CBP'
+    else:
+        baseDir = '/home/pi/CBP'
+
+    if not os.path.isdir(baseDir):
+        os.mkdir(baseDir)
+    logDir = os.path.join(baseDir,'logs')
+    if not os.path.isdir(logDir):
+        os.mkdir(logDir)
+    plotDir = os.path.join(baseDir,'plots')
+    if not os.path.isdir(plotDir):
+        os.mkdir(plotDir)
+
+    logNumber = len(glob.glob(os.path.join(logDir,'raster_log_*')))
+    #logNumber = 5
+    logFile = os.path.join(os.path.join(logDir,'raster_log_%d.txt'%logNumber))
 
 if opts.doRaster:
     if opts.doLog:
@@ -136,12 +147,16 @@ if opts.doRaster:
         thetas = np.arange(opts.thetamin,opts.thetamax+opts.dtheta,opts.dtheta)
         phis = np.arange(opts.phimin,opts.phimax+opts.dphi,opts.dphi)
 
+        theta0 = 0.0
+        phi0 = 0.0
         for phi in phis:
             for theta in thetas:
                 print "Current Position (phi,theta): %.5f, %.5f"%(phi,theta)
-                sys_command = "python tiptilt.py --doAngle -t %.5f -p %.5f"%(theta,phi)
+                sys_command = "python tiptilt.py --doAngle -t %.5f -p %.5f"%(theta-theta0,phi-phi0)
                 os.system(sys_command)
                 raw_input("Press enter when ready.")
+                theta0 = theta
+                phi0 = phi 
  
     elif opts.rasterType == "AltAz":
         alts = np.arange(opts.altmin,opts.altmax+opts.dalt,opts.dalt)

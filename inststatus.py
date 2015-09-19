@@ -3,6 +3,7 @@
 import os, serial, sys, time, glob, struct, subprocess
 import numpy as np
 import optparse
+from threading import Timer
 import FLI
 
 def parse_commandline():
@@ -22,34 +23,43 @@ def parse_commandline():
 
     return opts
 
+def run_cmd(cmd, timeout_sec = 20):
+    proc = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    kill_proc = lambda p: p.kill()
+    timer = Timer(timeout_sec, kill_proc, [proc])
+    try:
+        timer.start()
+        stdout,stderr = proc.communicate()
+    finally:
+        timer.cancel()
+    return stdout
+
 def get_status(opts):
 
     # set defaults
-    posx = 0
-    posy = 0
-    posz = 0
-    lvdt1 = 0
-    lvdt2 = 0
-    alt = 0
-    az = 0
-    mask = 0
-    filter = 0
-    photo = 0
+    posx = -1
+    posy = -1
+    posz = -1
+    lvdt1 = -1
+    lvdt2 = -1
+    alt = -1
+    az = -1
+    mask = -1
+    filter = -1
+    photo = -1
 
     instruments = opts.instruments.split(",")
     for instrument in instruments:
         if instrument == "XY":
             sys_command = "python zaber.py --doGetPosition -d 1"
-            p = subprocess.Popen(sys_command.split(" "),stdout=subprocess.PIPE)
-            output = p.communicate()[0]
+            output = run_cmd(sys_command)
             lines = output.split("\n")
             for line in lines:
                 lineSplit = line.split(" ")
                 if lineSplit[0] == "Position:":
                     posx = float(lineSplit[1])
             sys_command = "python zaber.py --doGetPosition -d 2"
-            p = subprocess.Popen(sys_command.split(" "),stdout=subprocess.PIPE)
-            output = p.communicate()[0]
+            output = run_cmd(sys_command)
             lines = output.split("\n")
             for line in lines:
                 lineSplit = line.split(" ")
@@ -58,8 +68,7 @@ def get_status(opts):
 
         elif instrument == "Focuser":
             sys_command = "python focuser.py --doGetPosition"
-            p = subprocess.Popen(sys_command.split(" "),stdout=subprocess.PIPE)
-            output = p.communicate()[0]
+            output = run_cmd(sys_command)
             lines = output.split("\n")
             for line in lines:
                 lineSplit = line.split(" ")
@@ -68,8 +77,7 @@ def get_status(opts):
 
         elif instrument == "TipTilt":
             sys_command = "python tiptilt.py --doGetPosition"
-            p = subprocess.Popen(sys_command.split(" "),stdout=subprocess.PIPE)
-            output = p.communicate()[0]
+            output = run_cmd(sys_command)
             lines = output.split("\n")
             for line in lines:
                 lineSplit = line.split(" ")
@@ -80,8 +88,7 @@ def get_status(opts):
 
         elif instrument == "AltAz":
             sys_command = "python telmount.py --doSSH --doGetPosition"
-            p = subprocess.Popen(sys_command.split(" "),stdout=subprocess.PIPE)
-            output = p.communicate()[0]
+            output = run_cmd(sys_command)
             lines = output.split("\n")
             for line in lines:
                 lineSplit = line.split(" ")
@@ -92,8 +99,7 @@ def get_status(opts):
 
         elif instrument == "FilterWheel":
             sys_command = "python filter_wheel.py --doGetPosition"
-            p = subprocess.Popen(sys_command.split(" "),stdout=subprocess.PIPE)
-            output = p.communicate()[0]
+            output = run_cmd(sys_command)
             lines = output.split("\n")
             for line in lines:
                 lineSplit = line.split(" ")
@@ -104,13 +110,25 @@ def get_status(opts):
 
         elif instrument == "Photodiode":
             sys_command = "python photodiode.py --doGetPhotodiode"
-            p = subprocess.Popen(sys_command.split(" "),stdout=subprocess.PIPE)
-            output = p.communicate()[0]
+            output = run_cmd(sys_command)
             lines = output.split("\n")
             for line in lines:
                 lineSplit = line.split(" ")
                 if lineSplit[0] == "Photodiode:":
                     photo = int(lineSplit[1])
+
+    if (posx == -1) or (posy == -1):
+        print "Zaber stages not responding..."
+    if (posz == -1):
+        print "Focuser not responding..."
+    if (alt == -1) or (az == -1):
+        print "Telescope mount not responding..."
+    if (lvdt1 == -1) or (lvdt2 == -1):
+        print "TipTilt not responding..."
+    if (mask == -1) or (filter == -1):
+        print "Filter wheel not responding..."
+    if (photo == -1):
+        print "Photodiode not responding..."
 
     if opts.verbose:
         print "X: %.5f"%posx

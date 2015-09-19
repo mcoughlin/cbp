@@ -36,14 +36,19 @@ def receiving(ser):
 
 def get_photodiode():
 
-    PORT = '/dev/ttyACM2'
+    PORT = '/dev/ttyACM.PD'
     BAUD_RATE = 9600
     ser2 = serial.Serial(PORT, BAUD_RATE)
     conversion = 1.0
 
     success = 0
+    numlines = 5
+    linenum = 0
     while success == 0:
         line = receiving(ser2)
+        if linenum < numlines:
+            linenum = linenum + 1
+            continue
         line = line.replace("\n","").replace("\r","")
         lineSplit = line.split(" ")
         lineSplit = filter(None,lineSplit)
@@ -62,7 +67,7 @@ def get_photodiode():
 opts = parse_commandline()
 
 if opts.compile:
-    steps_command = "cd /home/pi/Arduino/photodiode/; ./compile.sh"
+    steps_command = "cd /home/pi/Arduino/PD/; ./compile.sh"
     os.system(steps_command)
 
 if opts.doGetPhotodiode:

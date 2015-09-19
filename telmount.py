@@ -17,11 +17,12 @@ def parse_commandline():
 
     parser.add_option("-r","--ra",default=5.0,type=float)
     parser.add_option("-d","--dec",default=10.0,type=float)
-    parser.add_option("-a","--alt",default=45.0,type=float)
-    parser.add_option("-z","--az",default=0.0,type=float)
+    parser.add_option("-a","--alt",default=30.0,type=float)
+    parser.add_option("-z","--az",default=300.0,type=float)
     parser.add_option("-c","--coordinates",default="altaz")
     parser.add_option("--doPosition", action="store_true",default=False)
     parser.add_option("--doGetPosition", action="store_true",default=False)
+    parser.add_option("--doZero", action="store_true",default=False)
     parser.add_option("--doSSH", action="store_true",default=False)
   
     opts, args = parser.parse_args()
@@ -380,6 +381,20 @@ if __name__ == "__main__":
             ra_target = opts.ra
             dec_target = opts.dec
             print("Target RA: %.5f Declination: %.5f\n"%(ra_target,dec_target)) 
+            success = xconn.gotoradec(ra_target,dec_target)
+            print("Success: %d\n"%success)
+
+    if opts.doZero:
+        if opts.coordinates == "altaz":
+            alt_target = 30.0
+            az_target = 300.0
+            print("Target Altitude: %.5f Azimuth: %.5f\n"%(alt_target,az_target))
+            success = xconn.gotoaltaz(alt_target,az_target)
+            print("Success: %d\n"%success)
+        else:
+            ra_target = 0.0
+            dec_target = 0.0
+            print("Target RA: %.5f Declination: %.5f\n"%(ra_target,dec_target))
             success = xconn.gotoradec(ra_target,dec_target)
             print("Success: %d\n"%success)
 

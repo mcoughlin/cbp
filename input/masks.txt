@@ -1,5 +1,5 @@
-0, 200 micron slit, 0
-1, 5 micron slit, 0
-2, sin wave grating, 0
-3, 2 micron pinhole, 0
-4, USAF target, 0
+0, 200 micron slit, 78000
+1, 5 micron slit, 74000
+2, sin wave grating, 44000
+3, 2 micron pinhole, 75000
+4, USAF target, 75000
