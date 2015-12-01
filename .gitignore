@@ -1,0 +1,11 @@
+/build
+/cbp.egg-info
+/dist
+/docs/_build
+/docs/_generated
+/cbp/version.py
+*.pyx
+*.so
+*.swp
+/.idea
+.DS_store
