@@ -6,8 +6,8 @@ import optparse
 from threading import Timer
 #import FLI
 
-import phidget
-import altaz
+import cbp.phidget
+import cbp.altaz
 
 def parse_commandline():
     """
@@ -35,13 +35,13 @@ if opts.doRun:
 
     if opts.instrument == "phidget":
         nave = 10000
-        x, y, z, angle = phidget.main(nave)
+        x, y, z, angle = cbp.phidget.main(nave)
         print x,y,z,angle
     elif opts.instrument == "altaz":
         if opts.doCompile:
-            altaz.main(runtype = "compile")
+            cbp.altaz.main(runtype = "compile")
         if opts.doSteps:
-            altaz.main(runtype = "steps", val = opts.steps)
+            cbp.altaz.main(runtype = "steps", val = opts.steps)
         if opts.doAngle:
-            altaz.main(runtype = "angle", val = opts.angle)
+            cbp.altaz.main(runtype = "angle", val = opts.angle)
 

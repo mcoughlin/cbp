@@ -5,7 +5,7 @@ import optparse
 import pexpect
 import numpy as np
 
-import phidget
+import cbp.phidget
 
 def parse_commandline():
     """
@@ -76,13 +76,13 @@ def main(runtype = "steps", val = 1000):
         print "Moving in angle..."
         target_angle = val
         nave = 10000
-        x, y, z, angle = phidget.main(nave)
+        x, y, z, angle = cbp.phidget.main(nave)
         current_angle = angle        
         diff_angle = target_angle - current_angle
         print diff_angle
 
         while np.abs(diff_angle) > 0.1:
-            x, y, z, angle = phidget.main(nave)
+            x, y, z, angle = cbp.phidget.main(nave)
             current_angle = angle
             diff_angle = target_angle - current_angle
 
