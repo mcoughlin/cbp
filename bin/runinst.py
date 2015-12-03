@@ -8,6 +8,7 @@ from threading import Timer
 
 import cbp.phidget
 import cbp.altaz
+import cbp.potentiometer
 
 def parse_commandline():
     """
@@ -19,6 +20,7 @@ def parse_commandline():
     parser.add_option("-i","--instrument",default="phidget")    
     parser.add_option("-n","--steps",default=1000,type=int)
     parser.add_option("-a","--angle",default=2.0,type=float)
+    parser.add_option("-m","--motornum",default=1,type=int)
     parser.add_option("-c","--doCompile", action="store_true",default=False)
     parser.add_option("--doSteps", action="store_true",default=False)
     parser.add_option("--doAngle", action="store_true",default=False)
@@ -37,11 +39,14 @@ if opts.doRun:
         nave = 10000
         x, y, z, angle = cbp.phidget.main(nave)
         print x,y,z,angle
+    elif opts.instrument == "potentiometer":
+        potentiometer_1, potentiometer_2 = cbp.potentiometer.main()
+        print potentiometer_1, potentiometer_2
     elif opts.instrument == "altaz":
         if opts.doCompile:
             cbp.altaz.main(runtype = "compile")
         if opts.doSteps:
-            cbp.altaz.main(runtype = "steps", val = opts.steps)
+            cbp.altaz.main(runtype = "steps", val = opts.steps, motornum = opts.motornum)
         if opts.doAngle:
-            cbp.altaz.main(runtype = "angle", val = opts.angle)
+            cbp.altaz.main(runtype = "angle", val = opts.angle, motornum = opts.motornum)
 

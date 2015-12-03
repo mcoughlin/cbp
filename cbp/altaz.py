@@ -37,15 +37,15 @@ def receive():
        r[i] = ord(ser.read(1))
    return r
 
-def takesteps(mag = 100, direction = 1):
-    steps_command = "picocom -b 57600 --nolock /dev/ttyACM0"
+def takesteps(mag = 100, direction = 1, motornum = 1):
+    steps_command = "picocom -b 57600 --nolock /dev/ttyACM2"
     child = pexpect.spawn (steps_command)
     loop = True
     while loop:
         i = child.expect ([pexpect.TIMEOUT,'\n'], timeout = 2)
         #print child.before, child.after
         if i == 0: # Timeout
-            argstring = 'args %d %d\r'%(mag,direction)
+            argstring = 'args %d %d %d\r'%(mag,direction,motornum)
             print argstring
             child.sendline(argstring)
             loop = False
@@ -53,10 +53,10 @@ def takesteps(mag = 100, direction = 1):
             continue
     child.close()
 
-def main(runtype = "steps", val = 1000):
+def main(runtype = "steps", val = 1000, motornum = 1):
    
     if runtype == "compile":
-        steps_command = "cd /home/mcoughlin/Code/arduino/altaz/; source ./compile.sh"
+        steps_command = "cd /home/mcoughlin/Code/arduino/stepper/; source ./compile.sh"
         os.system(steps_command)
  
     elif runtype == "steps":
@@ -66,10 +66,10 @@ def main(runtype = "steps", val = 1000):
         if val<0:
             direction = 1
         else:
-            direction = -1 
+            direction = 2
         mag = steps
 
-        takesteps(mag = mag, direction = direction)    
+        takesteps(mag = mag, direction = direction, motornum = motornum)    
 
     elif runtype == "angle":
     
@@ -90,7 +90,7 @@ def main(runtype = "steps", val = 1000):
             if diff_angle < 0:
                 direction = 1
             else:
-                direction = -1
+                direction = 2
 
             if np.abs(diff_angle) > 10:
                 mag = 1000
@@ -99,7 +99,7 @@ def main(runtype = "steps", val = 1000):
             else:
                 mag = 50
 
-            takesteps(mag = mag, direction = direction)
+            takesteps(mag = mag, direction = direction, motornum = motornum)
   
 if __name__ == "__main__":
 
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     if opts.doCompile:
         main(runtype = "compile")
     if opts.doSteps:
-        main(runtype = "steps", val = opts.steps)
+        main(runtype = "steps", val = opts.steps, motornum = opts.motornum)
     if opts.doAngle:
-        main(runtype = "angle", val = opts.angle)
+        main(runtype = "angle", val = opts.angle, motornum = opts.motornum)
    
