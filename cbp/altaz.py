@@ -54,6 +54,12 @@ def takesteps(mag = 100, direction = 1, motornum = 1):
     child.close()
 
 def main(runtype = "steps", val = 1000, motornum = 1):
+
+    if runtype == "angle":
+        if motornum == 1:
+            runtype = "altangle"
+        elif motornum == 2:
+            runtype = "azangle"
    
     if runtype == "compile":
         steps_command = "cd /home/mcoughlin/Code/arduino/stepper/; source ./compile.sh"
@@ -71,7 +77,7 @@ def main(runtype = "steps", val = 1000, motornum = 1):
 
         takesteps(mag = mag, direction = direction, motornum = motornum)    
 
-    elif runtype == "angle":
+    elif runtype == "altangle":
     
         print "Moving in angle..."
         target_angle = val
@@ -79,14 +85,14 @@ def main(runtype = "steps", val = 1000, motornum = 1):
         x, y, z, angle = cbp.phidget.main(nave)
         current_angle = angle        
         diff_angle = target_angle - current_angle
-        print diff_angle
 
         while np.abs(diff_angle) > 0.1:
             x, y, z, angle = cbp.phidget.main(nave)
             current_angle = angle
             diff_angle = target_angle - current_angle
 
-            print current_angle
+            print "Current: %.5f, Diff: %.5f"%(current_angle,diff_angle)
+
             if diff_angle < 0:
                 direction = 1
             else:
@@ -101,6 +107,34 @@ def main(runtype = "steps", val = 1000, motornum = 1):
 
             takesteps(mag = mag, direction = direction, motornum = motornum)
   
+    elif runtype == "azangle":
+
+        print "Moving in angle..."
+        target_angle = val
+        angle_1, angle_2 = cbp.potentiometer.main()
+        current_angle = angle_2
+        diff_angle = target_angle - current_angle
+
+        while np.abs(diff_angle) > 0.1:
+            angle_1, angle_2 = cbp.potentiometer.main()
+            current_angle = angle_2
+            diff_angle = target_angle - current_angle
+
+            print "Current: %.5f, Diff: %.5f"%(current_angle,diff_angle)
+            if diff_angle < 0:
+                direction = 2
+            else:
+                direction = 1
+
+            if np.abs(diff_angle) > 2:
+                mag = 1000
+            elif np.abs(diff_angle) > 1:
+                mag = 100
+            else:
+                mag = 50
+
+            takesteps(mag = mag, direction = direction, motornum = motornum)
+
 if __name__ == "__main__":
 
     # Parse command line

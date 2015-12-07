@@ -37,7 +37,7 @@ def receiving(ser):
 
 def get_potentiometer():
 
-    PORT = '/dev/ttyACM1'
+    PORT = '/dev/ttyACM0'
     BAUD_RATE = 57600
     ser2 = serial.Serial(PORT, BAUD_RATE)
     conversion = 360.0/32767.0
