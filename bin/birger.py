@@ -41,7 +41,7 @@ def receive():
 # Parse command line
 opts = parse_commandline()
 
-devUSB = "/dev/tty.usbserial"
+devUSB = "/dev/ttyUSB0"
 
 # open serial port
 # replace "/dev/ttyUSB0" with "COM1", "COM2", etc in Windows
@@ -77,17 +77,18 @@ command = 'bv'
 
 # Get aperture range
 command = 'da'
-#reply = sendandreceive(command)
-#print reply
+reply = sendandreceive(command)
+print reply
 
 # Get zoom range
 command = 'dz'
-#reply = sendandreceive(command)
-#print reply
+reply = sendandreceive(command)
+print reply
 
 if opts.doGetFocus:
     command = 'fp'
     reply = sendandreceive(command)
+    print reply
 
     reply_split = reply.split(" ")
     reply_split = filter(None, reply_split)

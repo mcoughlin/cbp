@@ -24,8 +24,8 @@ def parse_commandline():
 opts = parse_commandline()
 
 fws = FLI.filter_wheel.USBFilterWheel.find_devices()
-if not len(fws) == 2:
-    raise Exception("Focuser or Filter wheel not connected...")
+#if not len(fws) == 2:
+#    raise Exception("Focuser or Filter wheel not connected...")
 
 for fw in fws:
     if fw.model == "CenterLine Filter Wheel":

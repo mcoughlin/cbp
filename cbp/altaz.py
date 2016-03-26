@@ -38,7 +38,7 @@ def receive():
    return r
 
 def takesteps(mag = 100, direction = 1, motornum = 1):
-    steps_command = "picocom -b 57600 --nolock /dev/ttyACM2"
+    steps_command = "picocom -b 57600 --nolock /dev/ttyACM.MSD"
     child = pexpect.spawn (steps_command)
     loop = True
     while loop:

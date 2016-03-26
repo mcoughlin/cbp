@@ -37,7 +37,7 @@ def receiving(ser):
 
 def get_potentiometer():
 
-    PORT = '/dev/ttyACM0'
+    PORT = '/dev/ttyACM.ADS'
     BAUD_RATE = 57600
     ser2 = serial.Serial(PORT, BAUD_RATE)
     conversion = 360.0/32767.0
@@ -71,7 +71,7 @@ def get_potentiometer():
 def main(doCompile = 0):
 
     if doCompile:
-        steps_command = "cd /home/mcoughlin/Code/arduino/potentiometer/; ./compile.sh"
+        steps_command = "cd /home/pi/Code/arduino/potentiometer/; ./compile.sh"
         os.system(steps_command)
 
     potentiometer_1, potentiometer_2 = get_potentiometer()
@@ -82,3 +82,4 @@ if __name__ == "__main__":
     doCompile = 0
     potentiometer_1, potentiometer_2 = main(doCompile = doCompile)
 
+    print potentiometer_1, potentiometer_2
