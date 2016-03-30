@@ -12,7 +12,7 @@ def parse_commandline():
     parser = optparse.OptionParser()
 
     parser.add_option("-c","--compile", action="store_true",default=False)
-    parser.add_option("--doGetPhotodiode", action="store_true",default=False)
+    parser.add_option("--doPhotodiode", action="store_true",default=False)
 
     opts, args = parser.parse_args()
 
@@ -63,15 +63,24 @@ def get_photodiode():
 
     return data_out_1
 
-# Parse command line
-opts = parse_commandline()
+def main(runtype = "compile", val = 0):
 
-if opts.compile:
-    steps_command = "cd /home/pi/Arduino/PD/; ./compile.sh"
-    os.system(steps_command)
+    if runtype == "compile":
+        steps_command = "cd /home/pi/Code/arduino/PD/; ./compile.sh"
+        os.system(steps_command)
+    elif runtype == "photodiode":
+        photo = get_photodiode()
+        conv = (1.0/2.0)*(1.0/10.0)
+        photo = photo*conv
+        print "Photodiode: %d"%photo
 
-if opts.doGetPhotodiode:
-    photo = get_photodiode()
-    conv = (1.0/2.0)*(1.0/10.0)
-    photo = photo*conv
-    print "Photodiode: %d"%photo
+if __name__ == "__main__":
+
+    # Parse command line
+    opts = parse_commandline()
+
+    if opts.doCompile:
+        main(runtype = "compile")
+    if opts.doPhotodiode:
+        main(runtype = "photodiode")
+

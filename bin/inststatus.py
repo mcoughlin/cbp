@@ -6,6 +6,11 @@ import optparse
 from threading import Timer
 import FLI
 
+import cbp.phidget, cbp.altaz
+import cbp.potentiometer, cbp.birger
+import cbp.lamp, cbp.shutter
+import cbp.photodiode
+
 def parse_commandline():
     """
     Parse the options given on the command-line.
@@ -15,7 +20,7 @@ def parse_commandline():
     parser.add_option("--doStatus", action="store_true",default=False)
     parser.add_option("--doLog", action="store_true",default=False)
     parser.add_option("-i","--instruments",\
-        default="XY,Focuser,TipTilt,AltAz,FilterWheel,Photodiode")    
+        default="AltAz,FilterWheel,Photodiode")    
     parser.add_option("-n","--imnum",default=0,type=int)
     parser.add_option("-v","--verbose", action="store_true",default=False)
 
@@ -50,43 +55,7 @@ def get_status(opts):
 
     instruments = opts.instruments.split(",")
     for instrument in instruments:
-        if instrument == "XY":
-            sys_command = "python zaber.py --doGetPosition -d 1"
-            output = run_cmd(sys_command)
-            lines = output.split("\n")
-            for line in lines:
-                lineSplit = line.split(" ")
-                if lineSplit[0] == "Position:":
-                    posx = float(lineSplit[1])
-            sys_command = "python zaber.py --doGetPosition -d 2"
-            output = run_cmd(sys_command)
-            lines = output.split("\n")
-            for line in lines:
-                lineSplit = line.split(" ")
-                if lineSplit[0] == "Position:":
-                    posy = float(lineSplit[1])
-
-        elif instrument == "Focuser":
-            sys_command = "python focuser.py --doGetPosition"
-            output = run_cmd(sys_command)
-            lines = output.split("\n")
-            for line in lines:
-                lineSplit = line.split(" ")
-                if lineSplit[0] == "Position:":
-                    posz = float(lineSplit[1])
-
-        elif instrument == "TipTilt":
-            sys_command = "python tiptilt.py --doGetPosition"
-            output = run_cmd(sys_command)
-            lines = output.split("\n")
-            for line in lines:
-                lineSplit = line.split(" ")
-                if lineSplit[0] == "LVDT_1:":
-                    lvdt1 = float(lineSplit[1])
-                elif lineSplit[0] == "LVDT_2:":
-                    lvdt2 = float(lineSplit[1])
-
-        elif instrument == "AltAz":
+        if instrument == "Potentiometer":
             sys_command = "python telmount.py --doSSH --doGetPosition"
             output = run_cmd(sys_command)
             lines = output.split("\n")
@@ -109,13 +78,7 @@ def get_status(opts):
                     filter = int(lineSplit[1])
 
         elif instrument == "Photodiode":
-            sys_command = "python photodiode.py --doGetPhotodiode"
-            output = run_cmd(sys_command)
-            lines = output.split("\n")
-            for line in lines:
-                lineSplit = line.split(" ")
-                if lineSplit[0] == "Photodiode:":
-                    photo = int(lineSplit[1])
+            photo = cbp.photodiode.main(runtype = "photodiode")
 
     if (posx == -1) or (posy == -1):
         print "Zaber stages not responding..."

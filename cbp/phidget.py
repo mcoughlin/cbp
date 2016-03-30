@@ -187,4 +187,4 @@ def main(nave = 10000):
 if __name__ == "__main__":
     nave = 10000 
     x,y,z,angle = main(nave=nave)
-
+    print x,y,z,angle
