@@ -1,0 +1,36 @@
+10 0.2
+12 1.6
+13 2.5
+14 3.8
+15 5.8
+16 9.3
+17 13.7
+18 19.7
+19 27.5
+20 36.9
+21 49.5
+22 64.8
+23 83.8
+24 113.5
+25 140.1
+26 171
+27 206
+28 246
+29 290
+30 344
+35 674
+40 1.18 microamps
+45 1.93 microamps
+50 2.92 microamps
+55 4.20 microamps
+60 5.76 microamps
+65 7.71 microamps
+70 9.98 microamps
+75 12.5 microamps
+100 32.1 microamps
+125 63.4 microamps
+150 106 microamps
+175 162 microamps
+200 230 microamps
+225 313 microamps
+250 406 microamps

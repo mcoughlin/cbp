@@ -1,5 +1,5 @@
 0, 568 nm inteference, 0
-1, 680 nm (10 nm), 0
-2, SDSS R, 0
+1, 700 nm (10 nm), 0
+2, 671 nm (10 nm), 0
 3, DECam (2.2 deg), 0
-4, Blank, 0
+4, 680 nm (10 nm), 0
