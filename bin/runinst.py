@@ -10,6 +10,7 @@ import cbp.phidget, cbp.altaz
 import cbp.potentiometer, cbp.birger
 import cbp.lamp, cbp.shutter
 import cbp.photodiode, cbp.filter_wheel
+import cbp.monochromater
 
 def parse_commandline():
     """
@@ -29,6 +30,8 @@ def parse_commandline():
     parser.add_option("-s","--shutter",default=-1,type=int)
     parser.add_option("--mask",default=0,type=int)
     parser.add_option("--filter",default=0,type=int)
+    parser.add_option("--wavelength",default=600,type=int)
+    parser.add_option("--monofilter",default=1,type=int)
 
     parser.add_option("-c","--doCompile", action="store_true",default=False)
 
@@ -42,6 +45,10 @@ def parse_commandline():
     parser.add_option("--doPhotodiode", action="store_true",default=False)
     parser.add_option("--doFWPosition", action="store_true",default=False)
     parser.add_option("--doFWGetPosition", action="store_true",default=False)
+    parser.add_option("--doMonoWavelength", action="store_true",default=False)
+    parser.add_option("--doMonoFilter", action="store_true",default=False)
+    parser.add_option("--doGetMonoWavelength", action="store_true",default=False)
+    parser.add_option("--doGetMonoFilter", action="store_true",default=False)
 
     parser.add_option("-v","--verbose", action="store_true",default=False)
 
@@ -80,10 +87,21 @@ if opts.doRun:
         if opts.doShutter:
             cbp.shutter.main(runtype = "shutter", val = opts.shutter)
     elif opts.instrument == "photodiode":
-        cbp.photodiode.main(runtype = "photodiode")
+        photo = cbp.photodiode.main(runtype = "photodiode")
+        print photo
     elif opts.instrument == "filter_wheel":
         if opts.doFWPosition:
             cbp.filter_wheel.main(runtype = "position", mask = opts.mask, filter = opts.filter)
         else:
             cbp.filter_wheel.main(runtype = "getposition")
+    elif opts.instrument == "monochrometer":
+        if opts.doMonoWavelength:
+            cbp.monochromater.main(runtype = "monowavelength", val = opts.wavelength)
+        elif opts.doGetMonoWavelength:
+            cbp.monochromater.main(runtype = "getmonowavelength")
+        elif opts.doMonoFilter:
+            cbp.monochromater.main(runtype = "monofilter", val = opts.monofilter)
+        elif opts.doGetMonoFilter:
+            cbp.monochromater.main(runtype = "getmonofilter")
+
 

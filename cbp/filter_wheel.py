@@ -44,8 +44,8 @@ def main(runtype = "position", mask = 0, filter = 0):
         mask = pos/5
         filt = np.mod(pos,5)
 
-        print "Mask: %d"%mask
-        print "Filter: %d"%filt
+        #print "Mask: %d"%mask
+        #print "Filter: %d"%filt
 
     elif runtype == "getposition":
 
@@ -54,8 +54,7 @@ def main(runtype = "position", mask = 0, filter = 0):
         mask = pos/5
         filt = np.mod(pos,5)
 
-        print "Mask: %d"%mask
-        print "Filter: %d"%filt
+        return mask, filt
 
 if __name__ == "__main__":
 

@@ -41,6 +41,7 @@ def get_potentiometer():
     BAUD_RATE = 57600
     ser2 = serial.Serial(PORT, BAUD_RATE)
     conversion = 360.0/32767.0
+    conversion = 1.0/32767.0
 
     success = 0
     numlines = 5

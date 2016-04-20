@@ -9,7 +9,8 @@ import FLI
 import cbp.phidget, cbp.altaz
 import cbp.potentiometer, cbp.birger
 import cbp.lamp, cbp.shutter
-import cbp.photodiode
+import cbp.photodiode, cbp.filter_wheel
+import cbp.monochromater
 
 def parse_commandline():
     """
@@ -20,7 +21,7 @@ def parse_commandline():
     parser.add_option("--doStatus", action="store_true",default=False)
     parser.add_option("--doLog", action="store_true",default=False)
     parser.add_option("-i","--instruments",\
-        default="AltAz,FilterWheel,Photodiode")    
+        default="phidget,filter_wheel,potentiometer,photodiode,monochromator,birger")    
     parser.add_option("-n","--imnum",default=0,type=int)
     parser.add_option("-v","--verbose", action="store_true",default=False)
 
@@ -42,70 +43,62 @@ def run_cmd(cmd, timeout_sec = 20):
 def get_status(opts):
 
     # set defaults
-    posx = -1
-    posy = -1
-    posz = -1
-    lvdt1 = -1
-    lvdt2 = -1
+    acc = -1
     alt = -1
     az = -1
     mask = -1
     filter = -1
     photo = -1
+    monofilter = -1
+    monowavelength = -1
+    focus = -1
+    aperture = -1
 
     instruments = opts.instruments.split(",")
     for instrument in instruments:
-        if instrument == "Potentiometer":
-            sys_command = "python telmount.py --doSSH --doGetPosition"
-            output = run_cmd(sys_command)
-            lines = output.split("\n")
-            for line in lines:
-                lineSplit = line.split(" ")
-                if lineSplit[0] == "Altitude:":
-                    alt = float(lineSplit[1])
-                elif lineSplit[0] == "Azimuth:":
-                    az = float(lineSplit[1])
-
-        elif instrument == "FilterWheel":
-            sys_command = "python filter_wheel.py --doGetPosition"
-            output = run_cmd(sys_command)
-            lines = output.split("\n")
-            for line in lines:
-                lineSplit = line.split(" ")
-                if lineSplit[0] == "Mask:":
-                    mask = int(lineSplit[1])
-                elif lineSplit[0] == "Filter:":
-                    filter = int(lineSplit[1])
-
-        elif instrument == "Photodiode":
+        if instrument == "phidget":
+            nave = 10000
+            x, y, z, angle = cbp.phidget.main(nave)
+            acc = angle
+        elif instrument == "potentiometer":
+            potentiometer_1, potentiometer_2 = cbp.potentiometer.main()
+            alt = potentiometer_1
+            az = potentiometer_2
+        elif instrument == "filter_wheel":
+            mask, filter = cbp.filter_wheel.main(runtype = "getposition")
+        elif instrument == "photodiode":
             photo = cbp.photodiode.main(runtype = "photodiode")
+        elif instrument == "monochromator":
+            monowavelength, monofilter = cbp.monochromater.main(runtype = "getmono")
+        elif instrument == "birger":
+            focus, aperture = cbp.birger.main(runtype = "status")
 
-    if (posx == -1) or (posy == -1):
-        print "Zaber stages not responding..."
-    if (posz == -1):
-        print "Focuser not responding..."
     if (alt == -1) or (az == -1):
-        print "Telescope mount not responding..."
-    if (lvdt1 == -1) or (lvdt2 == -1):
-        print "TipTilt not responding..."
+        print "Potentiometers not responding..."
+    if (acc == -1):
+        print "Phidget not responding..."
+    if (monowavelength == -1) or (monofilter == -1):
+        print "Monochrometer not responding..."
     if (mask == -1) or (filter == -1):
         print "Filter wheel not responding..."
     if (photo == -1):
         print "Photodiode not responding..."
+    if (focus == -1) or (aperture == -1):
+        print "Filter wheel not responding..."
 
     if opts.verbose:
-        print "X: %.5f"%posx
-        print "Y: %.5f"%posy
-        print "Z: %.5f"%posz
+        print "Accelerometer: %.5f"%acc
         print "Altitude: %.5f"%alt
         print "Azimuth: %.5f"%az
-        print "LVDT 1: %.5f"%lvdt1
-        print "LVDT 2: %.5f"%lvdt2
+        print "Monochromator Wavelength: %.5f"%monowavelength
+        print "Monochromator Filter: %.5f"%monofilter
         print "Mask: %d"%mask
         print "Filter: %d"%filter
         print "Photodiode: %d"%photo
+        print "Focus: %.5f"%focus
+        print "Aperture: %.5f"%aperture
 
-    return posx, posy, posz, lvdt1, lvdt2, alt, az, mask, filter, photo 
+    return acc, alt, az, monowavelength, monofilter, mask, filter, photo, focus, aperture
 
 # Parse command line
 opts = parse_commandline()
@@ -119,24 +112,11 @@ if opts.doStatus:
 
     if opts.doLog:
         fid = open(logFile,'w')
-        fid.write("IM X Y Z LVDT1 LVDT2 ALT AZ MASK FILTER PHOTO COMMENT\n")
+        fid.write("IM ACC ALT AZ MWAVE MFILT MASK FILTER PHOTO FOCUS APERTURE COMMENT\n")
 
     continueLoop = True
     while continueLoop:
-        posx, posy, posz, lvdt1, lvdt2, alt, az, mask, filter, photo = get_status(opts)
-
-        if opts.verbose: 
-            print "X: %.5f"%posx
-            print "Y: %.5f"%posy
-            print "Z: %.5f"%posz
-            print "Altitude: %.5f"%alt
-            print "Azimuth: %.5f"%az
-            print "LVDT 1: %.5f"%lvdt1
-            print "LVDT 2: %.5f"%lvdt2
-            print "Mask: %d"%mask
-            print "Filter: %d"%filter
-            print "Photodiode: %d"%photo
-            print "\n\n"
+        acc, alt, az, monowavelength, monofilter, mask, filter, photo, focus, aperture = get_status(opts)
 
         if opts.doLog:
             try: 
@@ -144,7 +124,7 @@ if opts.doStatus:
             except:
                 comment = "None"
 
-            fid.write('%d,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%d,%d,%.5f,%s\n'%(im, posx, posy, posz, lvdt1, lvdt2, alt, az, mask, filter, photo,comment))
+            fid.write('%d,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%s\n'%(im, acc, alt, az, monowavelength, monofilter, mask, filter, photo, focus, aperture, comment))
 
         val = raw_input('Quit? y/n ')
         if val == "y":

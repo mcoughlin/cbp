@@ -72,7 +72,8 @@ def main(runtype = "compile", val = 0):
         photo = get_photodiode()
         conv = (1.0/2.0)*(1.0/10.0)
         photo = photo*conv
-        print "Photodiode: %d"%photo
+        #print "Photodiode: %d"%photo
+        return photo
 
 if __name__ == "__main__":
 

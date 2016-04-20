@@ -13,7 +13,7 @@ def parse_commandline():
     parser.add_option("-a","--aperture",default=0,type=int)
     parser.add_option("--doFocus", action="store_true",default=False)
     parser.add_option("--doAperture", action="store_true",default=False)
-    parser.add_option("--doGetFocus", action="store_true",default=False)
+    parser.add_option("--doStatus", action="store_true",default=False)
     parser.add_option("-v","--verbose", action="store_true",default=False)
 
     opts, args = parser.parse_args()
@@ -40,7 +40,7 @@ def receive(ser):
 
 def main(runtype = "focus", val = 1000):
 
-    devUSB = "/dev/tty.usbserial"
+    devUSB = "/dev/ttyUSB0"
 
     # open serial port
     # replace "/dev/ttyUSB0" with "COM1", "COM2", etc in Windows
@@ -52,17 +52,17 @@ def main(runtype = "focus", val = 1000):
         print("Error opening com port. Quitting.")
         sys.exit(0)
 
-    print "Opening %s"%ser.portstr
+    #print "Opening %s"%ser.portstr
 
     # Setup Lens
     command = 'sm12'
     reply = sendandreceive(command,ser)
-    print reply
+    #print reply
 
     # Lens info
     command = 'lc'
     reply = sendandreceive(command,ser)
-    print reply
+    #print reply
 
     command = 'la'
     #reply = sendandreceive(command,ser)
@@ -84,17 +84,9 @@ def main(runtype = "focus", val = 1000):
     #print reply
 
     if runtype == "focus":
-        command = 'fp'
-        reply = sendandreceive(command,ser)
 
-        reply_split = reply.split(" ")
-        reply_split = filter(None, reply_split)
-    
-        fmin = float(reply_split[0].replace("fmin:",""))
-        fmax = float(reply_split[1].replace("fmax:",""))
-        current = float(reply_split[2].replace("current:","").replace("\r",""))
-
-        print "fmin: %.1f, fmax: %.1f, current: %.1f"%(fmin,fmax,current)
+        if (val < 0) or (val > 16383):
+            raise Exception("Focus should be integer between 0-16383") 
 
         focus = val
         focusstr = ("%04x"%(focus)).replace("0x","")
@@ -110,12 +102,44 @@ def main(runtype = "focus", val = 1000):
         command = 'eh%s,%s'%(focusstr,checksumstr)
         reply = sendandreceive(command,ser)
 
-    if runtype == "aperture":
+    elif runtype == "aperture":
+
+        if (val < 0) or (val > 24):
+            raise Exception("Focus should be integer between 0-24")
+
         command = 'in'
         reply = sendandreceive(command,ser)
 
         command = 'ma%d'%(val)
         reply = sendandreceive(command,ser)
+    elif runtype == "status":
+
+        command = 'fp'
+        reply = sendandreceive(command,ser)
+
+        reply = reply.replace("fp\rOK\r","")
+        reply_split = reply.split(" ")
+        reply_split = filter(None, reply_split)
+
+        fmin = float(reply_split[0].replace("fmin:",""))
+        fmax = float(reply_split[1].replace("fmax:",""))
+        focus = float(reply_split[2].replace("current:","").replace("\r",""))
+
+        #print reply_split
+
+        #print "fmin: %.1f, fmax: %.1f, current: %.1f"%(fmin,fmax,focus)
+
+        command = 'pa'
+        reply = sendandreceive(command,ser)
+
+        reply_split = reply.split(",")
+        reply_split = filter(None, reply_split)
+
+        aperture = float(reply_split[0])
+        fstop = float(reply_split[1].replace("f",""))
+
+        print focus, aperture
+        return focus, aperture
 
     ser.close() 
 
@@ -128,4 +152,5 @@ if __name__ == "__main__":
         main(runtype = "focus", val = opts.focus)
     if opts.doAperture:
         main(runtype = "aperture", val = opts.aperture)
-
+    if opts.doStatus:
+        focus, aperture = main(runtype = "status")

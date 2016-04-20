@@ -13,6 +13,7 @@ def parse_commandline():
     """
     parser = optparse.OptionParser()
 
+    parser.add_option("-m","--motornum",default=1,type=int)
     parser.add_option("-n","--steps",default=1000,type=int)
     parser.add_option("-a","--angle",default=2.0,type=float)
     parser.add_option("-c","--doCompile", action="store_true",default=False)
