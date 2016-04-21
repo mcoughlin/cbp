@@ -5,7 +5,7 @@ import optparse
 import pexpect
 import numpy as np
 
-import cbp.phidget
+import cbp.phidget, cbp.potentiometer
 
 def parse_commandline():
     """
@@ -58,9 +58,9 @@ def main(runtype = "steps", val = 1000, motornum = 1):
 
     if runtype == "angle":
         if motornum == 1:
-            runtype = "altangle"
-        elif motornum == 2:
             runtype = "azangle"
+        elif motornum == 2:
+            runtype = "altangle"
    
     if runtype == "compile":
         steps_command = "cd /home/mcoughlin/Code/arduino/stepper/; source ./compile.sh"
@@ -84,7 +84,7 @@ def main(runtype = "steps", val = 1000, motornum = 1):
         target_angle = val
         nave = 10000
         x, y, z, angle = cbp.phidget.main(nave)
-        current_angle = angle        
+        current_angle = angle    
         diff_angle = target_angle - current_angle
 
         while np.abs(diff_angle) > 0.1:
@@ -99,15 +99,18 @@ def main(runtype = "steps", val = 1000, motornum = 1):
             else:
                 direction = 2
 
-            if np.abs(diff_angle) > 10:
-                mag = 1000
+            if np.abs(diff_angle) > 2:
+                mag = 500
             elif np.abs(diff_angle) > 1:
                 mag = 100
+            elif np.abs(diff_angle) > 0.5:
+                mag = 100
             else:
-                mag = 50
+                mag = 10
 
+            print mag, direction, motornum
             takesteps(mag = mag, direction = direction, motornum = motornum)
-  
+ 
     elif runtype == "azangle":
 
         print "Moving in angle..."
@@ -128,11 +131,13 @@ def main(runtype = "steps", val = 1000, motornum = 1):
                 direction = 1
 
             if np.abs(diff_angle) > 2:
-                mag = 1000
+                mag = 500
             elif np.abs(diff_angle) > 1:
                 mag = 100
-            else:
+            elif np.abs(diff_angle) > 0.5:
                 mag = 50
+            else:
+                mag = 10
 
             takesteps(mag = mag, direction = direction, motornum = motornum)
 
@@ -147,4 +152,5 @@ if __name__ == "__main__":
         main(runtype = "steps", val = opts.steps, motornum = opts.motornum)
     if opts.doAngle:
         main(runtype = "angle", val = opts.angle, motornum = opts.motornum)
-   
+  
+ 

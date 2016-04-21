@@ -127,11 +127,12 @@ def main(runtype = "focus", val = 1000):
 
         #print reply_split
 
-        #print "fmin: %.1f, fmax: %.1f, current: %.1f"%(fmin,fmax,focus)
+        print "fmin: %.1f, fmax: %.1f, current: %.1f"%(fmin,fmax,focus)
 
         command = 'pa'
         reply = sendandreceive(command,ser)
 
+        print reply
         reply_split = reply.split(",")
         reply_split = filter(None, reply_split)
 
