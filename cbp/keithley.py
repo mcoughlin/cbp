@@ -1,86 +1,94 @@
-import serial
 import visa
-import time
-import sys
-import matplotlib.pyplot as plt
 import numpy as np
-import os
-import sys
 
-rm = visa.ResourceManager('@py')
-#ins = rm.open_resource(rm.list_resources()[0])
-ins = rm.open_resource('ASRL/dev/ttyUSB0::INSTR')
-print ins
+import serial, sys, time, glob, struct, os
+import numpy as np
+import optparse
+import pexpect
 
-ins.write_termination = '\n'
-ins.read_termination = '\n'
-ins.timeout = 5000
-ins.query_delay = 0.1 #delay before responding to a query.  I think this has a hand in setting the fundamental
-#response rate
+def parse_commandline():
+    """
+    Parse the options given on the command-line.
+    """
+    parser = optparse.OptionParser()
 
-chk = ins.write('*RST')
-print chk
-chk = ins.write('*CLS')
-print chk
-print ins.query('*IDN?')
+    parser.add_option("--doKeithley", action="store_true",default=False)
 
+    opts, args = parser.parse_args()
 
-ins.write('FORM:ELEM READ')
-ins.write('FORM:BORD SWAP')
-ins.write('FORM:DATA SRE')
-ins.write('TRIG:DEL 0')
-ins.write('TRIG:COUN 1')
-ins.write('DISP:ENAB OFF')
-ins.write('NPLC .01')
-ins.write('RANG 2e-9')
-ins.write('SYST:ZCH OFF')
-ins.write('SYST:AZER:STAT OFF')
+    return opts
 
-tot_time = 0
-print ins.query('*OPC?')
+class Keithley:
+	def __init__(self,rm=None,resnum=None,mode='char',nplc=1):
+		if rm is not None and resnum is not None:
+			self.rm = rm
+			self.ins = self.rm.open_resource(rm.list_resources()[resnum])
+		else:
+			self.rm = visa.ResourceManager('@py')
+			self.ins = self.rm.open_resource(self.rm.list_resources()[0])
+		self.ins.write_termination = '\n'
+		self.ins.read_termination = '\n'
+		self.ins.timeout = 5000
+		self.ins.query_delay = 0.0
+		#ins.write('SYST:ZCH OFF')  #see page 2-2
+		#ins.write('SYST:AZER:STAT OFF') #see page 2-13+
+		self.selectmode(mode,nplc=nplc)
+		self.dispon(True)
+		
+	def selectmode(self,mode,nplc):
+		assert mode.lower() in ['volt','char','curr','res'], "No mode %s" % mode.lower()
+		assert type(nplc) == type(1) #assert that nplc is an int
+		#self.ins.write('CONF:%s' % mode.upper())
+		self.ins.write('SENS:%s:NPLC %d' %(mode.upper(),nplc))
 
-#at start of the read, record time.time(), and append this to each measurement
-#this will be time in [s] (BUT IM NOT SURE SINCE WHEN, BECAUSE THIS IS BEING WRITTEN ON WINDOWS
-#IT MIGHT MATTER WHICH OS THIS IS BEING RUN ON SO BE CAREFUL)
+	def dispon(self,on):
+		if on:
+			self.ins.write('DISP:ENAB 1')
+		else:
+			self.ins.write('DISP:ENAB 0')
 
-#this time can later be converted to a sensible interpretation via time.ctime(mytimestamp)
+	def getread(self):
+		'''Array returned is of the form 
+			[READING, TIME, STATUS]
+			Where status is defined in the manual via bitmasks
+		'''
+		return np.array(self.ins.query('READ?').split(',')).astype(np.float)
+		
+	def getquery(self,query):
+		return self.ins.query(query)
+		
+	def close(self):
+		self.ins.close()
+		self.rm.close()
 
-dt =  90#time to read for in s
-vals = []
-#need info for filename construction
-#wavelength = sys.argv[1]
-#wavelength = int(wavelength)
-#light = sys.argv[2]
-#if light == "0":
-#	light = "dark"
-#else:
-#	light = "light"
-fname = "ut030616." + sys.argv[1] + ".photodiode.txt"
-wave = raw_input("WAVELENGTH? >>")
-light = raw_input("LIGHT/DARK? >>")
-disp = raw_input("DISPERSED? >>")
-header = "WAVELENGTH: %s LIGHT/DARK: %s DISP: %s" % (wave,light,disp)
+def get_keithley(rm):
 
-#fname = "%04d_nm_%s.txt" % (wavelength,light)
-if os.path.exists(fname):
-	print "WARNING: PATH ALREADY EXISTS!!!!!"
-	cont = raw_input("CONTINUE? [y/[n]] >>")
-	if cont.lower() != "y":
-		sys.exit()
+    ins1 = Keithley(rm = rm, resnum = 0)
+    ins2 = Keithley(rm = rm, resnum = 1)
 
-tstart = time.time()
-i=0
-print time.time()
-while time.time() - tstart < dt:
-	print time.time()
-	i += 1
-	vals.append([np.float32(ins.query('READ?')),time.time()])
-	if i%100 == 0:
-		print vals[-1]
-vals = np.array(vals)
-print vals
-print "got " + str(vals.shape[0]) + " readings"
-np.savetxt(fname,vals,header=header)
-plt.plot([float(v)/1E-9 for v in vals[:,0]],'-k',lw=2)
-plt.show(block=False)
-a = raw_input(">>Press ENTER to exit<<")
+    #ins1.selectmode("volt",1)
+    #ins2.selectmode("volt",1)
+    ins1.ins.write("SYST:ZCH ON")
+    ins1.ins.write("SYST:ZCH OFF")
+    photo1 = ins1.getread()
+    ins2.ins.write("SYST:ZCH ON")
+    ins2.ins.write("SYST:ZCH OFF")
+    photo2 = ins2.getread()
+
+    return photo1, photo2
+
+def main(runtype = "keithley"):
+
+    if runtype == "keithley":
+        rm = visa.ResourceManager('@py')
+        photo1, photo2 = get_keithley(rm = rm)
+        return photo1[0], photo2[0]
+
+if __name__ == "__main__":
+
+    # Parse command line
+    opts = parse_commandline()
+
+    if opts.doKeithley:
+        main(runtype = "keithley")
+

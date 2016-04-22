@@ -10,7 +10,7 @@ import cbp.phidget, cbp.altaz
 import cbp.potentiometer, cbp.birger
 import cbp.lamp, cbp.shutter
 import cbp.photodiode, cbp.filter_wheel
-import cbp.monochromater
+import cbp.monochromater, cbp.keithley
 
 def parse_commandline():
     """
@@ -21,7 +21,7 @@ def parse_commandline():
     parser.add_option("--doStatus", action="store_true",default=False)
     parser.add_option("--doLog", action="store_true",default=False)
     parser.add_option("-i","--instruments",\
-        default="phidget,filter_wheel,potentiometer,photodiode,monochromator,birger")    
+        default="phidget,filter_wheel,potentiometer,photodiode,monochromator,birger,keithley")    
     parser.add_option("-n","--imnum",default=0,type=int)
     parser.add_option("-v","--verbose", action="store_true",default=False)
 
@@ -53,6 +53,8 @@ def get_status(opts):
     monowavelength = -1
     focus = -1
     aperture = -1
+    photo1 = -1
+    photo2 = -1
 
     instruments = opts.instruments.split(",")
     for instrument in instruments:
@@ -70,8 +72,11 @@ def get_status(opts):
             photo = cbp.photodiode.main(runtype = "photodiode")
         elif instrument == "monochromator":
             monowavelength, monofilter = cbp.monochromater.main(runtype = "getmono")
+            print monowavelength, monofilter 
         elif instrument == "birger":
             focus, aperture = cbp.birger.main(runtype = "status")
+        elif instrument == "keithley":
+            photo1,photo2 = cbp.keithley.main(runtype = "keithley")
 
     if (alt == -1) or (az == -1):
         print "Potentiometers not responding..."
@@ -85,6 +90,8 @@ def get_status(opts):
         print "Photodiode not responding..."
     if (focus == -1) or (aperture == -1):
         print "Filter wheel not responding..."
+    if (photo1 == -1) or (photo2 == -1):
+        print "Keithley not responding..."
 
     if opts.verbose:
         print "Accelerometer: %.5f"%acc
@@ -97,8 +104,10 @@ def get_status(opts):
         print "Photodiode: %d"%photo
         print "Focus: %.5f"%focus
         print "Aperture: %.5f"%aperture
+        print "Keithley 1: %.10e"%photo1
+        print "Keithley 2: %.10e"%photo2
 
-    return acc, alt, az, monowavelength, monofilter, mask, filter, photo, focus, aperture
+    return acc, alt, az, monowavelength, monofilter, mask, filter, photo, focus, aperture, photo1, photo2
 
 # Parse command line
 opts = parse_commandline()
@@ -112,11 +121,11 @@ if opts.doStatus:
 
     if opts.doLog:
         fid = open(logFile,'w')
-        fid.write("IM ACC ALT AZ MWAVE MFILT MASK FILTER PHOTO FOCUS APERTURE COMMENT\n")
+        fid.write("IM ACC ALT AZ MWAVE MFILT MASK FILTER PHOTO FOCUS APERTURE KEITHLEY1 KEITHLEY2 COMMENT\n")
 
     continueLoop = True
     while continueLoop:
-        acc, alt, az, monowavelength, monofilter, mask, filter, photo, focus, aperture = get_status(opts)
+        acc, alt, az, monowavelength, monofilter, mask, filter, photo, focus, aperture, photo1, photo2 = get_status(opts)
 
         if opts.doLog:
             try: 
@@ -124,7 +133,7 @@ if opts.doStatus:
             except:
                 comment = "None"
 
-            fid.write('%d,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%s\n'%(im, acc, alt, az, monowavelength, monofilter, mask, filter, photo, focus, aperture, comment))
+            fid.write('%d,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5e,%.5e,%s\n'%(im, acc, alt, az, monowavelength, monofilter, mask, filter, photo, focus, aperture, photo1, photo2, comment))
 
         val = raw_input('Quit? y/n ')
         if val == "y":

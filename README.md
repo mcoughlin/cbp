@@ -26,4 +26,4 @@ Filter Wheel: python runinst.py --doRun --doFWPosition -i filter_wheel --mask 0 
 Lamp: python runinst.py --doRun --doLamp -i lamp -l 255
    Lamp: 0 - 255
 Monochrometer:  python runinst.py --doRun --doMonoWavelength -i monochrometer --wavelength 600
-
+Keithley: sudo python runinst.py -i keithley --doKeithley --doRun

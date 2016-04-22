@@ -10,7 +10,7 @@ import cbp.phidget, cbp.altaz
 import cbp.potentiometer, cbp.birger
 import cbp.lamp, cbp.shutter
 import cbp.photodiode, cbp.filter_wheel
-import cbp.monochromater
+import cbp.monochromater, cbp.keithley
 
 def parse_commandline():
     """
@@ -49,6 +49,7 @@ def parse_commandline():
     parser.add_option("--doMonoFilter", action="store_true",default=False)
     parser.add_option("--doGetMonoWavelength", action="store_true",default=False)
     parser.add_option("--doGetMonoFilter", action="store_true",default=False)
+    parser.add_option("--doKeithley", action="store_true",default=False)
 
     parser.add_option("-v","--verbose", action="store_true",default=False)
 
@@ -103,5 +104,8 @@ if opts.doRun:
             cbp.monochromater.main(runtype = "monofilter", val = opts.monofilter)
         elif opts.doGetMonoFilter:
             cbp.monochromater.main(runtype = "getmonofilter")
-
+    elif opts.instrument == "keithley":
+        if opts.doKeithley:
+            photo1, photo2 = cbp.keithley.main(runtype = "keithley")
+            print photo1, photo2
 

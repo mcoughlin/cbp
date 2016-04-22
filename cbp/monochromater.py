@@ -147,7 +147,7 @@ def disconnect():
 
 def main(runtype = "wavelength", val = 1000):
 
-    devUSB = "/dev/ttyUSB1"
+    devUSB = "/dev/ttyUSB2"
 
     m = openinst(pname=devUSB)
     if not m:
@@ -163,6 +163,14 @@ def main(runtype = "wavelength", val = 1000):
     elif runtype == "getmono":
         wave = askwave()
         filter = askfilter()
+        try:
+            wave = float(wave)
+        except:
+            wave = -1
+        try:
+            filter = float(filter)
+        except:
+            filter = -1
         return wave, filter
 
 if __name__ == "__main__":
