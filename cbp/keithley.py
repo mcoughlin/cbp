@@ -30,11 +30,24 @@ class Keithley:
 		self.ins.read_termination = '\n'
 		self.ins.timeout = 5000
 		self.ins.query_delay = 0.0
+
 		#ins.write('SYST:ZCH OFF')  #see page 2-2
 		#ins.write('SYST:AZER:STAT OFF') #see page 2-13+
 		self.selectmode(mode,nplc=nplc)
-		self.dispon(True)
-		
+                #self.ins.write('CURR:RANG:AUTO ON')
+                #self.ins.write('CHAR:RANG:AUTO ON')
+                #self.ins.write('VOLT:RANG:AUTO ON')
+		#self.dispon(True)
+
+                self.ins.write('*RST')
+                self.ins.write('SYST:ZCH ON')
+                self.ins.write('CURR:RANG 2e-9')
+                self.ins.write('INIT') 
+                self.ins.write('SYST:ZCOR:ACQ') 
+                self.ins.write('SYST:ZCOR ON')
+                #self.ins.write('CURR:RANG:AUTO ON')
+                self.ins.write('SYST:ZCH OFF')
+	
 	def selectmode(self,mode,nplc):
 		assert mode.lower() in ['volt','char','curr','res'], "No mode %s" % mode.lower()
 		assert type(nplc) == type(1) #assert that nplc is an int
@@ -63,17 +76,28 @@ class Keithley:
 
 def get_keithley(rm):
 
-    ins1 = Keithley(rm = rm, resnum = 0)
-    ins2 = Keithley(rm = rm, resnum = 1)
+    try:
+        ins1 = Keithley(rm = rm, resnum = 0)
+        ins1.ins.write("SYST:ZCH ON")
+        ins1.ins.write("SYST:ZCH OFF")
 
-    #ins1.selectmode("volt",1)
-    #ins2.selectmode("volt",1)
-    ins1.ins.write("SYST:ZCH ON")
-    ins1.ins.write("SYST:ZCH OFF")
-    photo1 = ins1.getread()
-    ins2.ins.write("SYST:ZCH ON")
-    ins2.ins.write("SYST:ZCH OFF")
-    photo2 = ins2.getread()
+        #ins1.selectmode("VOLT",10)
+
+        print ins1
+        photo1 = ins1.getread()
+    except:
+        photo1 = [-1,-1,-1]
+
+    try:
+        ins2 = Keithley(rm = rm, resnum = 1)
+        ins2.ins.write("SYST:ZCH ON")
+        ins2.ins.write("SYST:ZCH OFF")
+
+        ins2.selectmode("VOLT",10)
+
+        photo2 = ins2.getread()
+    except:
+        photo2 = [-1,-1,-1]
 
     return photo1, photo2
 
@@ -81,7 +105,9 @@ def main(runtype = "keithley"):
 
     if runtype == "keithley":
         rm = visa.ResourceManager('@py')
+        print rm.list_resources()
         photo1, photo2 = get_keithley(rm = rm)
+        print photo1, photo2
         return photo1[0], photo2[0]
 
 if __name__ == "__main__":
