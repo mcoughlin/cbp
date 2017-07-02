@@ -13,6 +13,7 @@ def parse_commandline():
 
     parser.add_option("-c","--compile", action="store_true",default=False)
     parser.add_option("--doPhotodiode", action="store_true",default=False)
+    parser.add_option("--doCompile", action="store_true",default=False)
 
     opts, args = parser.parse_args()
 

@@ -40,7 +40,7 @@ def receive(ser):
 
 def main(runtype = "focus", val = 1000):
 
-    devUSB = "/dev/ttyUSB0"
+    devUSB = "/dev/ttyUSB.BIRGER"
 
     # open serial port
     # replace "/dev/ttyUSB0" with "COM1", "COM2", etc in Windows
@@ -65,22 +65,22 @@ def main(runtype = "focus", val = 1000):
     #print reply
 
     command = 'la'
-    #reply = sendandreceive(command,ser)
+    reply = sendandreceive(command,ser)
     #print reply
 
     # Get Bootloader version
     command = 'bv'
-    #reply = sendandreceive(command,ser)
+    reply = sendandreceive(command,ser)
     #print reply
 
     # Get aperture range
     command = 'da'
-    #reply = sendandreceive(command,ser)
+    reply = sendandreceive(command,ser)
     #print reply
 
     # Get zoom range
     command = 'dz'
-    #reply = sendandreceive(command,ser)
+    reply = sendandreceive(command,ser)
     #print reply
 
     if runtype == "focus":
@@ -88,6 +88,7 @@ def main(runtype = "focus", val = 1000):
         if (val < 0) or (val > 16383):
             raise Exception("Focus should be integer between 0-16383") 
 
+        print val
         focus = val
         focusstr = ("%04x"%(focus)).replace("0x","")
 
@@ -127,19 +128,20 @@ def main(runtype = "focus", val = 1000):
 
         #print reply_split
 
-        print "fmin: %.1f, fmax: %.1f, current: %.1f"%(fmin,fmax,focus)
+        #print "fmin: %.1f, fmax: %.1f, current: %.1f"%(fmin,fmax,focus)
 
         command = 'pa'
         reply = sendandreceive(command,ser)
 
-        print reply
-        reply_split = reply.split(",")
-        reply_split = filter(None, reply_split)
+        try:
+            reply_split = reply.split(",")
+            reply_split = filter(None, reply_split)
 
-        aperture = float(reply_split[0])
-        fstop = float(reply_split[1].replace("f",""))
+            aperture = float(reply_split[0])
+            fstop = float(reply_split[1].replace("f",""))
+        except:
+            aperture = 0
 
-        print focus, aperture
         return focus, aperture
 
     ser.close() 

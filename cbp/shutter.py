@@ -28,7 +28,7 @@ def run_shutter(shutter):
         #print child.before, child.after
         if i == 0: # Timeout
             argstring = 'args %d\r'%(shutter)
-            print argstring
+            #print argstring
             child.sendline(argstring)
             loop = False
         if i == 1:
@@ -41,7 +41,7 @@ def main(runtype = "compile", val = 0):
         steps_command = "cd /home/pi/Code/arduino/shutter/; ./compile.sh"
         os.system(steps_command)
     elif runtype == "shutter":
-        print "Running the shutter ..."
+        #print "Running the shutter ..."
         run_shutter(val)
 
 if __name__ == "__main__":

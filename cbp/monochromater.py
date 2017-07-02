@@ -14,8 +14,10 @@ def parse_commandline():
 
     parser.add_option("-w","--wavelength",default=600,type=int)
     parser.add_option("-f","--filter",default=1,type=int)
+    parser.add_option("-g","--grating",default=3,type=int)
     parser.add_option("--doMonoWavelength", action="store_true",default=False)
     parser.add_option("--doMonoFilter", action="store_true",default=False)
+    parser.add_option("--doMonoGrating", action="store_true",default=False)
     parser.add_option("--doGetMono", action="store_true",default=False)
     parser.add_option("-v","--verbose", action="store_true",default=False)
 
@@ -46,6 +48,21 @@ def hello():
 	info  = info[7:]
 	result = string.strip(info)
 	return result
+
+def gograt(grat):
+	if grat not in [1,2,3]:
+		raise
+	m.write('GRAT %d\r\n' % grat)
+	m.read()
+	return
+
+def getgrat():
+	m.write('GRAT?\r\n')
+        r = m.read(200)
+        #print r
+        r = r[4]
+        result = string.strip(r)
+        return result
 	
 def gowave(wave):
 	"""Checks longpass filter, goes to wavelength wave (nm), and writes wavelength to file filename. Also returns result to commander."""
@@ -54,18 +71,20 @@ def gowave(wave):
         #m.write("filter 1\r\n")
 
         # adjust order blocking filter, if necessary
-	if wave < 450:
+	if wave < 600:
                 if int(r[9:]) != 1:
                         m.write("filter 1\r\n")
-                        print "out.monochrom: Moving to filter 1 (no filter)"
+                        #print "out.monochrom: Moving to filter 1 (no filter)"
                 else:
-                        print "out.monochrom: Filter 1 already in place"
-        elif wave <= 750:
+                        #print "out.monochrom: Filter 1 already in place"
+                        pass
+        elif wave >= 600:
 		if int(r[9:]) != 2:
 			m.write("filter 2\r\n")
-			print "out.monochrom: Moving to filter 2"
+			#print "out.monochrom: Moving to filter 2"
 		else:
-			print "out.monochrom: Filter 2 already in place"
+			#print "out.monochrom: Filter 2 already in place"
+                        pass
         #elif wave <= 1050:
         #        if int(r[9:]) != 2:
         #                m.write("filter 2\r\n")
@@ -147,19 +166,26 @@ def disconnect():
 
 def main(runtype = "wavelength", val = 1000):
 
-    devUSB = "/dev/ttyUSB2"
+    devUSB = "/dev/ttyUSB.MONO"
 
+    #print "establishing..."
     m = openinst(pname=devUSB)
     if not m:
         return -1, -1
+    #print "done"
 
-    out = hello()
+    #    out = hello()
     #print out
 
     if runtype == "monowavelength":
         gowave(val)
     elif runtype == "monofilter":
         gofilter(val)
+    elif runtype == "monograting":
+        gograt(val)
+        grat = getgrat()
+        print grat
+
     elif runtype == "getmono":
         wave = askwave()
         filter = askfilter()
@@ -171,6 +197,8 @@ def main(runtype = "wavelength", val = 1000):
             filter = float(filter)
         except:
             filter = -1
+
+        print wave, filter
         return wave, filter
 
 if __name__ == "__main__":
@@ -184,5 +212,6 @@ if __name__ == "__main__":
         main(runtype = "monofilter", val = opts.filter)
     if opts.doGetMono:
         main(runtype = "getmono")
-
+    if opts.doMonoGrating:
+        main(runtype = "monograting", val = opts.grating)
 

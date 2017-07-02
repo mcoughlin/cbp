@@ -54,6 +54,7 @@ def main(runtype = "position", mask = 0, filter = 0):
         mask = pos/5
         filt = np.mod(pos,5)
 
+        print mask, filt
         return mask, filt
 
 if __name__ == "__main__":
