@@ -107,7 +107,7 @@ def create_parser():
 
     parser_laser = subparsers.add_parser('laser', help='laser instrument')
     parser_laser.add_argument('wavelength',default=600,type=int)
-    parser_laser.set_defaults(func=laser)
+    parser_laser.set_defaults(func=laser_laser)
 
     parser.add_argument("-v","--verbose", action="store_true",default=False)
 
@@ -173,7 +173,7 @@ def spectograph(opts):
     wavelengths, intensities = cbp.spectrograph.main(runtype = "spectrograph", duration = opts.duration)
     print(wavelengths, intensities)
 
-def laser(opts):
+def laser_laser(opts):
     laser.main(opts.wavelength)
 
 def main():

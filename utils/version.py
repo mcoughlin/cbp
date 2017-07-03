@@ -25,6 +25,7 @@ __credits__ = 'Adam Mercer <adam.mercer@ligo.org>'
 import os
 import subprocess
 import time
+import sys
 
 
 class GitStatus(object):
@@ -49,7 +50,10 @@ class GitStatus(object):
         host
         """
         for path in os.environ['PATH'].split(os.pathsep):
-            gitbin = os.path.join(path, 'git')
+            if sys.platform == "win32":
+                gitbin = os.path.join(path, 'git.exe')
+            else:
+                gitbin = os.path.join(path, 'git')
             if os.path.isfile(gitbin) and os.access(gitbin, os.X_OK):
                 return gitbin
         raise ValueError("Git binary not found on this host")
