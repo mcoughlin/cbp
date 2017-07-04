@@ -7,6 +7,10 @@ import numpy as np
 
 import cbp.phidget, cbp.potentiometer
 
+class Altaz:
+    def __init__(self):
+        pass
+
 def parse_commandline():
     """
     Parse the options given on the command-line.

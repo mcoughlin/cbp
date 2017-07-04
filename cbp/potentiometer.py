@@ -5,6 +5,67 @@ import numpy as np
 import optparse
 import pexpect
 
+
+class Potentiometer:
+    def __init__(self):
+        self.serial = self.create_serial()
+
+    def create_serial(self):
+        PORT = '/dev/ttyACM.ADS'
+        BAUD_RATE = 57600
+        ser2 = serial.Serial(PORT, BAUD_RATE)
+        return ser2
+
+    def receiving(self):
+        ser = self.serial
+        buffer_string = ''
+        last_received = ''
+        while last_received == "":
+            buffer_string = buffer_string + ser.read(ser.inWaiting())
+            if '\n' in buffer_string:
+                lines = buffer_string.split('\n') # Guaranteed to have at least 2 entries
+                last_received = lines[-2]
+                #If the Arduino sends lots of empty lines, you'll lose the
+                #last filled line, so you could make the above statement conditional
+                #like so: if lines[-2]: last_received = lines[-2]
+                buffer_string = lines[-1]
+
+        return last_received
+
+    def get_pententiometer(self):
+        conversion = 360.0 / 32767.0
+
+        success = 0
+        numlines = 5
+        linenum = 0
+        while success == 0:
+            line = self.receiving()
+
+            if linenum < numlines:
+                linenum = linenum + 1
+                continue
+            line = line.replace("\n", "").replace("\r", "")
+            lineSplit = line.split(" ")
+            lineSplit = filter(None, lineSplit)
+
+            if not len(lineSplit) == 2:
+                continue
+
+            data_out_1 = float(lineSplit[0])
+            data_out_2 = float(lineSplit[1])
+
+            data_out_1 = 90.0 - (data_out_1 * conversion)
+            data_out_2 = data_out_2 * conversion
+
+            success = 1
+
+        return data_out_1, data_out_2
+
+    def do_compile(self):
+        steps_command = "cd /home/pi/Code/arduino/potentiometer/; ./compile.sh"
+        os.system(steps_command)
+
+
 def parse_commandline():
     """
     Parse the options given on the command-line.
@@ -19,68 +80,17 @@ def parse_commandline():
 
     return opts
 
-def receiving(ser):
-
-    buffer_string = ''
-    last_received = ''
-    while last_received == "":
-        buffer_string = buffer_string + ser.read(ser.inWaiting())
-        if '\n' in buffer_string:
-            lines = buffer_string.split('\n') # Guaranteed to have at least 2 entries
-            last_received = lines[-2]
-            #If the Arduino sends lots of empty lines, you'll lose the
-            #last filled line, so you could make the above statement conditional
-            #like so: if lines[-2]: last_received = lines[-2]
-            buffer_string = lines[-1]
-
-    return last_received
-
-def get_potentiometer():
-
-    PORT = '/dev/ttyACM.ADS'
-    BAUD_RATE = 57600
-    ser2 = serial.Serial(PORT, BAUD_RATE)
-    conversion = 360.0/32767.0
-    #conversion = 1.0/32767.0
-
-    success = 0
-    numlines = 5
-    linenum = 0
-    while success == 0:
-        line = receiving(ser2)
-
-        if linenum < numlines:
-            linenum = linenum + 1
-            continue
-        line = line.replace("\n","").replace("\r","")
-        lineSplit = line.split(" ")
-        lineSplit = filter(None,lineSplit)
-
-        if not len(lineSplit) == 2:
-            continue
-
-        data_out_1 = float(lineSplit[0])
-        data_out_2 = float(lineSplit[1])
-
-        data_out_1 = 90.0 - (data_out_1 * conversion)
-        data_out_2 = data_out_2 * conversion
-
-        success = 1
-
-    return data_out_1, data_out_2
-
-def main(doCompile = 0):
+def main(potentiometer, doCompile = 0):
 
     if doCompile:
-        steps_command = "cd /home/pi/Code/arduino/potentiometer/; ./compile.sh"
-        os.system(steps_command)
+        potentiometer.do_compile()
 
-    potentiometer_1, potentiometer_2 = get_potentiometer()
+    potentiometer_1, potentiometer_2 = potentiometer.get_potentiometer()
 
     return potentiometer_1, potentiometer_2
 
 if __name__ == "__main__":
     doCompile = 0
-    potentiometer_1, potentiometer_2 = main(doCompile = doCompile)
+    potentiometer_1, potentiometer_2 = main(doCompile=doCompile)
 
     print potentiometer_1, potentiometer_2

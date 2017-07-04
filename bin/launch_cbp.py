@@ -81,6 +81,10 @@ class LaunchCbp(cmd.Cmd):
                 print(err)
 
 
-    
+def main():
+    LaunchCbp().cmdloop()
+
+if __name__ == '__main__':
+    main()
 
 

@@ -6,6 +6,11 @@ import seabreeze
 seabreeze.use('pyseabreeze')
 import seabreeze.spectrometers as sb
 
+
+class Spectograph:
+    def __init__(self):
+        pass
+
 def parse_commandline():
     """
     Parse the options given on the command-line.

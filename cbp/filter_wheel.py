@@ -5,6 +5,56 @@ import optparse
 import numpy as np
 import FLI
 
+
+class FilterWheel:
+    def __init__(self):
+        self.center_line_filter_wheel = self.initialize_connection()
+        self.mask = None
+        self.filter = None
+        self.status = None
+
+    def initialize_connection(self):
+        fws = FLI.filter_wheel.USBFilterWheel.find_devices()
+        if not len(fws) == 2:
+            raise Exception("Focuser or Filter wheel not connected...")
+
+        for fw in fws:
+            if fw.model == "CenterLine Filter Wheel":
+                fw0 = fw
+                self.status = "Connected"
+        return fw0
+
+    def error_raised(self):
+        if self.mask > 4 or self.mask < 0:
+            raise Exception("Mask position must be integer 0-4")
+        elif self.filter > 4 or self.filter < 0:
+            raise Exception("Filter position must be integer 0-4")
+        return False
+
+    def do_position(self, mask, filter):
+        self.mask = mask
+        self.filter = filter
+        if not self.error_raised():
+            position = 5 * self.mask + self.filter
+            self.center_line_filter_wheel.set_filter_pos(position)
+            pos = self.center_line_filter_wheel.get_filter_pos()
+
+    def get_position(self):
+        pos = self.center_line_filter_wheel.get_filter_pos()
+
+        self.mask = pos / 5
+        self.filter = np.mod(pos, 5)
+
+        print("Mask:{0} Filter:{1}".format(self.mask, self.filter))
+        return self.mask, self.filter
+
+    def check_status(self):
+        fws = FLI.filter_wheel.USBFilterWheel.find_devices()
+        if not len(fws) == 2:
+            print("Focuser or Filter Wheel not connected")
+            self.status = "Not connected"
+
+
 def parse_commandline():
     """
     Parse the options given on the command-line.
@@ -20,42 +70,16 @@ def parse_commandline():
 
     return opts
 
-def main(runtype = "position", mask = 0, filter = 0):
 
-    fws = FLI.filter_wheel.USBFilterWheel.find_devices()
-    #if not len(fws) == 2:
-    #    raise Exception("Focuser or Filter wheel not connected...")
+def main(filter_wheel,runtype = "position", mask = 0, filter = 0):
 
-    for fw in fws:
-        if fw.model == "CenterLine Filter Wheel":
-            fw0 = fw
-
-    if mask > 4 or mask < 0:
-        raise Exception("Mask position must be integer 0-4")
-    elif filter > 4 or filter < 0:
-        raise Exception("Filter position must be integer 0-4")
+    fws = filter_wheel
 
     if runtype == "position":
-
-        position = 5 * mask + filter
-        fw0.set_filter_pos(position)
-        pos = fw0.get_filter_pos()
-
-        mask = pos/5
-        filt = np.mod(pos,5)
-
-        #print "Mask: %d"%mask
-        #print "Filter: %d"%filt
+        fws.do_position(mask, filter)
 
     elif runtype == "getposition":
-
-        pos = fw0.get_filter_pos()
-
-        mask = pos/5
-        filt = np.mod(pos,5)
-
-        print mask, filt
-        return mask, filt
+        fws.get_position()
 
 if __name__ == "__main__":
 

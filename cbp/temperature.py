@@ -5,6 +5,10 @@ import numpy as np
 import optparse
 import pexpect
 
+class Temperature:
+    def __init__(self):
+        pass
+
 def parse_commandline():
     """
     Parse the options given on the command-line.
