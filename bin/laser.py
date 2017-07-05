@@ -5,6 +5,7 @@ This is a module that communicates with the ESKPLA laser in the lab via RS232 po
 import serial
 import argparse
 import string
+import numpy as np
 
 
 class LaserSerialInterface:
@@ -106,6 +107,12 @@ class LaserSerialInterface:
         split_msg = split_msg[1:]
         return int(split_msg)
 
+    def loop_change_wavelength(self, min, max):
+        np_array = np.arange(min,max+1)
+        for item in np_array:
+            self.change_wavelength(item)
+        print("done.")
+
 
 def create_parser():
     parser = argparse.ArgumentParser(description='Program to change the wavelength of the laser using rs232 interface.')
@@ -120,8 +127,9 @@ def main(wavelength):
     :return: None
     """
 
-    laser_interface = LaserSerialInterface(loop=False)
-    laser_interface.change_wavelength(wavelength)
+    laser_interface = LaserSerialInterface(loop=True)
+    laser_interface.loop_change_wavelength(500, 700)
+    #laser_interface.change_wavelength(wavelength)
 
 if __name__ == '__main__':
-    main()
+    main(500)

@@ -9,7 +9,34 @@ import seabreeze.spectrometers as sb
 
 class Spectograph:
     def __init__(self):
-        pass
+        self.spectrometer = self.create_connection()
+        self.status = None
+
+    def create_connection(self):
+        devices = sb.list_devices()
+        spec = sb.Spectrometer(devices[0])
+        self.status = "connected"
+        return spec
+
+    def get_spectograph(self, duration = 1000000, spectrumFile='test.dat'):
+        spec = self.spectrometer
+        spec.integration_time_micros(duration)
+        time.sleep(duration * 1e-6)
+        wavelengths = spec.wavelengths()
+        intensities = spec.intensities()
+
+        idx1 = np.where(wavelengths >= 350.0)[0]
+        idx2 = np.where(wavelengths <= 1100.0)[0]
+        idx = np.intersect1d(idx1, idx2)
+        wavelengths = wavelengths[idx]
+        intensities = intensities[idx]
+
+        fid = open(spectrumFile, "w")
+        for wavelength, intensity in zip(wavelengths, intensities):
+            fid.write("%.5e %.5e\n" % (wavelength, intensity))
+        fid.close()
+
+        return wavelengths, intensities
 
 def parse_commandline():
     """
@@ -25,33 +52,12 @@ def parse_commandline():
 
     return opts
 
-def get_spectrograph(spec, duration = 1000000, spectrumFile = 'test.dat'):
 
-    spec.integration_time_micros(duration)
-    time.sleep(duration*1e-6)
-    wavelengths = spec.wavelengths()
-    intensities = spec.intensities()
+def main(spectograph, runtype = "spectrograph", duration = 1000000, spectrumFile = 'test.dat'):
 
-    idx1 = np.where(wavelengths >= 350.0)[0]
-    idx2 = np.where(wavelengths <= 1100.0)[0]
-    idx = np.intersect1d(idx1,idx2)
-    wavelengths = wavelengths[idx]
-    intensities = intensities[idx]
+    wavelengths, intensities = spectograph.get_spectrograph(duration=duration, spectrumFile=spectrumFile)
 
-    fid = open(spectrumFile,"w")
-    for wavelength,intensity in zip(wavelengths,intensities):
-        fid.write("%.5e %.5e\n"%(wavelength,intensity))
-    fid.close()
-
-    return wavelengths,intensities
-
-def main(runtype = "spectrograph", duration = 1000000, spectrumFile = 'test.dat'): 
-
-    devices = sb.list_devices()
-    spec = sb.Spectrometer(devices[0])
-
-    wavelengths,intensities = get_spectrograph(spec, duration = duration, spectrumFile = spectrumFile)
-    return wavelengths,intensities
+    return wavelengths, intensities
 
 if __name__ == "__main__":
 
@@ -59,6 +65,7 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doSpectrograph:
-        wavelengths,intensities = main(runtype = "spectrograph", duration = opts.duration, spectrumFile = opts.spectrumFile) 
+        wavelengths, intensities = main(runtype = "spectrograph", duration = opts.duration,
+                                       spectrumFile = opts.spectrumFile)
 
 

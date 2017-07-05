@@ -25,7 +25,8 @@ def create_parser():
     parser_phidget = subparsers.add_parser('phidget', help='prints out phidget position')
     parser_phidget.set_defaults(func=phidget)
     
-    parser_pententiometer = subparsers.add_parser('pententiometer', help='prints out information about the two pententiometers')
+    parser_pententiometer = subparsers.add_parser('pententiometer',
+                                                  help='prints out information about the two pententiometers')
     parser_pententiometer.set_defaults(func=pententiometer)
     
     parser_altaz = subparsers.add_parser('altaz', help='instrument to move camera')
@@ -72,30 +73,40 @@ def create_parser():
 
     parser_filter_wheel_subparsers = parser_filter_wheel.add_subparsers(help='filter wheel sub-commands')
 
-    parser_filter_wheel_position = parser_filter_wheel_subparsers.add_parser('position', help='change position of filter wheel.')
+    parser_filter_wheel_position = parser_filter_wheel_subparsers.add_parser('position',
+                                                                             help='change position of filter wheel.')
     parser_filter_wheel_position.add_argument('mask',default=0,type=int)
     parser_filter_wheel_position.add_argument('filter',default=0,type=int)
     parser_filter_wheel_position.set_defaults(func=filter_wheel_position)
 
-    parser_filter_wheel_get_position = parser_filter_wheel_subparsers.add_parser('get position', help='get position of filter wheel.')
+    parser_filter_wheel_get_position = parser_filter_wheel_subparsers.add_parser('get position',
+                                                                                 help='get position of filter wheel.')
     parser_filter_wheel_get_position.set_defaults(func=filter_wheel_get_position)
     
     parser_monochrometer = subparsers.add_parser('monochrometer', help='monochrometer instrument')
 
     parser_monochrometer_subparsers = parser_monochrometer.add_subparsers(help='monochrometer sub-commands')
 
-    parser_monochrometer_wavelength = parser_monochrometer_subparsers.add_parser('wavelength', help='change the wavelength of the monochrometer')
+    parser_monochrometer_wavelength = parser_monochrometer_subparsers.add_parser('wavelength',
+                                                                                 help='change the wavelength of the '
+                                                                                      'monochrometer')
     parser_monochrometer_wavelength.add_argument('wavelength',default=600,type=int)
     parser_monochrometer_wavelength.set_defaults(func=monochrometer_wavelength)
 
-    parser_monochrometer_get_wavelength = parser_monochrometer_subparsers.add_parser('get wavelength', help='get the wavelength of the monochrometer')
+    parser_monochrometer_get_wavelength = parser_monochrometer_subparsers.add_parser('get wavelength',
+                                                                                     help='get the wavelength of the '
+                                                                                          'monochrometer')
     parser_monochrometer_get_wavelength.set_defaults(func=monochrometer_get_wavelength)
 
-    parser_monochrometer_filter = parser_monochrometer_subparsers.add_parser('filter', help='change the filter of the monochrometer')
+    parser_monochrometer_filter = parser_monochrometer_subparsers.add_parser('filter',
+                                                                             help='change the filter of the '
+                                                                                  'monochrometer')
     parser_monochrometer_filter.add_argument('monofilter',default=1,type=int)
     parser_monochrometer_filter.set_defaults(func=monochrometer_filter)
 
-    parser_monochrometer_get_filter = parser_monochrometer_subparsers.add_parser('get filter', help='get the filter of the monochrometer')
+    parser_monochrometer_get_filter = parser_monochrometer_subparsers.add_parser('get filter',
+                                                                                 help='get the filter of the '
+                                                                                      'monochrometer')
     parser_monochrometer_get_filter.set_defaults(func=monochrometer_get_filter)
 
     parser_keithley = subparsers.add_parser('keithley', help='keithley instrument')
@@ -174,7 +185,8 @@ def spectograph(opts):
     print(wavelengths, intensities)
 
 def laser_laser(opts):
-    laser.main(opts.wavelength)
+    laser_interface = laser.LaserSerialInterface(loop=False)
+    laser_interface.loop_change_wavelength(500, 700)
 
 def main():
     parser = create_parser()

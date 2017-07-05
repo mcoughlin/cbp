@@ -8,7 +8,35 @@ import pexpect
 
 class Shutter:
     def __init__(self):
-        pass
+        self.shutter = self.create_connection()
+        self.status = None
+
+    def create_connection(self):
+        shutter_command = "picocom -b 57600 /dev/ttyACM.SHUTTER"
+        child = pexpect.spawn(shutter_command)
+        self.status = "connected"
+        return child
+
+    def close_connection(self):
+        self.shutter.close()
+
+    def run_shutter(self, shutter):
+        done = False
+        while not done:
+            i = self.shutter.expect([pexpect.TIMEOUT, '\n'], timeout=2)
+            # print child.before, child.after
+            if i == 0:  # Timeout
+                argstring = 'args {0:d}\r'.format(shutter)
+                # print argstring
+                self.shutter.sendline(argstring)
+                done = True
+            if i == 1:
+                continue
+
+    def do_compile(self):
+        steps_command = "cd /home/pi/Code/arduino/shutter/; ./compile.sh"
+        os.system(steps_command)
+
 
 def parse_commandline():
     """
@@ -24,30 +52,14 @@ def parse_commandline():
 
     return opts
 
-def run_shutter(shutter):
-    shutter_command = "picocom -b 57600 /dev/ttyACM.SHUTTER"
-    child = pexpect.spawn (shutter_command)
-    loop = True
-    while loop:
-        i = child.expect ([pexpect.TIMEOUT,'\n'], timeout = 2)
-        #print child.before, child.after
-        if i == 0: # Timeout
-            argstring = 'args %d\r'%(shutter)
-            #print argstring
-            child.sendline(argstring)
-            loop = False
-        if i == 1:
-            continue
-    child.close()
 
-def main(runtype = "compile", val = 0):
+def main(shutter, runtype = "compile", val = 0):
 
     if runtype == "compile":
-        steps_command = "cd /home/pi/Code/arduino/shutter/; ./compile.sh"
-        os.system(steps_command)
+        shutter.do_compile()
     elif runtype == "shutter":
         #print "Running the shutter ..."
-        run_shutter(val)
+        shutter.run_shutter(val)
 
 if __name__ == "__main__":
 
@@ -55,7 +67,7 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doCompile:
-        main(runtype = "compile")
+        main(runtype="compile")
     if opts.doShutter:
-        main(runtype = "shutter", val = opts.shutter)
+        main(runtype="shutter", val = opts.shutter)
 

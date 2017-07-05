@@ -22,7 +22,7 @@ class Photodiode:
         numlines = 5
         linenum = 0
         while success == 0:
-            line = receiving(self.serial)
+            line = self.receiving()
             if linenum < numlines:
                 linenum = linenum + 1
                 continue
@@ -67,6 +67,7 @@ class Photodiode:
         photo = photo * conv
         # print "Photodiode: %d"%photo
         return photo
+
 
 def parse_commandline():
     """
