@@ -117,9 +117,15 @@ def create_parser():
     parser_spectograph.set_defaults(func=spectograph)
 
     parser_laser = subparsers.add_parser('laser', help='laser instrument')
-    parser_laser.add_argument('wavelength_min',default=500,type=int)
-    parser_laser.add_argument('wavelength_max',default=520,type=int)
-    parser_laser.set_defaults(func=laser_laser)
+    parser_laser_subparsers = parser_laser.add_subparsers(help='laser sub-commands')
+    parser_laser_change_wavelength = parser_laser_subparsers.add_parser('change_wavelength', help='change wavelength')
+    parser_laser_change_wavelength.add_argument('wavelength', default=500, type=int)
+    parser_laser_change_wavelength_loop = parser_laser_subparsers.add_parser('change_wavelength_loop', help='loop through array of wavelengths')
+    parser_laser_change_wavelength_loop.add_argument('--diagnostic', action="store_true", help='performs diagnostic')
+    parser_laser_change_wavelength_loop.add_argument('wavelength_min',default=500,type=int)
+    parser_laser_change_wavelength_loop.add_argument('wavelength_max',default=520,type=int)
+    parser_laser_change_wavelength.set_defaults(func=laser_change_wavelength)
+    parser_laser_change_wavelength_loop.set_defaults(func=laser_change_wavelength_loop)
 
     parser.add_argument("-v","--verbose", action="store_true",default=False)
 
@@ -185,9 +191,13 @@ def spectograph(opts):
     wavelengths, intensities = cbp.spectrograph.main(runtype = "spectrograph", duration = opts.duration)
     print(wavelengths, intensities)
 
-def laser_laser(opts):
+def laser_change_wavelength(opts):
     laser_interface = laser.LaserSerialInterface(loop=False)
-    laser_interface.loop_change_wavelength(opts.wavelength_min,opts.wavelength_max)
+    laser_interface.change_wavelength(opts.wavelength)
+
+def laser_change_wavelength_loop(opts):
+    laser_interface = laser.LaserSerialInterface(loop=False)
+    laser_interface.loop_change_wavelength(opts.wavelength_min,opts.wavelength_max, opts.diagnostic)
 
 def main():
     parser = create_parser()

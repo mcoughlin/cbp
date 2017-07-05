@@ -96,6 +96,187 @@ class Keithley:
         self.ins.close()
         self.rm.close()
 
+    def get_keithley(rm, duration=1, photons=100000, charge=10 ** -6, wavelength=550, mode='curr',
+                     analysisType='duration', doSingle=False, doReset=True, photonFile='test.dat',
+                     doShutter=True):
+
+        if doSingle:
+            # QE for NIST and Thorlabs
+            filename = '../input/NIST_PD.txt'
+            data_out = np.loadtxt(filename)
+            QE_NIST_PD = np.interp(wavelength, data_out[:, 0], data_out[:, 1])
+            filename = '../input/NIST_Thorlabs.txt'
+            data_out = np.loadtxt(filename)
+            QE_Thorlabs_PD = QE_NIST_PD * \
+                             np.interp(wavelength, data_out[:, 0], data_out[:, 1] / data_out[:, 2])
+
+            filename = '../input/CBP_throughput.txt'
+            data_out = np.loadtxt(filename)
+            throughput = np.interp(wavelength, data_out[:, 0], data_out[:, 1])
+            throughput = throughput * 1.67  # Vignetting correction
+
+            cbp.monochromater.main(runtype="monowavelength", val=wavelength)
+
+            if True:
+                # try:
+                ins1 = Keithley(rm=rm, resnum=0, mode=mode, doReset=doReset)
+                if analysisType == 'duration':
+                    start_time = time.time()
+                    elapsed_time = time.time() - start_time
+
+                    times = []
+                    photo1 = []
+                    totphotons = []
+
+                    for ii in xrange(10):
+                        thistime = time.time()
+                        elapsed_time = thistime - start_time
+
+                        photo = ins1.getread()[0]
+
+                        photo1.append(photo)
+                        times.append(thistime)
+
+                        intsphere_charge = photo
+                        intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                        totphotons.append(totphoton)
+
+                    if doShutter:
+                        cbp.shutter.main(cbp.shutter,runtype="shutter", val=-1)
+                    else:
+                        cbp.shutter.main(cbp.shutter,runtype="shutter", val=1)
+                    while elapsed_time < duration:
+                        thistime = time.time()
+                        elapsed_time = thistime - start_time
+
+                        photo = ins1.getread()[0]
+                        intsphere_charge = photo
+                        intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+
+                        photo1.append(photo)
+                        times.append(thistime)
+                        totphotons.append(totphoton)
+
+                    # time.sleep(duration)
+                    cbp.shutter.main(cbp.shutter,runtype="shutter", val=1)
+
+                    for ii in xrange(10):
+                        thistime = time.time()
+                        elapsed_time = thistime - start_time
+
+                        photo = ins1.getread()[0]
+
+                        photo1.append(photo)
+                        times.append(thistime)
+
+                        intsphere_charge = photo
+                        intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                        totphotons.append(totphoton)
+
+                elif (analysisType == 'photons') or (analysisType == 'charge'):
+
+                    times = []
+                    photo1 = []
+                    totphotons = []
+                    start_time = time.time()
+                    totphoton = 0
+                    intsphere_charge = 0
+
+                    fid = open(photonFile, 'w')
+                    for ii in xrange(10):
+                        photo = ins1.getread()[0]
+                        elapsed_time = time.time() - start_time
+
+                        photo1.append(photo)
+                        times.append(elapsed_time)
+
+                        intsphere_charge = photo1
+                        intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                        totphotons.append(totphoton)
+                        if analysisType == "photons":
+                            print "%.0f/%.0f" % (totphoton, photons)
+                        elif analysisType == "charge":
+                            print "%.5e/%.5e" % (intsphere_charge, charge)
+                        fid.write("%.10f %.10e %.0f\n" % (elapsed_time, photo1, totphoton))
+
+                    cbp.shutter.main(runtype="shutter", val=-1)
+                    if analysisType == "photons":
+                        while totphoton < photons:
+                            photo1 = ins1.getread()[0]
+                            elapsed_time = time.time() - start_time
+
+                            photos1.append(photo1)
+                            times.append(elapsed_time)
+
+                            intsphere_charge = photo1
+                            intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+                            totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                            totphotons.append(totphoton)
+
+                            print "%.0f/%.0f" % (totphoton, photons)
+                            fid.write("%.10f %.10e %.0f\n" % (elapsed_time, photo1, totphoton))
+                    elif analysisType == "charge":
+                        while intsphere_charge < charge:
+                            photo1 = ins1.getread()[0]
+                            elapsed_time = time.time() - start_time
+
+                            photos1.append(photo1)
+                            times.append(elapsed_time)
+
+                            intsphere_charge = photo1
+                            intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+                            totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                            totphotons.append(totphoton)
+
+                            print "%.5e/%.5e" % (intsphere_charge, charge)
+                            fid.write("%.10f %.10e %.0f\n" % (elapsed_time, photo1, totphoton))
+                    cbp.shutter.main(runtype="shutter", val=1)
+
+                    for ii in xrange(10):
+                        photo1 = ins1.getread()[0]
+                        elapsed_time = time.time() - start_time
+
+                        photos1.append(photo1)
+                        times.append(elapsed_time)
+
+                        intsphere_charge = photo1
+                        intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                        totphotons.append(totphoton)
+
+                        if analysisType == "photons":
+                            print "%.0f/%.0f" % (totphoton, photons)
+                        elif analysisType == "charge":
+                            print "%.5e/%.5e" % (intsphere_charge, charge)
+
+                        fid.write("%.10f %.10e %.0f\n" % (elapsed_time, photo1, totphoton))
+
+                    fid.close()
+                    photo1 = photos1
+                    # except:
+            # times = [-1]
+            #    photo1 = [-1]
+            #    totphotons = [-1]
+            # print times, photo1, totphotons
+            return times, photo1, totphotons
+        else:
+            try:
+                ins1 = Keithley(rm=rm, resnum=0, mode=mode, doReset=doReset)
+                # ins2 = Keithley(rm = rm, resnum = 1, mode = mode, doReset = doReset)
+                time.sleep(duration)
+                photo1 = ins1.getread()
+                # photo2 = ins2.getread()
+                photo2 = [-1, -1, -1]
+            except:
+                photo1 = [-1, -1, -1]
+                photo2 = [-1, -1, -1]
+
+            return photo1[0], photo2[0]
+
 
 def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, mode='curr',
                  analysisType='duration', doSingle=False, doReset=True, photonFile='test.dat',

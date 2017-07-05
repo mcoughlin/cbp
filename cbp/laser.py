@@ -107,11 +107,13 @@ class LaserSerialInterface:
         split_msg = split_msg[1:]
         return int(split_msg)
 
-    def loop_change_wavelength(self, min, max):
-        np_array = np.arange(min,max+1)
-        for item in np_array:
-            self.change_wavelength(item)
-        print("done.")
+    def loop_change_wavelength(self, min, max,diagnostic):
+            np_array = np.arange(min,max+1)
+            for item in np_array:
+                self.change_wavelength(item)
+                if not diagnostic:
+                    raw_input("Press Enter to continue")
+            print("done.")
 
 
 def create_parser():

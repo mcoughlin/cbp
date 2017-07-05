@@ -91,28 +91,32 @@ Filter Wheel:
     python runinst.py --doRun --doFWPosition -i filter_wheel --mask 0 --filter 0
 
 Lamp:
-   Lamp: 0 - 255
+    Lamp: 0 - 255
 
 .. code:: bash
 
     python runinst.py --doRun --doLamp -i lamp -l 255
 
 Monochrometer:
+
 .. code:: bash
 
     python runinst.py --doRun --doMonoWavelength -i monochrometer --wavelength 600
 
 Keithley:
+
 .. code:: bash
 
     python runinst.py -i keithley --doKeithley --doRun
 
 Spectrograph:
+
 .. code:: bash
 
     python runinst.py -i spectrograph --doSpectrograph --doRun
 
 Laser:
+
 .. code:: bash
 
     python  runinst.py --doRun --doLaser -i laser --wavelength 521
