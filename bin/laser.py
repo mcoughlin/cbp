@@ -128,7 +128,7 @@ def main(wavelength):
     """
 
     laser_interface = LaserSerialInterface(loop=True)
-    laser_interface.loop_change_wavelength(500, 700)
+    laser_interface.loop_change_wavelength(500, 520)
     #laser_interface.change_wavelength(wavelength)
 
 if __name__ == '__main__':

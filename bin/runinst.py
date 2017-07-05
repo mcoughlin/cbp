@@ -117,7 +117,8 @@ def create_parser():
     parser_spectograph.set_defaults(func=spectograph)
 
     parser_laser = subparsers.add_parser('laser', help='laser instrument')
-    parser_laser.add_argument('wavelength',default=600,type=int)
+    parser_laser.add_argument('wavelength_min',default=500,type=int)
+    parser_laser.add_argument('wavelength_max',default=520,type=int)
     parser_laser.set_defaults(func=laser_laser)
 
     parser.add_argument("-v","--verbose", action="store_true",default=False)
@@ -186,7 +187,7 @@ def spectograph(opts):
 
 def laser_laser(opts):
     laser_interface = laser.LaserSerialInterface(loop=False)
-    laser_interface.loop_change_wavelength(500, 700)
+    laser_interface.loop_change_wavelength(opts.wavelength_min,opts.wavelength_max)
 
 def main():
     parser = create_parser()
