@@ -18,6 +18,7 @@ import os
 
 import visa
 
+
 class CBP:
     def __init__(self):
         #self.altaz = altaz.Altaz()
@@ -31,15 +32,15 @@ class CBP:
         #self.photodiode = photodiode.Photodiode()
         #self.potentiometer = potentiometer.Potentiometer()
         #self.shutter = shutter.Shutter()
-        #self.spectograph = spectrograph.Spectograph()
+        self.spectograph = cbp.spectrograph.Spectograph()
         #self.sr830 = sr830.Sr830()
         #self.temperature = temperature.Temperature()
         self.laser = cbp.laser.LaserSerialInterface(loop=False)
 
     def keithley_change_wavelength_loop(self, outputDir='data',wavelength_min=500, wavelength_max=700, wavelength_steps=10,Naverages=3):
 
-        shutter_closed_directory = '%s/closed/'%outputDir
-        shutter_opened_directory = '%s/opened/'%outputDir
+        shutter_closed_directory = '{0}/closed/'.format(outputDir)
+        shutter_opened_directory = '{0}/opened/'.format(outputDir)
         if not os.path.exists(shutter_closed_directory):
             os.makedirs(shutter_closed_directory)
         if not os.path.exists(shutter_opened_directory):
@@ -47,6 +48,8 @@ class CBP:
 
         shutter_closed_file = open(shutter_closed_directory + 'photo.dat', 'w')
         shutter_open_file = open(shutter_opened_directory + 'photo.dat', 'w')
+        spectograph_shutter_closed_file = open(shutter_closed_directory + 'specto.dat', 'w')
+        spectograph_shutter_opened_file = open(shutter_opened_directory + 'specto.dat', 'w')
 
         wavelength_array = np.arange(wavelength_min, wavelength_max, wavelength_steps)
         print("created array")
@@ -57,23 +60,38 @@ class CBP:
             print("starting change_wavelength")
             self.laser.change_wavelength(wave)
             photo_diode_list = []
+            frequencies_list = []
             for i in range(Naverages):
                 photo1, photo2 = self.keithley.get_photodiode_reading()
                 photo_diode_list.append(photo1)
+                wavelength, frequencies = self.spectograph.do_spectograph()
+                frequencies_list.append(frequencies)
+
             photo_diode_avg = sum(photo_diode_list)/len(photo_diode_list)
+            frequencies_avg = sum(frequencies_list)/len(frequencies_list)
             line = "{0} {1}\n".format(wave, photo_diode_avg)
+            line_2 = "{0} {1}\n".format(wave, frequencies_avg)
             shutter_closed_file.write(line)
+            spectograph_shutter_closed_file.write(line_2)
  
 
             thorlabs.thorlabs.main(val=1)
             print("shutter opened")
             photo_diode_list = []
+            frequencies_list = []
             for i in range(10):
                 photo1, photo2 = self.keithley.get_photodiode_reading()
                 photo_diode_list.append(photo1)
+                wavelength, frequencies = self.spectograph.do_spectograph()
+                frequencies_list.append(frequencies)
             photo_diode_avg = sum(photo_diode_list) / len(photo_diode_list)
+            frequencies_avg = sum(frequencies_list) / len(frequencies_list)
             line = "{0} {1}\n".format(wave, photo_diode_avg)
+            line_2 = "{0} {1}\n".format(wave, frequencies_avg)
             shutter_open_file.write(line)
+            spectograph_shutter_opened_file.write(line_2)
         shutter_closed_file.close()
         shutter_open_file.close()
+        spectograph_shutter_closed_file.close()
+        spectograph_shutter_opened_file.close()
 

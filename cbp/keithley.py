@@ -278,10 +278,9 @@ class Keithley:
             return photo1[0], photo2[0]
 
     def get_photodiode_reading(self,rm=visa.ResourceManager('@py'),mode='curr',doReset=True):
-        ins = Keithley(rm=rm, resnum=0, mode=mode, doReset=doReset)
         print('Keithley created')
         time.sleep(1)
-        photo1 = ins.getread()
+        photo1 = self.getread()
         print("Diode read")
         photo2 = [-1, -1, -1]
         return photo1[0], photo2[0]

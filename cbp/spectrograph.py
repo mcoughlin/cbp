@@ -38,6 +38,11 @@ class Spectograph:
 
         return wavelengths, intensities
 
+    def do_spectograph(self, duration=10000000, spectrumFile='test.dat'):
+        wavelengths, intensities = self.get_spectograph(duration=duration, spectrumFile=spectrumFile)
+
+        return wavelengths, intensities
+
 def parse_commandline():
     """
     Parse the options given on the command-line.
@@ -53,9 +58,10 @@ def parse_commandline():
     return opts
 
 
-def main(spectograph, runtype = "spectrograph", duration = 1000000, spectrumFile = 'test.dat'):
+def main(runtype = "spectrograph", duration = 1000000, spectrumFile='test.dat'):
+    spectograph = Spectograph()
 
-    wavelengths, intensities = spectograph.get_spectrograph(duration=duration, spectrumFile=spectrumFile)
+    wavelengths, intensities = spectograph.get_spectograph(duration=duration, spectrumFile=spectrumFile)
 
     return wavelengths, intensities
 
