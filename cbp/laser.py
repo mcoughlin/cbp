@@ -62,6 +62,7 @@ class LaserSerialInterface:
         :return:
         """
         while self.state != 'ready':
+            print("checking state...")
             self.check_state()
 
     def change_wavelength(self, wavelength):

@@ -35,10 +35,13 @@ class Keithley:
     def __init__(self, rm=None, resnum=None, mode='curr', nplc=1, doReset=False):
         if rm is not None and resnum is not None:
             self.rm = rm
+            print("finding resource")
             if resnum == 0:
                 devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
+                print("resource found")
             elif resnum == 1:
                 devtty = 'ASRL/dev/ttyUSB.KEITHLEY2::INSTR'
+                print("resource found")
             else:
                 devtty = rm.list_resources()[resnum]
 
@@ -68,6 +71,7 @@ class Keithley:
         self.ins.write('SYST:ZCOR ON')
         self.ins.write('SYST:ZCH OFF')
         self.ins.write('SYST:ZCOR OFF')
+        print("keithley connected")
 
     def selectmode(self, mode, nplc):
         assert mode.lower() in ['volt', 'char', 'curr', 'res'], "No mode %s" % mode.lower()
@@ -99,7 +103,7 @@ class Keithley:
     def get_keithley(rm, duration=1, photons=100000, charge=10 ** -6, wavelength=550, mode='curr',
                      analysisType='duration', doSingle=False, doReset=True, photonFile='test.dat',
                      doShutter=True):
-
+        print("starting get_keithley")
         if doSingle:
             # QE for NIST and Thorlabs
             filename = '../input/NIST_PD.txt'
@@ -119,6 +123,7 @@ class Keithley:
 
             if True:
                 # try:
+                print("entering true loop")
                 ins1 = Keithley(rm=rm, resnum=0, mode=mode, doReset=doReset)
                 if analysisType == 'duration':
                     start_time = time.time()
@@ -149,12 +154,6 @@ class Keithley:
                     while elapsed_time < duration:
                         thistime = time.time()
                         elapsed_time = thistime - start_time
-
-                        photo = ins1.getread()[0]
-                        intsphere_charge = photo
-                        intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
-                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
-
                         photo1.append(photo)
                         times.append(thistime)
                         totphotons.append(totphoton)
@@ -265,6 +264,7 @@ class Keithley:
             return times, photo1, totphotons
         else:
             try:
+                print("entering else loop")
                 ins1 = Keithley(rm=rm, resnum=0, mode=mode, doReset=doReset)
                 # ins2 = Keithley(rm = rm, resnum = 1, mode = mode, doReset = doReset)
                 time.sleep(duration)
@@ -276,6 +276,15 @@ class Keithley:
                 photo2 = [-1, -1, -1]
 
             return photo1[0], photo2[0]
+
+    def get_photodiode_reading(self,rm=visa.ResourceManager('@py'),mode='curr',doReset=True):
+        ins = Keithley(rm=rm, resnum=0, mode=mode, doReset=doReset)
+        print('Keithley created')
+        time.sleep(1)
+        photo1 = ins.getread()
+        print("Diode read")
+        photo2 = [-1, -1, -1]
+        return photo1[0], photo2[0]
 
 
 def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, mode='curr',

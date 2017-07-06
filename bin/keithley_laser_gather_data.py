@@ -1,6 +1,6 @@
-import cbp.cbp
+import cbp_cbp
 
-cbp = cbp.cbp.CBP()
+cbp = cbp_cbp.CBP()
 
 keithley = cbp.keithley
 laser = cbp.laser
