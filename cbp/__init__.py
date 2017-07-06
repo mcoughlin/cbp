@@ -22,7 +22,7 @@
 SeisMon is used to monitor and predict the impact of earthquakes on the
 LIGO gravitational-wave detectors.
 """
-from cbp import version, CBP
+from cbp import version
 
 __author__ = 'Michael Coughlin <michael.coughlin@ligo.org>'
 __version__ = version.__version__
