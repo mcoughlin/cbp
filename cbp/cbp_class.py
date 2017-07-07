@@ -88,12 +88,13 @@ class CBP:
                 photo1, photo2 = self.keithley.get_photodiode_reading()
                 photo_diode_list.append(photo1)
                 wavelength, frequencies = self.spectograph.do_spectograph()
-                frequencies_list.append(frequencies)
+                frequencies_avg = sum(frequencies)/len(frequencies)
+                frequencies_list.append(frequencies_avg)
 
             photo_diode_avg = sum(photo_diode_list)/len(photo_diode_list)
-            frequencies_avg = sum(frequencies_list)/len(frequencies_list)
+            frequency_avg = sum(frequencies_list)/len(frequencies_list)
             line = "{0} {1}\n".format(wave, photo_diode_avg)
-            line_2 = "{0} {1}\n".format(wave, frequencies_avg)
+            line_2 = "{0} {1}\n".format(wavelength[0], frequency_avg)
             shutter_closed_file.write(line)
             spectograph_shutter_closed_file.write(line_2)
  
@@ -102,15 +103,16 @@ class CBP:
             print("shutter opened")
             photo_diode_list = []
             frequencies_list = []
-            for i in range(10):
+            for i in range(Naverages):
                 photo1, photo2 = self.keithley.get_photodiode_reading()
                 photo_diode_list.append(photo1)
                 wavelength, frequencies = self.spectograph.do_spectograph()
-                frequencies_list.append(frequencies)
+                frequencies_avg = sum(frequencies)/len(frequencies)
+                frequencies_list.append(frequencies_avg)
             photo_diode_avg = sum(photo_diode_list) / len(photo_diode_list)
-            frequencies_avg = sum(frequencies_list) / len(frequencies_list)
+            frequency_avg = sum(frequencies_list) / len(frequencies_list)
             line = "{0} {1}\n".format(wave, photo_diode_avg)
-            line_2 = "{0} {1}\n".format(wave, frequencies_avg)
+            line_2 = "{0} {1}\n".format(wavelength[0], frequency_avg)
             shutter_open_file.write(line)
             spectograph_shutter_opened_file.write(line_2)
         shutter_closed_file.close()

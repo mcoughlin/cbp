@@ -5,7 +5,7 @@ def main():
 
     outputDir = '/home/pi/CBP/keithley/'
     wavelength_min=400
-    wavelength_max=1000
+    wavelength_max=425
     wavelength_steps = 5
     Naverages = 3
     collimated_beam_projector = cbp_instrument.CBP()

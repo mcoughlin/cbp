@@ -16,6 +16,7 @@ class Spectograph:
         devices = sb.list_devices()
         spec = sb.Spectrometer(devices[0])
         self.status = "connected"
+        print("Spectograph connected")
         return spec
 
     def get_spectograph(self, duration = 1000000, spectrumFile='test.dat'):
@@ -30,11 +31,12 @@ class Spectograph:
         idx = np.intersect1d(idx1, idx2)
         wavelengths = wavelengths[idx]
         intensities = intensities[idx]
+        print("get_spectograph done")
 
-        fid = open(spectrumFile, "w")
-        for wavelength, intensity in zip(wavelengths, intensities):
-            fid.write("%.5e %.5e\n" % (wavelength, intensity))
-        fid.close()
+        # fid = open(spectrumFile, "w")
+        # for wavelength, intensity in zip(wavelengths, intensities):
+            # fid.write("%.5e %.5e\n" % (wavelength, intensity))
+        # fid.close()
 
         return wavelengths, intensities
 
