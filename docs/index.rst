@@ -3,12 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to CBP's documentation!
-===============================
+Welcome to CBP's |version| documentation!
+=========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   .. automodule:: cbp
+
+   .. automodule:: cbp.cbp_class
 
 
 

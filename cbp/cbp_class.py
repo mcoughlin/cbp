@@ -18,8 +18,20 @@ import os
 
 import visa
 
+"""
+.. module:: cbp_class
+    :platform: unix
+    :synopsis: This is a module inside of package cbp which is designed to hold the complete cbp instrumentation inside 
+    of class CBP.
+
+.. moduleauthor:: Michael Coughlin
+"""
+
 
 class CBP:
+    """
+    This is the class that contains all of the written cbp instrument modules.
+    """
     def __init__(self):
         #self.altaz = altaz.Altaz()
         #self.birger = birger.Birger()
@@ -38,6 +50,17 @@ class CBP:
         self.laser = cbp.laser.LaserSerialInterface(loop=False)
 
     def keithley_change_wavelength_loop(self, outputDir='data',wavelength_min=500, wavelength_max=700, wavelength_steps=10,Naverages=3):
+        """
+        Takes an average from reading photodiode and spectograph with both opening and closing the shutter.
+
+        :param outputDir: This is the root directory where files are written
+        :param wavelength_min: This is the starting wavelength
+        :param wavelength_max: This is the ending wavelength
+        :param wavelength_steps: This is the number of steps that are taken at each wavelength change.
+        :param Naverages: This is the number of times that the photodiodes are read which is used to calculate an average.
+        :return: Ostensibly doesn't return anything, but writes out data files that show average photodiode and
+        spectograph readings at each wavelength.
+        """
 
         shutter_closed_directory = '{0}/closed/'.format(outputDir)
         shutter_opened_directory = '{0}/opened/'.format(outputDir)
