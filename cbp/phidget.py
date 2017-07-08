@@ -132,6 +132,77 @@ class CbpPhidget:
             spatial.setDataRate(4)
             self.DisplayDeviceInfo()
 
+    def do_phidget(self, nave=10000):
+        self.set_handlers()
+
+        # print("Opening phidget object....")
+
+        self.open_phidget()
+
+        # print("Waiting for attach....")
+
+        self.wait_for_attach()
+
+        # print("Press Enter to quit....")
+
+        data = True
+        while data:
+            try:
+                x = self.spatial.getAcceleration(0)
+                data = False
+            except:
+                data = True
+        xs = []
+        ys = []
+        zs = []
+        for i in xrange(nave):
+            try:
+                x = self.spatial.getAcceleration(0)
+                y = self.spatial.getAcceleration(1)
+                z = self.spatial.getAcceleration(2)
+
+                xs.append(x)
+                ys.append(y)
+                zs.append(z)
+            except:
+                continue
+
+        xs = np.array(xs)
+        ys = np.array(ys)
+        zs = np.array(zs)
+
+        x = np.median(xs)
+        y = np.median(ys)
+        z = np.median(zs)
+
+        if np.abs(x) <= np.abs(y):
+            if y <= 0:
+                direction = -1
+            else:
+                direction = 1
+        elif np.abs(x) > np.abs(y):
+            if x <= 0:
+                direction = -1
+            else:
+                direction = 1
+
+        xymag = np.sqrt(x ** 2 + y ** 2)
+        xyzmag = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        angle = direction * (360.0 / (2 * np.pi)) * np.arctan(xymag / z)
+
+        try:
+            self.spatial.closePhidget()
+        except PhidgetException as e:
+            print("Phidget Exception %i: %s" % (e.code, e.details))
+            print("Exiting....")
+            exit(1)
+
+        return x, y, z, angle
+
+        # print("Done.")
+        # exit(0)
+
+
 
 
 #Information Display Function
@@ -188,76 +259,10 @@ def SpatialData(e):
     #print("------------------------------------------")
 
 
-def main(phidget, nave=10000):
+def main(nave=10000):
     #Main Program Code
-    phidget.set_handlers()
-
-    #print("Opening phidget object....")
-
-    phidget.open_phidget()
-
-    #print("Waiting for attach....")
-
-    phidget.wait_for_attach()
-
-    #print("Press Enter to quit....")
-
-    data = True
-    while data:
-        try:
-            x = spatial.getAcceleration(0)
-            data = False
-        except:
-            data = True
-    xs = []
-    ys = []
-    zs = []
-    for i in xrange(nave):
-        try:
-            x = spatial.getAcceleration(0)
-            y = spatial.getAcceleration(1)
-            z = spatial.getAcceleration(2) 
-
-            xs.append(x)
-            ys.append(y)
-            zs.append(z)
-        except:
-            continue
-
-    xs = np.array(xs)
-    ys = np.array(ys)
-    zs = np.array(zs)
- 
-    x = np.median(xs)
-    y = np.median(ys)
-    z = np.median(zs)
-
-    if np.abs(x) <= np.abs(y):
-        if y <= 0:
-            direction = -1
-        else:
-            direction = 1
-    elif np.abs(x) > np.abs(y):
-        if x <= 0:
-            direction = -1
-        else:
-            direction = 1
-
-    xymag = np.sqrt(x**2 + y**2)
-    xyzmag = np.sqrt(x**2 + y**2 + z**2)
-    angle = direction*(360.0/(2*np.pi))*np.arctan(xymag/z)
-
-    try:
-        spatial.closePhidget()
-    except PhidgetException as e:
-        print("Phidget Exception %i: %s" % (e.code, e.details))
-        print("Exiting....")
-        exit(1)
-
-    return x, y, z, angle
-
-    #print("Done.")
-    #exit(0)
+    phidget = CbpPhidget()
+    return phidget.do_phidget(nave)
 
 if __name__ == "__main__":
     nave = 10000 

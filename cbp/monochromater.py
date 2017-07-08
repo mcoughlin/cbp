@@ -211,7 +211,8 @@ def parse_commandline():
     return opts
 
 
-def main(monochromater, runtype="wavelength", val=1000):
+def main(runtype="wavelength", val=1000):
+    monochromater = Monochromater()
 
     if runtype == "monowavelength":
         monochromater.monowavelength(val)

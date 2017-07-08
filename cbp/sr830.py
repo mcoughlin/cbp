@@ -6,9 +6,6 @@ import numpy as np
 import optparse
 import pexpect
 
-class Sr830:
-    def __init__(self):
-        pass
 
 def parse_commandline():
     """
@@ -22,7 +19,8 @@ def parse_commandline():
 
     return opts
 
-class SR830():
+
+class SR830:
     def __init__(self,rm=None,resnum=None):
         if rm is not None and resnum is not None:
             self.rm = rm
@@ -207,24 +205,24 @@ class SR830():
         return float(self.io.query("OUTP?"+conv[x])),float(self.io.query("OUTP?"+conv[y]))
         #return self.io.ask_for_values("SNAP?"+conv[x]+','+conv[y])
 
+    def get_sr830(self):
 
-def get_sr830(rm):
+        ins = self
 
-    ins = SR830(rm = rm, resnum = 0)
+        photo = []
+        while len(photo) == 0:
+            try:
+                photo = ins.query_ch1_ch2('R','theta')
+            except:
+                continue
+        return photo[0]
 
-    photo = []
-    while len(photo) == 0:
-        try:
-            photo = ins.query_ch1_ch2('R','theta')
-        except:
-            continue
-    return photo[0]
 
-def main(runtype = "sr830"):
-
+def main(runtype="sr830"):
+    sr830 = SR830()
     if runtype == "sr830":
         rm = visa.ResourceManager('@py')
-        photo = get_sr830(rm = rm)
+        photo = sr830.get_sr830()
         return photo
 
 if __name__ == "__main__":
@@ -233,5 +231,5 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doSR830:
-        main(runtype = "sr830")
+        main(runtype="sr830")
 

@@ -50,8 +50,8 @@ def parse_commandline():
     return opts
 
 
-def main(lamp,runtype="compile", val=0):
-    lamp = lamp
+def main(runtype="compile", val=0):
+    lamp = Lamp()
     if runtype == "compile":
         lamp.compile_lamp()
     elif runtype == "lamp":
@@ -63,8 +63,8 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doCompile:
-        main(runtype = "compile")
+        main(runtype="compile")
     if opts.doLamp:
-        main(runtype = "lamp", val = opts.lamp)
+        main(runtype="lamp", val = opts.lamp)
 
 

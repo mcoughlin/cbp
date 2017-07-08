@@ -71,9 +71,9 @@ def parse_commandline():
     return opts
 
 
-def main(filter_wheel,runtype = "position", mask = 0, filter = 0):
+def main(runtype = "position", mask = 0, filter = 0):
 
-    fws = filter_wheel
+    fws = FilterWheel()
 
     if runtype == "position":
         fws.do_position(mask, filter)
@@ -87,6 +87,6 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doPosition:
-        main(runtype = "position", mask = opts.mask, filter = opts.filter)
+        main(runtype="position", mask=opts.mask, filter=opts.filter)
     if opts.doGetPosition:
-        main(runtype = "getposition")
+        main(runtype="getposition")

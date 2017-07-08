@@ -6,13 +6,14 @@ import argparse
 from threading import Timer
 #import FLI
 
-import cbp.phidget, cbp.altaz
-import cbp.potentiometer, cbp.birger
-import cbp.lamp, cbp.shutter
-import cbp.photodiode, cbp.filter_wheel
-import cbp.monochromater, cbp.keithley
-import cbp.spectrograph
-import laser
+# import cbp.phidget, cbp.altaz
+# import cbp.potentiometer, cbp.birger
+# import cbp.lamp, cbp.shutter
+# import cbp.photodiode, cbp.filter_wheel
+# import cbp.monochromater, cbp.keithley
+# import cbp.spectrograph
+# import cbp.laser
+import cbp.cbp_class as CBP
 
 def create_parser():
     """
@@ -192,14 +193,15 @@ def spectograph(opts):
     print(wavelengths, intensities)
 
 def laser_change_wavelength(opts):
-    laser_interface = laser.LaserSerialInterface(loop=False)
+    laser_interface = cbp.laser.LaserSerialInterface(loop=False)
     laser_interface.change_wavelength(opts.wavelength)
 
 def laser_change_wavelength_loop(opts):
-    laser_interface = laser.LaserSerialInterface(loop=False)
+    laser_interface = cbp.laser.LaserSerialInterface(loop=False)
     laser_interface.loop_change_wavelength(opts.wavelength_min,opts.wavelength_max, opts.diagnostic)
 
 def main():
+    cbp = CBP.CBP()
     parser = create_parser()
     opts = parser.parse_args()
     opts.func(opts)

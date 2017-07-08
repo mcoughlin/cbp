@@ -53,7 +53,8 @@ def parse_commandline():
     return opts
 
 
-def main(shutter, runtype = "compile", val = 0):
+def main(runtype = "compile", val = 0):
+    shutter = Shutter()
 
     if runtype == "compile":
         shutter.do_compile()
