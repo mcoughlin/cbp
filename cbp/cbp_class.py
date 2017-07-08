@@ -70,53 +70,71 @@ class CBP:
             os.makedirs(shutter_opened_directory)
 
         shutter_closed_file = open(shutter_closed_directory + 'photo.dat', 'w')
-        shutter_open_file = open(shutter_opened_directory + 'photo.dat', 'w')
-        spectograph_shutter_closed_file = open(shutter_closed_directory + 'specto.dat', 'w')
-        spectograph_shutter_opened_file = open(shutter_opened_directory + 'specto.dat', 'w')
+        shutter_opened_file = open(shutter_opened_directory + 'photo.dat', 'w')
 
-        wavelength_array = np.arange(wavelength_min, wavelength_max, wavelength_steps)
+        wavelength_array = np.arange(wavelength_min, wavelength_max+wavelength_steps, wavelength_steps)
         print("created array")
         for wave in wavelength_array:
+
+            spectograph_shutter_closed_file = open(shutter_closed_directory + 'specto_%.0f.dat'%wave, 'w')
+            spectograph_shutter_opened_file = open(shutter_opened_directory + 'specto_%.0f.dat'%wave, 'w')
  
             thorlabs.thorlabs.main(val=2)
             print("shutter closed")
             print("starting change_wavelength")
             self.laser.change_wavelength(wave)
-            photo_diode_list = []
-            frequencies_list = []
+            photodiode_list = []
             for i in range(Naverages):
                 photo1, photo2 = self.keithley.get_photodiode_reading()
-                photo_diode_list.append(photo1)
-                wavelength, frequencies = self.spectograph.do_spectograph()
-                frequencies_avg = sum(frequencies)/len(frequencies)
-                frequencies_list.append(frequencies_avg)
+                photodiode_list.append(photo1)
+                wavelength, intensity = self.spectograph.do_spectograph()
 
-            photo_diode_avg = sum(photo_diode_list)/len(photo_diode_list)
-            frequency_avg = sum(frequencies_list)/len(frequencies_list)
-            line = "{0} {1}\n".format(wave, photo_diode_avg)
-            line_2 = "{0} {1}\n".format(wavelength[0], frequency_avg)
+                if i == 0:
+                    intensity_list = intensity
+                else:
+                    intensity_list = np.vstack((intensity_list,intensity))
+            photodiode_avg = np.mean(photodiode_list)
+            photodiode_std = np.std(photodiode_list)
+
+            intensity_avg = np.mean(intensity_list,axis=0)
+            intensity_std = np.std(intensity_list,axis=0)
+
+            line = "{0} {1} {2}\n".format(wave, photodiode_avg, photodiode_std)
             shutter_closed_file.write(line)
-            spectograph_shutter_closed_file.write(line_2)
  
-
+            for i in xrange(len(wavelength)):
+                line = "{0} {1} {2}\n".format(wavelength[i],intensity_avg[i],intensity_std[i])
+                spectograph_shutter_closed_file.write(line)
+ 
             thorlabs.thorlabs.main(val=1)
             print("shutter opened")
-            photo_diode_list = []
-            frequencies_list = []
+
+            photodiode_list = []
             for i in range(Naverages):
                 photo1, photo2 = self.keithley.get_photodiode_reading()
-                photo_diode_list.append(photo1)
-                wavelength, frequencies = self.spectograph.do_spectograph()
-                frequencies_avg = sum(frequencies)/len(frequencies)
-                frequencies_list.append(frequencies_avg)
-            photo_diode_avg = sum(photo_diode_list) / len(photo_diode_list)
-            frequency_avg = sum(frequencies_list) / len(frequencies_list)
-            line = "{0} {1}\n".format(wave, photo_diode_avg)
-            line_2 = "{0} {1}\n".format(wavelength[0], frequency_avg)
-            shutter_open_file.write(line)
-            spectograph_shutter_opened_file.write(line_2)
+                photodiode_list.append(photo1)
+                wavelength, intensity = self.spectograph.do_spectograph()
+
+                if i == 0:
+                    intensity_list = intensity
+                else:
+                    intensity_list = np.vstack((intensity_list,intensity))
+            photodiode_avg = np.mean(photodiode_list)
+            photodiode_std = np.std(photodiode_list)
+
+            intensity_avg = np.mean(intensity_list,axis=0)
+            intensity_std = np.std(intensity_list,axis=0)
+
+            line = "{0} {1} {2}\n".format(wave, photodiode_avg, photodiode_std)
+            shutter_opened_file.write(line)
+
+            for i in xrange(len(wavelength)):
+                line = "{0} {1} {2}\n".format(wavelength[i],intensity_avg[i],intensity_std[i])
+                spectograph_shutter_opened_file.write(line)
+
+            spectograph_shutter_closed_file.close()
+            spectograph_shutter_opened_file.close()
+
         shutter_closed_file.close()
-        shutter_open_file.close()
-        spectograph_shutter_closed_file.close()
-        spectograph_shutter_opened_file.close()
+        shutter_opened_file.close()
 
