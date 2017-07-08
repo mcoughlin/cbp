@@ -139,8 +139,8 @@ def parse_commandline():
     return opts
 
 
-def main(birger,runtype = "focus", val = 1000):
-    birger = birger
+def main(runtype="focus", val=1000):
+    birger = Birger()
     if runtype == "focus":
         birger.do_focus(val)
     elif runtype == "aperture":
@@ -154,8 +154,8 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doFocus:
-        main(runtype = "focus", val = opts.focus)
+        main(runtype="focus", val=opts.focus)
     if opts.doAperture:
-        main(runtype = "aperture", val = opts.aperture)
+        main(runtype="aperture", val=opts.aperture)
     if opts.doStatus:
-        focus, aperture = main(runtype = "status")
+        focus, aperture = main(runtype="status")

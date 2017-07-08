@@ -84,7 +84,8 @@ def parse_commandline():
     return opts
 
 
-def main(photodiode, runtype = "compile", val = 0):
+def main(runtype = "compile", val = 0):
+    photodiode = Photodiode()
 
     if runtype == "compile":
         photodiode.compile()
@@ -97,7 +98,7 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doCompile:
-        main(runtype = "compile")
+        main(runtype="compile")
     if opts.doPhotodiode:
-        main(runtype = "photodiode")
+        main(runtype="photodiode")
 

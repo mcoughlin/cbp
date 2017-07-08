@@ -10,10 +10,8 @@ Welcome to CBP's |version| documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   .. automodule:: cbp
-
-   .. automodule:: cbp.cbp_class
-
+   altaz
+   cbp_class
 
 
 Indices and tables

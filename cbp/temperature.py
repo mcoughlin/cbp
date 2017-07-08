@@ -85,7 +85,8 @@ def parse_commandline():
 
     return opts
 
-def main(temperature, runtype = "compile", val = 0):
+def main(runtype = "compile", val = 0):
+    temperature = Temperature()
 
     if runtype == "compile":
         temperature.do_compile()
