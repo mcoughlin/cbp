@@ -32,21 +32,21 @@ class CBP:
     This is the class that contains all of the written cbp instrument modules.
     """
     def __init__(self):
-        self.altaz = cbp.altaz.Altaz()
-        self.birger = cbp.birger.Birger()
-        self.filter_wheel = cbp.filter_wheel.FilterWheel()
+        #self.altaz = cbp.altaz.Altaz()
+        #self.birger = cbp.birger.Birger()
+        #self.filter_wheel = cbp.filter_wheel.FilterWheel()
         rm = visa.ResourceManager('@py')
-        self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0)
-        self.lamp = cbp.lamp.Lamp()
-        self.monochromater = cbp.monochromater.Monochromater()
-        self.phidget = cbp.phidget.CbpPhidget()
-        self.photodiode = cbp.photodiode.Photodiode()
-        self.potentiometer = cbp.potentiometer.Potentiometer()
-        self.shutter = cbp.shutter.Shutter()
+        #self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0)
+        #self.lamp = cbp.lamp.Lamp()
+        #self.monochromater = cbp.monochromater.Monochromater()
+        #self.phidget = cbp.phidget.CbpPhidget()
+        #self.photodiode = cbp.photodiode.Photodiode()
+        #self.potentiometer = cbp.potentiometer.Potentiometer()
+        #self.shutter = cbp.shutter.Shutter()
         self.spectograph = cbp.spectrograph.Spectograph()
-        self.sr830 = cbp.sr830.SR830(rm=rm)
-        self.temperature = cbp.temperature.Temperature()
-        self.laser = cbp.laser.LaserSerialInterface(loop=False)
+        #self.sr830 = cbp.sr830.SR830(rm=rm)
+        #self.temperature = cbp.temperature.Temperature()
+        #self.laser = cbp.laser.LaserSerialInterface(loop=False)
 
     def keithley_change_wavelength_loop(self, outputDir='data',wavelength_min=500, wavelength_max=700, wavelength_steps=10,Naverages=3):
         """
@@ -74,7 +74,6 @@ class CBP:
         wavelength_array = np.arange(wavelength_min, wavelength_max+wavelength_steps, wavelength_steps)
         print("created array")
         for wave in wavelength_array:
-<<<<<<< HEAD
 
             spectograph_shutter_closed_file = open(shutter_closed_directory + 'specto_%.0f.dat'%wave, 'w')
             spectograph_shutter_opened_file = open(shutter_opened_directory + 'specto_%.0f.dat'%wave, 'w')
@@ -134,9 +133,7 @@ class CBP:
 
             spectograph_shutter_closed_file.close()
             spectograph_shutter_opened_file.close()
-=======
  
->>>>>>> f9f960f519d92e1ff1dae625f9968ac4e61c7b7d
 
         shutter_closed_file.close()
         shutter_opened_file.close()
@@ -170,17 +167,24 @@ class CBP:
             spectograph_shutter_opened_file.write(line_2)
 
 
-    def get_spectograph_average(self,output_dir='/home/pi/CBP/keithley/',num_averages=3, duration=1000000):
+    def get_spectograph_average(self,output_dir='/home/pi/CBP/keithley/',Naverages=3, duration=1000000):
+        if not os.path.exists(output_dir):
+           os.makedirs(output_dir)
         spectograph_file = open(output_dir + 'specto_{0}.dat'.format(duration),'w')
-        intensity_average_list =[]
-        for i in range(num_averages):
-            wavelength, frequencies = self.spectograph.do_spectograph(duration=duration)
-            intensity_sum = 0
-            for intensity in frequencies:
-                intensity_sum += intensity
-            intensity_average = intensity_sum / len(frequencies)
-            intensity_average_list.append(intensity_average)
-        intensity_average_total = sum(intensity_average_list) / num_averages
-        spectograph_file.write('{0}'.format(intensity_average_total))
+        for i in range(Naverages):
+            wavelength, intensity = self.spectograph.do_spectograph()
+
+            if i == 0:
+                intensity_list = intensity
+            else:
+                intensity_list = np.vstack((intensity_list,intensity))
+
+        intensity_avg = np.mean(intensity_list,axis=0)
+        intensity_std = np.std(intensity_list,axis=0)
+
+        for i in xrange(len(wavelength)):
+            line = "{0} {1} {2}\n".format(wavelength[i],intensity_avg[i],intensity_std[i])
+            spectograph_file.write(line)
+        spectograph_file.close()
 
 
