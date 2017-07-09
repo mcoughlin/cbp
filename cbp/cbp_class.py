@@ -167,10 +167,13 @@ class CBP:
             spectograph_shutter_opened_file.write(line_2)
 
 
-    def get_spectograph_average(self,output_dir='/home/pi/CBP/keithley/',Naverages=3, duration=1000000):
+    def get_spectograph_average(self,output_dir='/home/pi/CBP/keithley/',Naverages=3, duration=1000000,dark=False):
         if not os.path.exists(output_dir):
            os.makedirs(output_dir)
-        spectograph_file = open(output_dir + 'specto_{0}.dat'.format(duration),'w')
+        if dark:
+           spectograph_file = open(output_dir + 'specto_{0}_dark.dat'.format(duration),'w')
+        else:
+            spectograph_file = open(output_dir + 'specto_{0}_light.dat'.format(duration),'w')
         for i in range(Naverages):
             wavelength, intensity = self.spectograph.do_spectograph()
 
