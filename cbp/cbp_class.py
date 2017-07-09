@@ -175,7 +175,7 @@ class CBP:
         else:
             spectograph_file = open(output_dir + 'specto_{0}_light.dat'.format(duration),'w')
         for i in range(Naverages):
-            wavelength, intensity = self.spectograph.do_spectograph()
+            wavelength, intensity = self.add_spectra(duration=duration)
 
             if i == 0:
                 intensity_list = intensity
@@ -190,4 +190,28 @@ class CBP:
             spectograph_file.write(line)
         spectograph_file.close()
 
+    def add_spectra(self,duration):
+        if duration > 60000000:
+            duration_in_seconds = duration * (1*10**-6)
+            number_of_times = float(duration_in_seconds)/60
+            list_of_times = []
+            while number_of_times != 0:
+                if not number_of_times < 1:
+                    number_of_times -= 1
+                    list_of_times.append(60*(1*10**6))
+                else:
+                    list_of_times.append(int((number_of_times * 60)*(1*10**6)))
+                    break
+
+            for i,time in enumerate(list_of_times):
+                wavelength, intensity = self.spectograph.get_spectograph(duration=time)
+                if i == 0:
+                    intensity_list = intensity
+                else:
+                    intensity_list = np.vstack((intensity_list, intensity))
+            intensity_list_added = np.sum(intensity_list,axis=0)
+            return wavelength, intensity_list_added
+        else:
+            wavelength, intensity = self.spectograph.get_spectograph(duration=duration)
+            return wavelength, intensity
 
