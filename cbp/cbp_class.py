@@ -31,24 +31,55 @@ class CBP:
     """
     This is the class that contains all of the written cbp instrument modules.
     """
-    def __init__(self):
-        #self.altaz = cbp.altaz.Altaz()
-        #self.birger = cbp.birger.Birger()
-        #self.filter_wheel = cbp.filter_wheel.FilterWheel()
+    def __init__(self,altaz=False,birger=False,filter_wheel=False,keithley=False,lamp=False,monochromater=False,phidget=False,photodiode=False,potentiometer=False,shutter=False,spectograph=False,sr830=False,temperature=False,laser=False,everything=False):
+        if altaz:
+            self.altaz = cbp.altaz.Altaz()
+        if birger:
+            self.birger = cbp.birger.Birger()
+        if filter_wheel:
+            self.filter_wheel = cbp.filter_wheel.FilterWheel()
         rm = visa.ResourceManager('@py')
-        self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0)
-        #self.lamp = cbp.lamp.Lamp()
-        #self.monochromater = cbp.monochromater.Monochromater()
-        #self.phidget = cbp.phidget.CbpPhidget()
-        #self.photodiode = cbp.photodiode.Photodiode()
-        #self.potentiometer = cbp.potentiometer.Potentiometer()
-        #self.shutter = cbp.shutter.Shutter()
-        self.spectograph = cbp.spectrograph.Spectograph()
-        #self.sr830 = cbp.sr830.SR830(rm=rm)
-        #self.temperature = cbp.temperature.Temperature()
-        self.laser = cbp.laser.LaserSerialInterface(loop=False)
+        if keithley:
+            self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0)
+        if lamp:
+            self.lamp = cbp.lamp.Lamp()
+        if monochromater:
+            self.monochromater = cbp.monochromater.Monochromater()
+        if phidget:
+            self.phidget = cbp.phidget.CbpPhidget()
+        if photodiode:
+            self.photodiode = cbp.photodiode.Photodiode()
+        if potentiometer:
+            self.potentiometer = cbp.potentiometer.Potentiometer()
+        if shutter:
+            self.shutter = cbp.shutter.Shutter()
+        if spectograph:
+            self.spectograph = cbp.spectrograph.Spectograph()
+        if sr830:
+            self.sr830 = cbp.sr830.SR830(rm=rm)
+        if temperature:
+            self.temperature = cbp.temperature.Temperature()
+        if laser:
+            self.laser = cbp.laser.LaserSerialInterface(loop=False)
+        if everything:
+            self.altaz = cbp.altaz.Altaz()
+            self.birger = cbp.birger.Birger()
+            self.filter_wheel = cbp.filter_wheel.FilterWheel()
+            rm = visa.ResourceManager('@py')
+            self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0)
+            self.lamp = cbp.lamp.Lamp()
+            self.monochromater = cbp.monochromater.Monochromater()
+            self.phidget = cbp.phidget.CbpPhidget()
+            self.photodiode = cbp.photodiode.Photodiode()
+            self.potentiometer = cbp.potentiometer.Potentiometer()
+            self.shutter = cbp.shutter.Shutter()
+            self.spectograph = cbp.spectrograph.Spectograph()
+            self.sr830 = cbp.sr830.SR830(rm=rm)
+            self.temperature = cbp.temperature.Temperature()
+            self.laser = cbp.laser.LaserSerialInterface(loop=False)
 
-    def keithley_change_wavelength_loop(self, outputDir='data',wavelength_min=500, wavelength_max=700, wavelength_steps=10,Naverages=3):
+
+    def keithley_change_wavelength_loop(self, outputDir='data',wavelength_min=500, wavelength_max=700, wavelength_steps=10,Naverages=3,duration=1000000):
         """
         Takes an average from reading photodiode and spectograph with both opening and closing the shutter.
 
@@ -77,68 +108,14 @@ class CBP:
 
             spectograph_shutter_closed_file = open(shutter_closed_directory + 'specto_%.0f.dat'%wave, 'w')
             spectograph_shutter_opened_file = open(shutter_opened_directory + 'specto_%.0f.dat'%wave, 'w')
- 
-            thorlabs.thorlabs.main(val=2)
-            print("shutter closed")
-            print("starting change_wavelength")
-            self.laser.change_wavelength(wave)
-            photodiode_list = []
-            for i in range(Naverages):
-                photo1, photo2 = self.keithley.get_photodiode_reading()
-                photodiode_list.append(photo1)
-                wavelength, intensity = self.spectograph.do_spectograph()
 
-                if i == 0:
-                    intensity_list = intensity
-                else:
-                    intensity_list = np.vstack((intensity_list,intensity))
-            photodiode_avg = np.mean(photodiode_list)
-            photodiode_std = np.std(photodiode_list)
-
-            intensity_avg = np.mean(intensity_list,axis=0)
-            intensity_std = np.std(intensity_list,axis=0)
-
-            line = "{0} {1} {2}\n".format(wave, photodiode_avg, photodiode_std)
-            shutter_closed_file.write(line)
- 
-            for i in xrange(len(wavelength)):
-                line = "{0} {1} {2}\n".format(wavelength[i],intensity_avg[i],intensity_std[i])
-                spectograph_shutter_closed_file.write(line)
- 
-            thorlabs.thorlabs.main(val=1)
-            print("shutter opened")
-
-            photodiode_list = []
-            for i in range(Naverages):
-                photo1, photo2 = self.keithley.get_photodiode_reading()
-                photodiode_list.append(photo1)
-                wavelength, intensity = self.spectograph.do_spectograph()
-
-                if i == 0:
-                    intensity_list = intensity
-                else:
-                    intensity_list = np.vstack((intensity_list,intensity))
-            photodiode_avg = np.mean(photodiode_list)
-            photodiode_std = np.std(photodiode_list)
-
-            intensity_avg = np.mean(intensity_list,axis=0)
-            intensity_std = np.std(intensity_list,axis=0)
-
-            line = "{0} {1} {2}\n".format(wave, photodiode_avg, photodiode_std)
-            shutter_opened_file.write(line)
-
-            for i in xrange(len(wavelength)):
-                line = "{0} {1} {2}\n".format(wavelength[i],intensity_avg[i],intensity_std[i])
-                spectograph_shutter_opened_file.write(line)
-
-            spectograph_shutter_closed_file.close()
-            spectograph_shutter_opened_file.close()
- 
+            self.get_photodiode_spectograph_averages(2,wave=wave,Naverages=Naverages,shutter_closed_file=shutter_closed_file,spectograph_shutter_closed_file=spectograph_shutter_closed_file,shutter_open_file=shutter_opened_file,spectograph_shutter_opened_file=spectograph_shutter_opened_file,duration=duration)
+            self.get_photodiode_spectograph_averages(2, wave=wave, Naverages=Naverages,shutter_closed_file=shutter_closed_file,spectograph_shutter_closed_file=spectograph_shutter_closed_file,shutter_open_file=shutter_opened_file,spectograph_shutter_opened_file=spectograph_shutter_opened_file,duration=duration)
 
         shutter_closed_file.close()
         shutter_opened_file.close()
 
-    def get_photodiode_spectograph_averages(self,shutter_position,wave,Naverages, shutter_closed_file,spectograph_shutter_closed_file,shutter_open_file, spectograph_shutter_opened_file):
+    def get_photodiode_spectograph_averages(self,shutter_position,wave,Naverages, shutter_closed_file,spectograph_shutter_closed_file,shutter_open_file, spectograph_shutter_opened_file,duration):
         thorlabs.thorlabs.main(val=shutter_position)
         if shutter_position == 2:
             print("shutter closed")
@@ -146,26 +123,36 @@ class CBP:
             print("shutter open")
         print("starting change_wavelength")
         self.laser.change_wavelength(wave)
-        photo_diode_list = []
-        frequencies_list = []
+        photodiode_list = []
         for i in range(Naverages):
             photo1, photo2 = self.keithley.get_photodiode_reading()
-            photo_diode_list.append(photo1)
-            wavelength, frequencies = self.spectograph.do_spectograph()
-            frequencies_avg = sum(frequencies) / len(frequencies)
-            frequencies_list.append(frequencies_avg)
+            photodiode_list.append(photo1)
+            wavelength, intensity = self.spectograph.do_spectograph(duration=duration)
 
-        photo_diode_avg = sum(photo_diode_list) / len(photo_diode_list)
-        frequency_avg = sum(frequencies_list) / len(frequencies_list)
-        line = "{0} {1}\n".format(wave, photo_diode_avg)
-        line_2 = "{0} {1}\n".format(wavelength[0], frequency_avg)
+            if i == 0:
+                intensity_list = intensity
+            else:
+                intensity_list = np.vstack((intensity_list, intensity))
+        photodiode_avg = np.mean(photodiode_list)
+        photodiode_std = np.std(photodiode_list)
+
+        intensity_avg = np.mean(intensity_list, axis=0)
+        intensity_std = np.std(intensity_list, axis=0)
+
+        line = "{0} {1} {2}\n".format(wave, photodiode_avg, photodiode_std)
+        spectograph_shutter_closed_file.write(line)
         if shutter_position == 2:
             shutter_closed_file.write(line)
-            spectograph_shutter_closed_file.write(line_2)
+            for i in xrange(len(wavelength)):
+                line = "{0} {1} {2}\n".format(wavelength[i],intensity_avg[i],intensity_std[i])
+                spectograph_shutter_closed_file.write(line)
         elif shutter_position == 1:
             shutter_open_file.write(line)
-            spectograph_shutter_opened_file.write(line_2)
-
+            for i in xrange(len(wavelength)):
+                line = "{0} {1} {2}\n".format(wavelength[i],intensity_avg[i],intensity_std[i])
+                spectograph_shutter_opened_file.write(line)
+        spectograph_shutter_opened_file.close()
+        spectograph_shutter_closed_file.close()
 
     def get_spectograph_average(self,output_dir='/home/pi/CBP/keithley/',Naverages=3, duration=1000000,dark=False):
         if not os.path.exists(output_dir):
