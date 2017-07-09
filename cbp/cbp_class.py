@@ -36,7 +36,7 @@ class CBP:
         #self.birger = cbp.birger.Birger()
         #self.filter_wheel = cbp.filter_wheel.FilterWheel()
         rm = visa.ResourceManager('@py')
-        #self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0)
+        self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0)
         #self.lamp = cbp.lamp.Lamp()
         #self.monochromater = cbp.monochromater.Monochromater()
         #self.phidget = cbp.phidget.CbpPhidget()
@@ -46,7 +46,7 @@ class CBP:
         self.spectograph = cbp.spectrograph.Spectograph()
         #self.sr830 = cbp.sr830.SR830(rm=rm)
         #self.temperature = cbp.temperature.Temperature()
-        #self.laser = cbp.laser.LaserSerialInterface(loop=False)
+        self.laser = cbp.laser.LaserSerialInterface(loop=False)
 
     def keithley_change_wavelength_loop(self, outputDir='data',wavelength_min=500, wavelength_max=700, wavelength_steps=10,Naverages=3):
         """
