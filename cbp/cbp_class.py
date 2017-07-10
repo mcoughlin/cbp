@@ -202,3 +202,5 @@ class CBP:
             wavelength, intensity = self.spectograph.get_spectograph(duration=duration)
             return wavelength, intensity
 
+if __name__ == '__main__':
+    pass

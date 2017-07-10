@@ -1,13 +1,15 @@
 import cmd
 import runinst
 import shlex
+import cbp.cbp_class as CBP
 
 
 class LaunchCbp(cmd.Cmd):
-    def __init__(self, **kwargs):
+    def __init__(self, cbp, **kwargs):
         self.prompt = "cbp:// "
         cmd.Cmd.__init__(self, **kwargs)
         self.parser = runinst.create_parser()
+        self.cbp = cbp
 
     def do_exit(self,line):
         return True
@@ -82,7 +84,8 @@ class LaunchCbp(cmd.Cmd):
 
 
 def main():
-    LaunchCbp().cmdloop()
+    cbp = CBP.CBP(everything=True)
+    LaunchCbp(cbp=cbp).cmdloop()
 
 if __name__ == '__main__':
     main()
