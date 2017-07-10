@@ -158,9 +158,9 @@ class CBP:
         if not os.path.exists(output_dir):
            os.makedirs(output_dir)
         if dark:
-           spectograph_file = open(output_dir + 'specto_{0}_dark.dat'.format(duration),'w')
+           spectograph_file = open(output_dir + 'specto_{0}_{1}_dark.dat'.format(duration,Naverages),'w')
         else:
-            spectograph_file = open(output_dir + 'specto_{0}_light.dat'.format(duration),'w')
+            spectograph_file = open(output_dir + 'specto_{0}_{1}_light.dat'.format(duration,Naverages),'w')
         for i in range(Naverages):
             wavelength, intensity = self.add_spectra(duration=duration)
 
