@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-import serial, sys, time, glob, struct, os
 import optparse
-import pexpect
+import os
+import struct
+
 import numpy as np
+import pexpect
 
-import cbp.phidget, cbp.potentiometer
-
+import cbp.phidget
+import cbp.potentiometer
 
 """
 .. module:: altaz
@@ -19,10 +21,11 @@ class Altaz:
     """
     This class is for controlling the motors of the device which move horizontally and vertically.
     """
+
     def __init__(self):
         pass
 
-    def send(self,device, command, data=0):
+    def send(self, device, command, data=0):
         """
         send a packet using the specified device number, command number, and data
         The data argument is optional and defaults to zero
@@ -49,7 +52,7 @@ class Altaz:
             r[i] = ord(ser.read(1))
         return r
 
-    def takesteps(self,mag=100, direction=1, motornum=1):
+    def takesteps(self, mag=100, direction=1, motornum=1):
         """
 
         :param mag:
@@ -81,7 +84,7 @@ class Altaz:
         steps_command = "cd /home/mcoughlin/Code/arduino/stepper/; source ./compile.sh"
         os.system(steps_command)
 
-    def do_steps(self,motornum,val):
+    def do_steps(self, motornum, val):
         """
 
         :param motornum: the motor number to move the device.
@@ -159,24 +162,26 @@ class Altaz:
 
             self.takesteps(mag=mag, direction=direction, motornum=motornum)
 
+
 def parse_commandline():
     """
     Parse the options given on the command-line.
     """
     parser = optparse.OptionParser()
 
-    parser.add_option("-m","--motornum",default=1,type=int)
-    parser.add_option("-n","--steps",default=1000,type=int)
-    parser.add_option("-a","--angle",default=2.0,type=float)
-    parser.add_option("-c","--doCompile", action="store_true",default=False)
-    parser.add_option("--doSteps", action="store_true",default=False)
-    parser.add_option("--doAngle", action="store_true",default=False)
+    parser.add_option("-m", "--motornum", default=1, type=int)
+    parser.add_option("-n", "--steps", default=1000, type=int)
+    parser.add_option("-a", "--angle", default=2.0, type=float)
+    parser.add_option("-c", "--doCompile", action="store_true", default=False)
+    parser.add_option("--doSteps", action="store_true", default=False)
+    parser.add_option("--doAngle", action="store_true", default=False)
 
     opts, args = parser.parse_args()
 
     return opts
 
-def main(runtype = "steps", val = 1000, motornum = 1):
+
+def main(runtype="steps", val=1000, motornum=1):
     altaz = Altaz()
 
     if runtype == "angle":
@@ -184,16 +189,16 @@ def main(runtype = "steps", val = 1000, motornum = 1):
             runtype = "azangle"
         elif motornum == 2:
             runtype = "altangle"
-   
+
     if runtype == "compile":
         altaz.do_compile()
- 
+
     elif runtype == "steps":
-        altaz.do_steps(motornum,val)
+        altaz.do_steps(motornum, val)
 
     elif runtype == "altangle":
         altaz.do_altangle(val, motornum)
- 
+
     elif runtype == "azangle":
         altaz.do_azangle(val, motornum)
 
@@ -204,10 +209,8 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doCompile:
-        main(runtype = "compile")
+        main(runtype="compile")
     if opts.doSteps:
         main(runtype="steps", val=opts.steps, motornum=opts.motornum)
     if opts.doAngle:
-        main(runtype="angle", val=opts.angle, motornum = opts.motornum)
-  
- 
+        main(runtype="angle", val=opts.angle, motornum=opts.motornum)

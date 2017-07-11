@@ -54,9 +54,9 @@ class CBP:
         if shutter:
             self.shutter = cbp.shutter.Shutter()
         if spectograph:
-            self.spectograph = cbp.spectrograph.Spectograph()
+            self.spectograph = cbp.spectrograph.Spectrograph()
         if sr830:
-            self.lockin = cbp.lockin.SR830(rm=rm)
+            self.lockin = cbp.lockin.LockIn(rm=rm)
         if temperature:
             self.temperature = cbp.temperature.Temperature()
         if laser:
@@ -71,27 +71,28 @@ class CBP:
             self.phidget = cbp.phidget.CbpPhidget()
             self.potentiometer = cbp.potentiometer.Potentiometer()
             self.shutter = cbp.shutter.Shutter()
-            self.spectograph = cbp.spectrograph.Spectograph()
-            self.lockin = cbp.lockin.SR830(rm=rm)
+            self.spectrograph = cbp.spectrograph.Spectrograph()
+            self.lockin = cbp.lockin.LockIn(rm=rm)
             self.temperature = cbp.temperature.Temperature()
-            #self.laser = cbp.laser.LaserSerialInterface(loop=False)
+            self.laser = cbp.laser.LaserSerialInterface(loop=False)
 
 
-    def keithley_change_wavelength_loop(self, outputDir='data',wavelength_min=500, wavelength_max=700, wavelength_steps=10,Naverages=3,duration=1000000):
+    def keithley_change_wavelength_loop(self, output_dir='data', wavelength_min=500, wavelength_max=700, wavelength_steps=10, n_averages=3, duration=1000000):
         """
         Takes an average from reading photodiode and spectograph with both opening and closing the shutter.
 
-        :param outputDir: This is the root directory where files are written
+        :param output_dir: This is the root directory where files are written
         :param wavelength_min: This is the starting wavelength
         :param wavelength_max: This is the ending wavelength
         :param wavelength_steps: This is the number of steps that are taken at each wavelength change.
-        :param Naverages: This is the number of times that the photodiodes are read which is used to calculate an average.
+        :param n_averages: This is the number of times that the photodiodes are read which is used to calculate an average.
+        :param duration: This is the length of time that the spectrograph will sleep for per reading.
         :return: Ostensibly doesn't return anything, but writes out data files that show average photodiode and spectograph readings at each wavelength.
 
         """
 
-        shutter_closed_directory = '{0}/closed/'.format(outputDir)
-        shutter_opened_directory = '{0}/opened/'.format(outputDir)
+        shutter_closed_directory = '{0}/closed/'.format(output_dir)
+        shutter_opened_directory = '{0}/opened/'.format(output_dir)
         if not os.path.exists(shutter_closed_directory):
             os.makedirs(shutter_closed_directory)
         if not os.path.exists(shutter_opened_directory):
@@ -107,13 +108,13 @@ class CBP:
             spectograph_shutter_closed_file = open(shutter_closed_directory + 'specto_%.0f.dat'%wave, 'w')
             spectograph_shutter_opened_file = open(shutter_opened_directory + 'specto_%.0f.dat'%wave, 'w')
 
-            self.get_photodiode_spectograph_averages(2,wave=wave,Naverages=Naverages,shutter_closed_file=shutter_closed_file,spectograph_shutter_closed_file=spectograph_shutter_closed_file,shutter_open_file=shutter_opened_file,spectograph_shutter_opened_file=spectograph_shutter_opened_file,duration=duration)
-            self.get_photodiode_spectograph_averages(2, wave=wave, Naverages=Naverages,shutter_closed_file=shutter_closed_file,spectograph_shutter_closed_file=spectograph_shutter_closed_file,shutter_open_file=shutter_opened_file,spectograph_shutter_opened_file=spectograph_shutter_opened_file,duration=duration)
+            self.get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
+            self.get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
 
         shutter_closed_file.close()
         shutter_opened_file.close()
 
-    def get_photodiode_spectograph_averages(self,shutter_position,wave,Naverages, shutter_closed_file,spectograph_shutter_closed_file,shutter_open_file, spectograph_shutter_opened_file,duration):
+    def get_photodiode_spectograph_averages(self, shutter_position, wave, n_averages, shutter_closed_file, spectograph_shutter_closed_file, shutter_open_file, spectograph_shutter_opened_file, duration):
         thorlabs.thorlabs.main(val=shutter_position)
         if shutter_position == 2:
             print("shutter closed")
@@ -122,7 +123,7 @@ class CBP:
         print("starting change_wavelength")
         self.laser.change_wavelength(wave)
         photodiode_list = []
-        for i in range(Naverages):
+        for i in range(n_averages):
             photo1, photo2 = self.keithley.get_photodiode_reading()
             photodiode_list.append(photo1)
             wavelength, intensity = self.spectograph.do_spectograph(duration=duration)
@@ -152,14 +153,14 @@ class CBP:
         spectograph_shutter_opened_file.close()
         spectograph_shutter_closed_file.close()
 
-    def get_spectograph_average(self,output_dir='/home/pi/CBP/keithley/',Naverages=3, duration=1000000,dark=False):
+    def get_spectograph_average(self, output_dir='/home/pi/CBP/keithley/', n_averages=3, duration=1000000, dark=False):
         if not os.path.exists(output_dir):
            os.makedirs(output_dir)
         if dark:
-           spectograph_file = open(output_dir + 'specto_{0}_{1}_dark.dat'.format(duration,Naverages),'w')
+           spectograph_file = open(output_dir + 'specto_{0}_{1}_dark.dat'.format(duration, n_averages), 'w')
         else:
-            spectograph_file = open(output_dir + 'specto_{0}_{1}_light.dat'.format(duration,Naverages),'w')
-        for i in range(Naverages):
+            spectograph_file = open(output_dir + 'specto_{0}_{1}_light.dat'.format(duration, n_averages), 'w')
+        for i in range(n_averages):
             wavelength, intensity = self.add_spectra(duration=duration)
 
             if i == 0:

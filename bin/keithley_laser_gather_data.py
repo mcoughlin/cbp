@@ -10,6 +10,6 @@ def main():
     Naverages = 3
     duration = 5000000
     collimated_beam_projector = cbp_instrument.CBP(keithley=True,spectograph=True,laser=True)
-    collimated_beam_projector.keithley_change_wavelength_loop(outputDir=outputDir,wavelength_min=wavelength_min, wavelength_max=wavelength_max,wavelength_steps=wavelength_steps,Naverages=Naverages, duration=duration)
+    collimated_beam_projector.keithley_change_wavelength_loop(output_dir=outputDir, wavelength_min=wavelength_min, wavelength_max=wavelength_max, wavelength_steps=wavelength_steps, n_averages=Naverages, duration=duration)
 
 main()

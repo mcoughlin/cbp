@@ -22,7 +22,10 @@ class LaserSerialInterface:
         if loop:
             self.serial = serial.serial_for_url('loop://')
         else:
-            self.serial = serial.Serial(port='/dev/ttyUSB.LASER', baudrate=19200, timeout=5)
+            try:
+                self.serial = serial.Serial(port='/dev/ttyUSB.LASER', baudrate=19200, timeout=5)
+            except:
+                self.status = "not connected"
         self.commands = {'say_state_msg': '[NL:SAY\PC]'}
         self.responses = {'[NL:What\PC]': 'Unrecognized string', '[NL:Ignored\PC]': 'Unrecognized command'}
 
@@ -131,7 +134,7 @@ def main(wavelength):
     """
 
     laser_interface = LaserSerialInterface(loop=True)
-    laser_interface.loop_change_wavelength(500, 520)
+    laser_interface.loop_change_wavelength(500, 520, False)
     #laser_interface.change_wavelength(wavelength)
 
 if __name__ == '__main__':

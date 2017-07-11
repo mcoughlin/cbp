@@ -76,7 +76,7 @@ def get_status(opts):
         elif instrument == "birger":
             focus, aperture = cbp.birger.main(runtype = "status")
         elif instrument == "keithley":
-            photo1,photo2 = cbp.keithley.main(runtype = "keithley", doSingle = True, doReset = True)
+            photo1,photo2 = cbp.keithley.main(runtype = "keithley", do_single= True, do_reset= True)
 
     if (alt == -1) or (az == -1):
         print "Potentiometers not responding..."

@@ -32,7 +32,7 @@ def parse_commandline():
 
 
 class Keithley:
-    def __init__(self, rm=None, resnum=None, mode='curr', nplc=1, doReset=False):
+    def __init__(self, rm=None, resnum=None, mode='curr', nplc=1, do_reset=False):
         if rm is not None and resnum is not None:
             self.rm = rm
             print("finding resource")
@@ -62,7 +62,7 @@ class Keithley:
         # self.ins.write('VOLT:RANG:AUTO ON')
         self.dispon(True)
 
-        if doReset:
+        if do_reset:
             self.ins.write('*RST')
             self.ins.write('INIT')
         self.selectmode(mode, nplc=nplc)
@@ -101,17 +101,17 @@ class Keithley:
         self.rm.close()
 
     def get_keithley(rm, duration=1, photons=100000, charge=10 ** -6, wavelength=550, mode='curr',
-                     analysisType='duration', doSingle=False, doReset=True, photonFile='test.dat',
-                     doShutter=True):
+                     analysis_type='duration', do_single=False, do_reset=True, photon_file='test.dat',
+                     do_shutter=True):
         print("starting get_keithley")
-        if doSingle:
+        if do_single:
             # QE for NIST and Thorlabs
             filename = '../input/NIST_PD.txt'
             data_out = np.loadtxt(filename)
-            QE_NIST_PD = np.interp(wavelength, data_out[:, 0], data_out[:, 1])
+            qe_nist_pd = np.interp(wavelength, data_out[:, 0], data_out[:, 1])
             filename = '../input/NIST_Thorlabs.txt'
             data_out = np.loadtxt(filename)
-            QE_Thorlabs_PD = QE_NIST_PD * \
+            qe_thorlabs_pd = qe_nist_pd * \
                              np.interp(wavelength, data_out[:, 0], data_out[:, 1] / data_out[:, 2])
 
             filename = '../input/CBP_throughput.txt'
@@ -124,8 +124,8 @@ class Keithley:
             if True:
                 # try:
                 print("entering true loop")
-                ins1 = Keithley(rm=rm, resnum=0, mode=mode, doReset=doReset)
-                if analysisType == 'duration':
+                ins1 = Keithley(rm=rm, resnum=0, mode=mode, do_reset=do_reset)
+                if analysis_type == 'duration':
                     start_time = time.time()
                     elapsed_time = time.time() - start_time
 
@@ -144,13 +144,13 @@ class Keithley:
 
                         intsphere_charge = photo
                         intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
-                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                        totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                         totphotons.append(totphoton)
 
-                    if doShutter:
-                        cbp.shutter.main(cbp.shutter,runtype="shutter", val=-1)
+                    if do_shutter:
+                        cbp.shutter.main(runtype="shutter", val=-1)
                     else:
-                        cbp.shutter.main(cbp.shutter,runtype="shutter", val=1)
+                        cbp.shutter.main(runtype="shutter", val=1)
                     while elapsed_time < duration:
                         thistime = time.time()
                         elapsed_time = thistime - start_time
@@ -159,7 +159,7 @@ class Keithley:
                         totphotons.append(totphoton)
 
                     # time.sleep(duration)
-                    cbp.shutter.main(cbp.shutter,runtype="shutter", val=1)
+                    cbp.shutter.main(runtype="shutter", val=1)
 
                     for ii in xrange(10):
                         thistime = time.time()
@@ -172,10 +172,10 @@ class Keithley:
 
                         intsphere_charge = photo
                         intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
-                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                        totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                         totphotons.append(totphoton)
 
-                elif (analysisType == 'photons') or (analysisType == 'charge'):
+                elif (analysis_type == 'photons') or (analysis_type == 'charge'):
 
                     times = []
                     photo1 = []
@@ -184,7 +184,7 @@ class Keithley:
                     totphoton = 0
                     intsphere_charge = 0
 
-                    fid = open(photonFile, 'w')
+                    fid = open(photon_file, 'w')
                     for ii in xrange(10):
                         photo = ins1.getread()[0]
                         elapsed_time = time.time() - start_time
@@ -194,16 +194,16 @@ class Keithley:
 
                         intsphere_charge = photo1
                         intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
-                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                        totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                         totphotons.append(totphoton)
-                        if analysisType == "photons":
+                        if analysis_type == "photons":
                             print "%.0f/%.0f" % (totphoton, photons)
-                        elif analysisType == "charge":
-                            print "%.5e/%.5e" % (intsphere_charge, charge)
+                        elif analysis_type == "charge":
+                            print("%.5e/%.5e" % (intsphere_charge, charge))
                         fid.write("%.10f %.10e %.0f\n" % (elapsed_time, photo1, totphoton))
 
                     cbp.shutter.main(runtype="shutter", val=-1)
-                    if analysisType == "photons":
+                    if analysis_type == "photons":
                         while totphoton < photons:
                             photo1 = ins1.getread()[0]
                             elapsed_time = time.time() - start_time
@@ -213,12 +213,12 @@ class Keithley:
 
                             intsphere_charge = photo1
                             intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
-                            totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                            totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                             totphotons.append(totphoton)
 
                             print "%.0f/%.0f" % (totphoton, photons)
                             fid.write("%.10f %.10e %.0f\n" % (elapsed_time, photo1, totphoton))
-                    elif analysisType == "charge":
+                    elif analysis_type == "charge":
                         while intsphere_charge < charge:
                             photo1 = ins1.getread()[0]
                             elapsed_time = time.time() - start_time
@@ -228,7 +228,7 @@ class Keithley:
 
                             intsphere_charge = photo1
                             intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
-                            totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                            totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                             totphotons.append(totphoton)
 
                             print "%.5e/%.5e" % (intsphere_charge, charge)
@@ -244,12 +244,12 @@ class Keithley:
 
                         intsphere_charge = photo1
                         intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
-                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                        totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                         totphotons.append(totphoton)
 
-                        if analysisType == "photons":
+                        if analysis_type == "photons":
                             print "%.0f/%.0f" % (totphoton, photons)
-                        elif analysisType == "charge":
+                        elif analysis_type == "charge":
                             print "%.5e/%.5e" % (intsphere_charge, charge)
 
                         fid.write("%.10f %.10e %.0f\n" % (elapsed_time, photo1, totphoton))
@@ -265,7 +265,7 @@ class Keithley:
         else:
             try:
                 print("entering else loop")
-                ins1 = Keithley(rm=rm, resnum=0, mode=mode, doReset=doReset)
+                ins1 = Keithley(rm=rm, resnum=0, mode=mode, do_reset=do_reset)
                 # ins2 = Keithley(rm = rm, resnum = 1, mode = mode, doReset = doReset)
                 time.sleep(duration)
                 photo1 = ins1.getread()
@@ -277,7 +277,7 @@ class Keithley:
 
             return photo1[0], photo2[0]
 
-    def get_photodiode_reading(self,rm=visa.ResourceManager('@py'),mode='curr',doReset=True):
+    def get_photodiode_reading(self, rm=visa.ResourceManager('@py'), mode='curr', do_reset=True):
         time.sleep(1)
         photo1 = self.getread()
         print("Diode read")
@@ -286,17 +286,17 @@ class Keithley:
 
 
 def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, mode='curr',
-                 analysisType='duration', doSingle=False, doReset=True, photonFile='test.dat',
-                 doShutter=True):
+                 analysis_type='duration', do_single=False, do_reset=True, photon_file='test.dat',
+                 do_shutter=True):
 
-    if doSingle:
+    if do_single:
         # QE for NIST and Thorlabs
         filename = '../input/NIST_PD.txt'
         data_out = np.loadtxt(filename)
-        QE_NIST_PD = np.interp(wavelength,data_out[:,0],data_out[:,1])
+        qe_nist_pd = np.interp(wavelength,data_out[:,0],data_out[:,1])
         filename = '../input/NIST_Thorlabs.txt'
         data_out = np.loadtxt(filename)
-        QE_Thorlabs_PD = QE_NIST_PD * \
+        qe_thorlabs_pd = qe_nist_pd * \
                  np.interp(wavelength,data_out[:,0],data_out[:,1]/data_out[:,2])
 
         filename = '../input/CBP_throughput.txt'
@@ -308,8 +308,8 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
 
         if True:
         #try:
-            ins1 = Keithley(rm = rm, resnum = 0, mode = mode, doReset = doReset)
-            if analysisType == 'duration':
+            ins1 = Keithley(rm = rm, resnum = 0, mode = mode, do_reset= do_reset)
+            if analysis_type == 'duration':
                 start_time = time.time()
                 elapsed_time = time.time() - start_time
 
@@ -328,10 +328,10 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
 
                     intsphere_charge = photo
                     intsphere_electrons = intsphere_charge / (1.6*10**(-19))
-                    totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                    totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                     totphotons.append(totphoton)
 
-                if doShutter:
+                if do_shutter:
                     cbp.shutter.main(runtype = "shutter", val = -1)
                 else:
                     cbp.shutter.main(runtype = "shutter", val = 1)
@@ -342,7 +342,7 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
                     photo = ins1.getread()[0]
                     intsphere_charge = photo
                     intsphere_electrons = intsphere_charge / (1.6*10**(-19))
-                    totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                    totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
 
                     photo1.append(photo)
                     times.append(thistime)
@@ -362,10 +362,10 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
 
                     intsphere_charge = photo
                     intsphere_electrons = intsphere_charge / (1.6*10**(-19))
-                    totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                    totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                     totphotons.append(totphoton)
 
-            elif (analysisType == 'photons') or (analysisType == 'charge'):
+            elif (analysis_type == 'photons') or (analysis_type == 'charge'):
 
                 times = []
                 photo1 = []
@@ -374,7 +374,7 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
                 totphoton = 0
                 intsphere_charge = 0
 
-                fid = open(photonFile,'w') 
+                fid = open(photon_file, 'w')
                 for ii in xrange(10):
                     photo = ins1.getread()[0]
                     elapsed_time = time.time() - start_time
@@ -384,16 +384,16 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
 
                     intsphere_charge = photo1
                     intsphere_electrons = intsphere_charge / (1.6*10**(-19))
-                    totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD                  
+                    totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                     totphotons.append(totphoton)
-                    if analysisType == "photons":
+                    if analysis_type == "photons":
                         print "%.0f/%.0f"%(totphoton,photons)
-                    elif analysisType == "charge":
+                    elif analysis_type == "charge":
                         print "%.5e/%.5e"%(intsphere_charge,charge)
                     fid.write("%.10f %.10e %.0f\n"%(elapsed_time,photo1,totphoton))         
 
                 cbp.shutter.main(runtype = "shutter", val = -1)
-                if analysisType == "photons":
+                if analysis_type == "photons":
                     while totphoton < photons:
                         photo1 = ins1.getread()[0]
                         elapsed_time = time.time() - start_time
@@ -403,12 +403,12 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
 
                         intsphere_charge = photo1
                         intsphere_electrons = intsphere_charge / (1.6*10**(-19))
-                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD    
+                        totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                         totphotons.append(totphoton)
 
                         print "%.0f/%.0f"%(totphoton,photons)
                         fid.write("%.10f %.10e %.0f\n"%(elapsed_time,photo1,totphoton))
-                elif analysisType == "charge":
+                elif analysis_type == "charge":
                     while intsphere_charge < charge:
                         photo1 = ins1.getread()[0]
                         elapsed_time = time.time() - start_time
@@ -418,7 +418,7 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
                     
                         intsphere_charge = photo1
                         intsphere_electrons = intsphere_charge / (1.6*10**(-19))
-                        totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD               
+                        totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                         totphotons.append(totphoton)
 
                         print "%.5e/%.5e"%(intsphere_charge,charge)
@@ -434,12 +434,12 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
 
                     intsphere_charge = photo1
                     intsphere_electrons = intsphere_charge / (1.6*10**(-19))
-                    totphoton = intsphere_electrons * throughput / QE_Thorlabs_PD
+                    totphoton = intsphere_electrons * throughput / qe_thorlabs_pd
                     totphotons.append(totphoton)
 
-                    if analysisType == "photons":
+                    if analysis_type == "photons":
                         print "%.0f/%.0f"%(totphoton,photons)
-                    elif analysisType == "charge":
+                    elif analysis_type == "charge":
                         print "%.5e/%.5e"%(intsphere_charge,charge)
 
                     fid.write("%.10f %.10e %.0f\n"%(elapsed_time,photo1,totphoton))
@@ -454,7 +454,7 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
         return times, photo1, totphotons
     else:
         try:
-            ins1 = Keithley(rm = rm, resnum = 0, mode = mode, doReset = doReset)
+            ins1 = Keithley(rm = rm, resnum = 0, mode = mode, do_reset= do_reset)
             #ins2 = Keithley(rm = rm, resnum = 1, mode = mode, doReset = doReset)
             time.sleep(duration)
             photo1 = ins1.getread()
@@ -468,21 +468,21 @@ def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, 
 
 
 def main(runtype="keithley", duration=1, photons=100000, charge=10**-6, wavelength=550, mode='curr',
-         analysisType="duration", doSingle=False, doReset=False, photonFile='test.dat', doShutter=True):
+         analysis_type="duration", do_single=False, do_reset=False, photon_file='test.dat', do_shutter=True):
 
     if runtype == "keithley":
         rm = visa.ResourceManager('@py')
-        if doSingle:
+        if do_single:
             times, photos, totphotons = get_keithley(rm = rm, duration = duration, mode = mode, photons = photons,
                                                      charge = charge, wavelength = wavelength,
-                                                     analysisType = analysisType, doSingle = doSingle, doReset = doReset,
-                                                     photonFile = photonFile, doShutter = doShutter)
+                                                     analysis_type= analysis_type, do_single= do_single, do_reset= do_reset,
+                                                     photon_file= photon_file, do_shutter= do_shutter)
             print times, photos, totphotons
             return times, photos, totphotons
         else:
             photo1, photo2 = get_keithley(rm = rm, duration = duration, mode = mode, photons = photons, charge = charge,
-                                          wavelength = wavelength, analysisType = analysisType, doSingle = doSingle,
-                                          doReset = doReset, photonFile = photonFile, doShutter = doShutter)
+                                          wavelength = wavelength, analysis_type= analysis_type, do_single= do_single,
+                                          do_reset= do_reset, photon_file= photon_file, do_shutter= do_shutter)
             print photo1, photo2 
             return photo1, photo2
 
@@ -492,7 +492,7 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doKeithley:
-        main(runtype="keithley",duration=opts.duration, photons=opts.photons, charge=opts.charge,
-             wavelength=opts.wavelength, mode=opts.mode, analysisType=opts.analysisType, doSingle=opts.doSingle,
-             doReset=opts.doReset, photonFile=opts.photonFile, doShutter=opts.doShutter)
+        main(runtype="keithley", duration=opts.duration, photons=opts.photons, charge=opts.charge,
+             wavelength=opts.wavelength, mode=opts.mode, analysis_type=opts.analysisType, do_single=opts.doSingle,
+             do_reset=opts.doReset, photon_file=opts.photonFile, do_shutter=opts.doShutter)
 

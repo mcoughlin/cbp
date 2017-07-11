@@ -80,13 +80,14 @@ def parse_commandline():
 
     return opts
 
+
 def main(doCompile=0):
     potentiometer = Potentiometer()
 
     if doCompile:
         potentiometer.do_compile()
 
-    potentiometer_1, potentiometer_2 = potentiometer.get_pententiometer()
+    potentiometer_1, potentiometer_2 = potentiometer.get_potentiometer()
 
     return potentiometer_1, potentiometer_2
 

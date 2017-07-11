@@ -20,7 +20,7 @@ def parse_commandline():
     return opts
 
 
-class SR830:
+class LockIn:
     def __init__(self,rm=None,resnum=None):
         if rm is not None and resnum is not None:
             self.rm = rm
@@ -145,9 +145,10 @@ class SR830:
         return float(self.io.ask('PHAS?'))
     
     def set_phase(self,value):
-        if value>=-360.0 and value <=729.99:
-            self.io.write('PHAS'+str(value))
-    
+        if value>=-360.0:
+            if value <=729.99:
+                self.io.write('PHAS'+str(value))
+
     def query_f_R_theta(self):
         """query the frequency, radius and phase of signal"""
         return self.io.ask_for_values("SNAP?9,3,4")
@@ -205,7 +206,7 @@ class SR830:
         return float(self.io.query("OUTP?"+conv[x])),float(self.io.query("OUTP?"+conv[y]))
         #return self.io.ask_for_values("SNAP?"+conv[x]+','+conv[y])
 
-    def get_sr830(self):
+    def get_lockin(self):
 
         ins = self
 
@@ -219,10 +220,10 @@ class SR830:
 
 
 def main(runtype="sr830"):
-    sr830 = SR830()
+    lockin = LockIn()
     if runtype == "sr830":
         rm = visa.ResourceManager('@py')
-        photo = sr830.get_sr830()
+        photo = lockin.get_lockin()
         return photo
 
 if __name__ == "__main__":

@@ -155,7 +155,7 @@ if opts.shutter == 1:
 elif opts.shutter == 0:
     doShutter = False
 
-times, photos, totphotons = cbp.keithley.main(runtype = "keithley",photons = opts.photons, charge = opts.charge, duration = opts.duration, wavelength = opts.wavelength, mode = 'char', analysisType = opts.analysisType, doSingle = True, doReset = True, doShutter = doShutter)
+times, photos, totphotons = cbp.keithley.main(runtype = "keithley", photons = opts.photons, charge = opts.charge, duration = opts.duration, wavelength = opts.wavelength, mode = 'char', analysis_type= opts.analysisType, do_single= True, do_reset= True, do_shutter= doShutter)
 
 
 

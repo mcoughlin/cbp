@@ -112,9 +112,9 @@ def create_parser():
     parser_keithley = subparsers.add_parser('keithley', help='keithley instrument')
     parser_keithley.set_defaults(func=keithley)
 
-    parser_spectograph = subparsers.add_parser('spectograph', help='spectograph instrument')
-    parser_spectograph.add_argument('duration',default=1000000,type=int)
-    parser_spectograph.set_defaults(func=spectograph)
+    parser_spectrograph = subparsers.add_parser('spectrograph', help='spectrograph instrument')
+    parser_spectrograph.add_argument('duration',default=1000000,type=int)
+    parser_spectrograph.set_defaults(func=spectograph)
 
     parser_laser = subparsers.add_parser('laser', help='laser instrument')
     parser_laser_subparsers = parser_laser.add_subparsers(help='laser sub-commands')
@@ -184,7 +184,7 @@ def monochrometer_get_filter(opts):
     cbp.monochromater.main(runtype = "getmonofilter")
 
 def keithley(opts):
-    photo1, photo2 = cbp.keithley.main(runtype = "keithley", doReset = 1, doSingle = 1)
+    photo1, photo2 = cbp.keithley.main(runtype = "keithley", do_reset= 1, do_single= 1)
     print(photo1, photo2)
 
 def spectograph(opts):

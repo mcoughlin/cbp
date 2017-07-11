@@ -7,7 +7,7 @@ seabreeze.use('pyseabreeze')
 import seabreeze.spectrometers as sb
 
 
-class Spectograph:
+class Spectrograph:
     def __init__(self):
         self.spectrometer = self.create_connection()
         self.status = None
@@ -61,9 +61,9 @@ def parse_commandline():
 
 
 def main(runtype = "spectrograph", duration = 1000000, spectrumFile='test.dat'):
-    spectograph = Spectograph()
+    spectrograph = Spectrograph()
 
-    wavelengths, intensities = spectograph.get_spectograph(duration=duration, spectrumFile=spectrumFile)
+    wavelengths, intensities = spectrograph.get_spectograph(duration=duration, spectrumFile=spectrumFile)
 
     return wavelengths, intensities
 
