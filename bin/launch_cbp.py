@@ -1,5 +1,5 @@
 import cmd
-import runinst
+import initialize_cbp
 import shlex
 import cbp.cbp_class as CBP
 
@@ -8,68 +8,71 @@ class LaunchCbp(cmd.Cmd):
     def __init__(self, cbp, **kwargs):
         self.prompt = "cbp:// "
         cmd.Cmd.__init__(self, **kwargs)
-        self.parser = runinst.create_parser()
+        self.parser = initialize_cbp.create_parser()
         self.cbp = cbp
 
     def do_exit(self,line):
         return True
 
     def _do_phidget(self, args):
-        runinst.phidget(args)
+        initialize_cbp.phidget(self.cbp,args)
 
-    def _do_pententiometer(self, args):
-        runinst.pententiometer(args)
+    def _do_potentiometer(self, args):
+        initialize_cbp.potentiometer(self.cbp,args)
 
     def _do_altaz_compile(self, args):
-        runinst.altaz_compile(args)
+        initialize_cbp.altaz_compile(self.cbp,args)
 
     def _do_altaz_steps(self, args):
-        runinst.altaz_steps(args)
+        initialize_cbp.altaz_steps(self.cbp,args)
 
     def _do_altaz_angle(self, args):
-        runinst.altaz_angle(args)
+        initialize_cbp.altaz_angle(self.cbp,args)
 
     def _do_birger_focus(self, args):
-        runinst.birger_focus(args)
+        initialize_cbp.birger_focus(self.cbp,args)
 
     def _do_birger_aperture(self, args):
-        runinst.birger_aperture(args)
+        initialize_cbp.birger_aperture(self.cbp,args)
 
     def _do_lamp_lamp(self, args):
-        runinst.lamp_lamp(args)
+        initialize_cbp.lamp_lamp(self.cbp,args)
 
     def _do_shutter_shutter(self, args):
-        runinst.shutter_shutter(args)
+        initialize_cbp.shutter_shutter(self.cbp,args)
 
     def _do_photodiode(self, args):
-        runinst.photodiode(args)
+        initialize_cbp.photodiode(self.cbp,args)
 
     def _do_filter_wheel_position(self, args):
-        runinst.filter_wheel_position(args)
+        initialize_cbp.filter_wheel_position(self.cbp,args)
 
     def _do_filter_wheel_get_position(self, args):
-        runinst.filter_wheel_get_position(args)
+        initialize_cbp.filter_wheel_get_position(self.cbp,args)
 
     def _do_monochrometer_wavelength(self, args):
-        runinst.monochrometer_wavelength(args)
+        initialize_cbp.monochrometer_wavelength(self.cbp,args)
 
     def _do_monochrometer_get_wavelength(self, args):
-        runinst.monochrometer_get_wavelength(args)
+        initialize_cbp.monochrometer_get_wavelength(self.cbp,args)
 
     def _do_monochrometer_filter(self, args):
-        runinst.monochrometer_filter(args)
+        initialize_cbp.monochrometer_filter(self.cbp,args)
 
     def _do_monochrometer_get_filter(self, args):
-        runinst.monochrometer_get_filter(args)
+        initialize_cbp.monochrometer_get_filter(self.cbp,args)
 
     def _do_keithley(self, args):
-        runinst.keithley(args)
+        initialize_cbp.keithley(self.cbp,args)
 
     def _do_spectograph(self, args):
-        runinst.spectograph(args)
+        initialize_cbp.spectograph(self.cbp,args)
 
-    def _do_laser_laser(self, args):
-        runinst.laser_laser(args)
+    def _do_laser_change_wavelength(self, args):
+        initialize_cbp.laser_change_wavelength(self.cbp,args)
+
+    def _do_laser_change_wavelength_loop(self, args):
+        initialize_cbp.laser_change_wavelength_loop(self.cbp,args)
 
     def default(self, line):
         try:
