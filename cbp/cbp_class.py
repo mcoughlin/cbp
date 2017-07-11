@@ -9,7 +9,7 @@ import cbp.photodiode
 import cbp.potentiometer
 import cbp.shutter
 import cbp.spectrograph
-import cbp.sr830
+import cbp.lockin
 import cbp.temperature
 import cbp.laser
 import numpy as np
@@ -56,7 +56,7 @@ class CBP:
         if spectograph:
             self.spectograph = cbp.spectrograph.Spectograph()
         if sr830:
-            self.sr830 = cbp.sr830.SR830(rm=rm)
+            self.lockin = cbp.lockin.SR830(rm=rm)
         if temperature:
             self.temperature = cbp.temperature.Temperature()
         if laser:
@@ -67,16 +67,14 @@ class CBP:
             self.filter_wheel = cbp.filter_wheel.FilterWheel()
             rm = visa.ResourceManager('@py')
             self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0)
-            self.lamp = cbp.lamp.Lamp()
             self.monochromater = cbp.monochromater.Monochromater()
             self.phidget = cbp.phidget.CbpPhidget()
-            self.photodiode = cbp.photodiode.Photodiode()
             self.potentiometer = cbp.potentiometer.Potentiometer()
             self.shutter = cbp.shutter.Shutter()
             self.spectograph = cbp.spectrograph.Spectograph()
-            self.sr830 = cbp.sr830.SR830(rm=rm)
+            self.lockin = cbp.lockin.SR830(rm=rm)
             self.temperature = cbp.temperature.Temperature()
-            self.laser = cbp.laser.LaserSerialInterface(loop=False)
+            #self.laser = cbp.laser.LaserSerialInterface(loop=False)
 
 
     def keithley_change_wavelength_loop(self, outputDir='data',wavelength_min=500, wavelength_max=700, wavelength_steps=10,Naverages=3,duration=1000000):

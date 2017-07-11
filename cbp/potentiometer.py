@@ -32,7 +32,7 @@ class Potentiometer:
 
         return last_received
 
-    def get_pententiometer(self):
+    def get_potentiometer(self):
         conversion = 360.0 / 32767.0
 
         success = 0

@@ -8,11 +8,10 @@ def altaz(test_steps=False,test_altangle=False,test_azangle=False):
         cbp.altaz.do_steps(motornum=1,val=100)
         cbp.altaz.do_steps(motornum=1, val=-100)
     if test_altangle:
-        cbp.altaz.do_altangle(motornum=1,val=5)
-        cbp.altaz.do_altangle(motornum=1,val=-5)
+        cbp.altaz.do_altangle(motornum=1,val=0)
     if test_azangle:
-        cbp.altaz.do_azangle(motornum=1,val=5)
-        cbp.altaz.do_azangle(motornum=1,val=-5)
+        cbp.altaz.do_azangle(motornum=1,val=0)
+        cbp.altaz.do_azangle(motornum=1,val=0)
 
 
 def birger(test_focus=False,test_aperture=False,test_status=False):
@@ -22,7 +21,7 @@ def birger(test_focus=False,test_aperture=False,test_status=False):
     if test_aperture:
         cbp.birger.do_aperture(val=12)
     if test_status:
-        cbp.birger.do_status()
+        print(cbp.birger.do_status())
 
 
 def filter_wheel(test_position=False,test_get_position=False):
@@ -30,7 +29,7 @@ def filter_wheel(test_position=False,test_get_position=False):
     if test_position:
         cbp.filter_wheel.do_position()
     if test_get_position:
-        cbp.filter_wheel.get_position()
+        print(cbp.filter_wheel.get_position())
 
 
 def lamp(test_lamp=False):
@@ -54,7 +53,7 @@ def photodiode(test_photodiode=False):
 def potentiometer(test_potentiometer=False):
     cbp = CBP.CBP(potentiometer=True)
     if test_potentiometer:
-        cbp.potentiometer.get_pententiometer()
+        cbp.potentiometer.get_potentiometer()
 
 
 def shutter(test_shutter=False):
@@ -84,7 +83,8 @@ def temperature(test_temperature=False):
 
 
 def main():
-    altaz(test_steps=True,test_altangle=True,test_azangle=True)
+    print(potentiometer(test_potentiometer=True))
+    
 
 
 if __name__ == '__main__':
