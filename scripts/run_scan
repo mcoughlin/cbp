@@ -1,0 +1,123 @@
+#!/bin/bash
+if [ "$#" -ne "8" ]; then
+  echo "USAGE: run_scan WAVEMIN WAVEMAX WAVESTEP TIME SLITWIDTH CBPSHUTTER LOG_DIRECTORY RUN_NAME"
+  exit 1
+fi
+
+i=1
+wavemin="$1"
+wavemax="$2"
+wavestep="$3"
+time="$4"
+slitwidth="$5"
+cbpshutter="$6"
+direc="$7"
+pitmplogfile="/tmp/CBPtmp.tmp"
+runname=$8
+echo "=====CURRENT SETTINGS===="
+echo "WAVEMIN: $wavemin"
+echo "WAVEMAX: $wavemax"
+echo "WAVESTEP: $wavestep"
+echo "TIME: $time"
+echo "SLITWIDTH: $slitwidth"
+echo "CBPSHUTTER: $cbpshutter"
+echo "LOG_DIRECTORY: $direc"
+echo "PI WRITING TMP LOGS TO: $pitmplogfile"
+echo "BASE RUN NAME: $runname"
+echo "========================="
+echo
+echo "Are dome lights off??"
+echo "Is the correct filter in place??"
+echo "Are current exposure settings correct??"
+
+suffix=.fits
+rootdirec=/data/npm/January18/d2/
+pan set rootname /data/npm/January18/d2/cbp_
+
+lastwave=$wavemin
+if [ "$wavemin" -ge "600" ]; then
+    echo -e "==========================================="
+    echo -e "ORDER BLOCKING FILTER MUST BE IN PLACE!!!!!"
+    echo -e "==========================================="
+    /home/observer/test/runpiwave.sh $wavemin &
+    echo -e "MOVING CBP TO WAVELENGTH ${wavemin}....."
+    sleep 30
+else
+    /home/observer/test/runpiwave.sh $wavemin &
+    echo -e "MOVING CBP TO WAVELENGTH ${wavemin}....."
+    sleep 30
+fi
+ 
+for wavelength in `seq $wavemin $wavestep $wavemax` ; do
+  #check to see if we need to put in order blocking filter
+  if [[ "$lastwave" -lt "600" ]] && [[ "$wavelength" -ge "600" ]]; then
+    echo -e "==========================================="
+    echo -e "WARNING: ORDER BLOCKING FILTER CHANGE!!!!!!"
+    echo -e "==========================================="
+    /home/observer/test/runpiwave.sh $wavelength &
+    echo -e "MOVING CBP TO WAVELENGTH ${wavelength}....."
+    sleep 30
+  fi
+
+  #setup CBP
+  echo "------------------------------------------------------"
+  echo "CURRENT WAVELENGTH: $wavelength"
+  echo "DOING LIGHT INTEGRATION FOR TIME $time"
+  exptime=`expr $time + 2`
+  pan set type DFLAT
+  pan set exptime $((exptime * 1000))
+
+  if [ "$cbpshutter" -eq "1" ]; then
+    shutstat="open"
+  else
+    shutstat="closed"
+  fi
+  pan set imagecomment "WAVE $wavelength CBPTIME $time SHUTTER $shutstat SLIT $slitwidth"
+  
+  #send cmd to CBP to move wavelengths and open shutter
+  /home/observer/test/runpi.sh $wavelength $time $cbpshutter $pitmplogfile & #1 means shutter open
+  pan expose
+  sleep 30
+  latestfile=`ls -t $rootdirec | head -1`
+  logname="${latestfile%$suffix}"
+  logpath="$direc${logname}.dat"
+  cp "$pitmplogfile" "$logpath"
+  rm "$pitmplogfile"
+
+  if [ -f $logpath ]; then
+      echo "Wrote log to $logpath"
+  else
+      echo "-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"
+      echo "ERROR WRITING LOG.  ABORTING."
+      echo "-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"
+      exit 1
+  fi
+
+#uncomment these lines to do darks for each exposure
+  echo "DOING DARK INTEGRATION FOR TIME $time"
+  pan set imagecomment "WAVE $wavelength CBPTIME $time SHUTTER closed"
+  /home/observer/test/runpi.sh $wavelength $time 0 $pitmplogfile & #0 means shutter closed
+  pan expose
+  sleep 30
+  latestfile=`ls -t $rootdirec | head -1`
+  logname="${latestfile%$suffix}"
+  logpath="$direc${logname}.dat"
+  cp "$pitmplogfile" "$logpath"
+  rm "$pitmplogfile"
+
+  if [ -f $logpath ]; then
+      echo "Wrote log to $logpath"
+  else
+      echo "-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"
+      echo "ERROR WRITING LOG.  ABORTING."
+      echo "-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"
+      exit 1
+  fi
+
+
+  
+  lastwave=$((wavelength))
+  echo "------------------------------------------------------"
+  
+  i=$((i+1))
+done
