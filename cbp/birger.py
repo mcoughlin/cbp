@@ -17,7 +17,7 @@ class Birger:
 
         # open serial port
         # replace "/dev/ttyUSB0" with "COM1", "COM2", etc in Windows
-        ser = serial.Serial(dev_usb)
+        # ser = serial.Serial(dev_usb)
 
         try:
             ser = serial.Serial(dev_usb, 115200, 8, 'N', 1, timeout=5)
