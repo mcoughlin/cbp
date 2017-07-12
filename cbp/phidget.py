@@ -35,9 +35,8 @@ class CbpPhidget:
             self.status = "connected"
             return spatial
         except RuntimeError as e:
+            self.status = "not connected"
             print("Runtime Exception: %s" % e.details)
-            print("Exiting....")
-            exit(1)
 
     # Information Display Function
     def DisplayDeviceInfo(self):

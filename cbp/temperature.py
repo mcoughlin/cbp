@@ -17,7 +17,8 @@ class Temperature:
             ser2 = serial.Serial(PORT, BAUD_RATE)
             self.status = "connected"
             return ser2
-        except:
+        except Exception as e:
+            print(e)
             self.status = "not connected"
 
     def receiving(self):

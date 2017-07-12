@@ -23,7 +23,8 @@ class LaserSerialInterface:
             try:
                 self.serial = serial.Serial(port='/dev/ttyUSB.LASER', baudrate=19200, timeout=5)
                 self.status = "connected"
-            except:
+            except Exception as e:
+                print(e)
                 self.status = "not connected"
         self.commands = {'say_state_msg': '[NL:SAY\PC]'}
         self.responses = {'[NL:What\PC]': 'Unrecognized string', '[NL:Ignored\PC]': 'Unrecognized command'}

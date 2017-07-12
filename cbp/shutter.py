@@ -17,7 +17,8 @@ class Shutter:
             child = pexpect.spawn(shutter_command)
             self.status = "connected"
             return child
-        except:
+        except Exception as e:
+            print(e)
             self.status = "not connected"
 
     def close_connection(self):

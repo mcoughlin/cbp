@@ -73,7 +73,7 @@ class CBP:
             self.potentiometer = cbp.potentiometer.Potentiometer()
             self.shutter = cbp.shutter.Shutter()
             self.spectrograph = cbp.spectrograph.Spectrograph()
-            #self.lockin = cbp.lockin.LockIn(rm=rm)
+            self.lockin = cbp.lockin.LockIn(rm=rm)
             self.temperature = cbp.temperature.Temperature()
             self.laser = cbp.laser.LaserSerialInterface(loop=False)
 

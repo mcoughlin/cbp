@@ -17,7 +17,7 @@ class Spectrograph:
         try:
             spec = sb.Spectrometer(devices[0])
             self.status = "connected"
-            print("Spectograph connected")
+            print("Spectrograph connected")
             return spec
         except:
             self.status = "not connected"
@@ -34,7 +34,7 @@ class Spectrograph:
         idx = np.intersect1d(idx1, idx2)
         wavelengths = wavelengths[idx]
         intensities = intensities[idx]
-        print("get_spectograph done")
+        print("get_spectrograph done")
 
         # fid = open(spectrumFile, "w")
         # for wavelength, intensity in zip(wavelengths, intensities):

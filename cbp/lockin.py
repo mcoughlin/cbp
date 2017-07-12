@@ -31,54 +31,58 @@ class LockIn:
         else:
             self.rm = visa.ResourceManager('@py')
             devtty = self.rm.list_resources()[0]
-        self.io = self.rm.open_resource(devtty)
+        try:
+            self.io = self.rm.open_resource(devtty)
+            self.status = "connected"
+            self.io.write_termination = '\r'
+            self.io.read_termination = '\r'
+            self.io.timeout = 5000
+            self.io.query_delay = 0.0
 
-        self.io.write_termination = '\r'
-        self.io.read_termination = '\r'
-        self.io.timeout = 5000
-        self.io.query_delay = 0.0
+            #The OUTX command sets the output interface to RS232 (i=0) or GPIB (i=1)
+            if devtty.count("GPIB"):
+                self.io.write("OUTX 1")
+            print self.io.ask("*IDN?")
 
-        #The OUTX command sets the output interface to RS232 (i=0) or GPIB (i=1)
-        if devtty.count("GPIB"):
-            self.io.write("OUTX 1")
-        print self.io.ask("*IDN?")
+            self.sensitivity_dict={'2 nV/fA':0,'50 uV/pA':13,
+                         '5 nV/fA':1,'100 uV/pA':14,
+                         '10 nV/fA':2,'200 uV/pA':15,
+                         '20 nV/fA':3,'500 uV/pA':16,
+                         '50 nV/fA':4,'1 mV/nA':17,
+                         '100 nV/fA':5,'2 mV/nA':18,
+                         '200 nV/fA':6,'5 mV/nA':19,
+                         '500 nV/fA':7,'10 mV/nA':20,
+                         '1 uV/pA':8,'20 mV/nA':21,
+                         '2 uV/pA':9,'50 mV/nA':22,
+                         '5 uV/pA':10,'100 mV/nA':23,
+                         '10 uV/pA':11,'200 mV/nA':24,
+                         '20 uV/pA':12,'500 mV/nA':25,
+                         '1 V/uA':26}
 
-        self.sensitivity_dict={'2 nV/fA':0,'50 uV/pA':13,
-                     '5 nV/fA':1,'100 uV/pA':14,
-                     '10 nV/fA':2,'200 uV/pA':15,
-                     '20 nV/fA':3,'500 uV/pA':16,
-                     '50 nV/fA':4,'1 mV/nA':17,
-                     '100 nV/fA':5,'2 mV/nA':18,
-                     '200 nV/fA':6,'5 mV/nA':19,
-                     '500 nV/fA':7,'10 mV/nA':20,
-                     '1 uV/pA':8,'20 mV/nA':21,
-                     '2 uV/pA':9,'50 mV/nA':22,
-                     '5 uV/pA':10,'100 mV/nA':23,
-                     '10 uV/pA':11,'200 mV/nA':24,
-                     '20 uV/pA':12,'500 mV/nA':25,
-                     '1 V/uA':26}
+            sens_list_utf8=['2 nV/fA','5 nV/fA','10 nV/fA','20 nV/fA','50 nV/fA','100 nV/fA','200 nV/fA','500 nV/fA',
+                            '1 uV/pA','2 uV/pA','5 uV/pA','10 uV/pA','20 uV/pA','50 uV/pA','100 uV/pA','200 uV/pA',
+                            '500 uV/pA','1 mV/nA','2 mV/nA','5 mV/nA','10 mV/nA','20 mV/nA','50 mV/nA','100 mV/nA',
+                            '200 mV/nA','500 mV/nA','1 V/uA']
 
-        sens_list_utf8=['2 nV/fA','5 nV/fA','10 nV/fA','20 nV/fA','50 nV/fA','100 nV/fA','200 nV/fA','500 nV/fA',
-                        '1 uV/pA','2 uV/pA','5 uV/pA','10 uV/pA','20 uV/pA','50 uV/pA','100 uV/pA','200 uV/pA',
-                        '500 uV/pA','1 mV/nA','2 mV/nA','5 mV/nA','10 mV/nA','20 mV/nA','50 mV/nA','100 mV/nA',
-                        '200 mV/nA','500 mV/nA','1 V/uA']
-        
-        self.sens_list_num=[2e-9,5e-9,10e-9,20e-9,50e-9,100e-9,200e-9,500e-9,
-                        1e-6,2e-6,5e-6,10e-6,20e-6,50e-6,100e-6,200e-6,
-                        500e-6,1e-3,2e-3,5e-3,10e-3,20e-3,50e-3,0.1,
-                        0.2,0.5,1]
-        #the encoding of the python script file is utf8 but the Qt interface is unicode, so conversion is needed
-        self.sensitivity=[]
-        for txt in sens_list_utf8:
-            self.sensitivity.append(unicode(txt,encoding='utf-8'))
-        #time constant
-        time_cste_list_utf8=['10 us','30 us','100 us','300 us','1 ms','3 ms','10 ms','30 ms','100 ms','300 ms',
-                        '1 s','3 s','10 s','30 s','100 s','300 s','1 ks','3 ks','10 ks','30 ks']
-        self.time_cste=[]
-        for txt in time_cste_list_utf8:
-            self.time_cste.append(unicode(txt,encoding='utf-8'))
-        #filter slop
-        self.filter_slop=map(unicode,['6 dB/oct','12 dB/oct','18 dB/oct','24 dB/oct'])
+            self.sens_list_num=[2e-9,5e-9,10e-9,20e-9,50e-9,100e-9,200e-9,500e-9,
+                            1e-6,2e-6,5e-6,10e-6,20e-6,50e-6,100e-6,200e-6,
+                            500e-6,1e-3,2e-3,5e-3,10e-3,20e-3,50e-3,0.1,
+                            0.2,0.5,1]
+            #the encoding of the python script file is utf8 but the Qt interface is unicode, so conversion is needed
+            self.sensitivity=[]
+            for txt in sens_list_utf8:
+                self.sensitivity.append(unicode(txt,encoding='utf-8'))
+            #time constant
+            time_cste_list_utf8=['10 us','30 us','100 us','300 us','1 ms','3 ms','10 ms','30 ms','100 ms','300 ms',
+                            '1 s','3 s','10 s','30 s','100 s','300 s','1 ks','3 ks','10 ks','30 ks']
+            self.time_cste=[]
+            for txt in time_cste_list_utf8:
+                self.time_cste.append(unicode(txt,encoding='utf-8'))
+            #filter slop
+            self.filter_slop=map(unicode,['6 dB/oct','12 dB/oct','18 dB/oct','24 dB/oct'])
+        except Exception as e:
+            print(e)
+            self.status = "not connected"
 
     def initialize(self):
         return 1      

@@ -26,7 +26,9 @@ class Monochromater:
             m.write("wave?" + "\r\n")
             m.read(100)
             self.status = "Connected"
-        except:
+        except Exception as e:
+            print(e)
+            self.status = "not connected"
             m = []
         return m
 
