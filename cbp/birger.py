@@ -9,8 +9,8 @@ import time
 
 class Birger:
     def __init__(self):
-        self.ser = self.open_serial()
         self.status = None
+        self.ser = self.open_serial()
 
     def open_serial(self):
         dev_usb = "/dev/ttyUSB.BIRGER"

@@ -8,10 +8,10 @@ import FLI
 
 class FilterWheel:
     def __init__(self):
+        self.status = None
         self.center_line_filter_wheel = self.initialize_connection()
         self.mask = None
         self.filter = None
-        self.status = None
 
     def initialize_connection(self):
         fws = FLI.filter_wheel.USBFilterWheel.find_devices()

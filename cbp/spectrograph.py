@@ -9,8 +9,8 @@ import seabreeze.spectrometers as sb
 
 class Spectrograph:
     def __init__(self):
-        self.spectrometer = self.create_connection()
         self.status = None
+        self.spectrometer = self.create_connection()
 
     def create_connection(self):
         devices = sb.list_devices()

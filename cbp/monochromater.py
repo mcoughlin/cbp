@@ -9,8 +9,8 @@ import optparse
 
 class Monochromater:
     def __init__(self):
-        self.serial = self.open_instance(port_name="/dev/ttyUSB.MONO")
         self.status = None
+        self.serial = self.open_instance(port_name="/dev/ttyUSB.MONO")
 
     def open_instance(self,port_name='/dev/ttyUSB0'):
         """

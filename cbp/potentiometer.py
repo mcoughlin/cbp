@@ -8,8 +8,8 @@ import pexpect
 
 class Potentiometer:
     def __init__(self):
-        self.serial = self.create_serial()
         self.status = None
+        self.serial = self.create_serial()
 
     def create_serial(self):
         try:

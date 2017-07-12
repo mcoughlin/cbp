@@ -8,8 +8,8 @@ import pexpect
 
 class Shutter:
     def __init__(self):
-        self.shutter = self.create_connection()
         self.status = None
+        self.shutter = self.create_connection()
 
     def create_connection(self):
         try:

@@ -25,8 +25,8 @@ from Phidgets.Phidget import PhidgetLogLevel
 
 class CbpPhidget:
     def __init__(self):
-        self.spatial = self.create_spatial()
         self.status = None
+        self.spatial = self.create_spatial()
         
 
     def create_spatial(self):
