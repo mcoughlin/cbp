@@ -82,7 +82,6 @@ class LaunchCbp(cmd.Cmd):
         print("birger: {0}".format(self.cbp.birger.status))
         print("filter wheel: {0}".format(self.cbp.filter_wheel.status))
         print("keithley: {0}".format(self.cbp.keithley.status))
-        print("lamp: {0}".format(self.cbp.lamp.status))
         print("laser: {0}".format(self.cbp.laser.status))
         print("lockin: {0}".format(self.cbp.lockin.status))
         print("monochromater: {0}".format(self.cbp.monochromater.status))
