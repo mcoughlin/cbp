@@ -30,7 +30,11 @@ class LockIn:
                 devtty = rm.list_resources()[resnum]
         else:
             self.rm = visa.ResourceManager('@py')
-            devtty = self.rm.list_resources()[0]
+            try:
+               devtty = self.rm.list_resources()[0]
+            except Exception as e:
+               print(e)
+               self.status = "not connected"
         try:
             self.io = self.rm.open_resource(devtty)
             self.status = "connected"
