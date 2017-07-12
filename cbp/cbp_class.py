@@ -15,6 +15,7 @@ import cbp.laser
 import numpy as np
 import thorlabs
 import os
+import time
 
 import visa
 
@@ -23,7 +24,7 @@ import visa
     :platform: unix
     :synopsis: This is a module inside of package cbp which is designed to hold the complete cbp instrumentation inside of class CBP.
 
-.. moduleauthor:: Michael Coughlin
+.. moduleauthor:: Michael Coughlin, Eric Coughlin
 """
 
 
@@ -161,7 +162,7 @@ class CBP:
         else:
             spectograph_file = open(output_dir + 'specto_{0}_{1}_light.dat'.format(duration, n_averages), 'w')
         for i in range(n_averages):
-            wavelength, intensity = self.add_spectra(duration=duration)
+            wavelength, intensity = self._add_spectra(duration=duration)
 
             if i == 0:
                 intensity_list = intensity
@@ -176,7 +177,7 @@ class CBP:
             spectograph_file.write(line)
         spectograph_file.close()
 
-    def add_spectra(self,duration):
+    def _add_spectra(self,duration):
         if duration > 60000000:
             duration_in_seconds = duration * (1*10**-6)
             number_of_times = float(duration_in_seconds)/60
@@ -200,6 +201,20 @@ class CBP:
         else:
             wavelength, intensity = self.spectograph.get_spectograph(duration=duration)
             return wavelength, intensity
+
+    def write_status_log(self,output_dir='/home/pi/CBP/status_log/'):
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        x,y,z,angle = self.phidget.do_phidget()
+        potentiometer1, potentiometer2 = self.potentiometer.get_potentiometer()
+        mask, filter = self.filter_wheel.get_position()
+        birger_status = self.birger.do_status()
+        keithley_status = self.keithley.get_keithley()
+        status_log_file = open(output_dir + '{0}_status.dat'.format(time.strftime("%m_%d_%Y_%H_%M")), 'w')
+        headings_line = "{0:10} {1:10} {2:10} {3:10} {4:10} {5:10} {6:10} {7:10} {8:10} {9:10}".format("X", "Y", "Z", "ANGLE","POTENTIOMETER 1", "POTENTIOMETER 2", "MASK", "FILTER", "BIRGER", "KEITHLEY")
+        status_log_file.write(headings_line)
+        data_line = "{0:10} {1:10} {2:10} {3:10} {4:10} {5:10} {6:10} {7:10} {8:10} {9:10}".format(x,y,z,angle,potentiometer1,potentiometer2,mask,filter,birger_status,keithley_status)
+        status_log_file.close()
 
 if __name__ == '__main__':
     pass

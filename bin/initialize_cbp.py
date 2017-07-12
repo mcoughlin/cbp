@@ -115,6 +115,9 @@ def create_parser():
     parser_laser_change_wavelength.set_defaults(func=laser_change_wavelength)
     parser_laser_change_wavelength_loop.set_defaults(func=laser_change_wavelength_loop)
 
+    parser_laser_check_wavelength = parser_laser_subparsers.add_parser('check wavelength', help='check wavelength')
+    parser_laser_check_wavelength.set_defaults(func=laser_check_wavelength)
+
     parser.add_argument("-v", "--verbose", action="store_true", default=False)
 
     return parser
@@ -147,13 +150,13 @@ def lamp_lamp(cbp, opts):
     cbp.lamp.do_lamp(opts.val)
 
 def shutter_shutter(cbp, opts):
-    cbp.shutter.do_shutter()
+    cbp.shutter.do_shutter(opts.val)
 
 def photodiode(cbp, opts):
     cbp.photodiode.do_photodiode()
 
 def filter_wheel_position(cbp, opts):
-    cbp.filter_wheel.do_position()
+    cbp.filter_wheel.do_position(opts.mask, opts.filter)
 
 def filter_wheel_get_position(cbp, opts):
     cbp.filter_wheel.get_position()
@@ -181,3 +184,9 @@ def laser_change_wavelength(cbp, opts):
 
 def laser_change_wavelength_loop(cbp, opts):
     cbp.laser.do_change_wavelength_loop()
+
+def laser_check_wavelength(cbp, opts):
+    cbp.laser.check_wavelength()
+
+if __name__ == '__main__':
+    pass

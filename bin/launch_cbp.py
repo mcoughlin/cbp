@@ -74,6 +74,9 @@ class LaunchCbp(cmd.Cmd):
     def _do_laser_change_wavelength_loop(self, args):
         initialize_cbp.laser_change_wavelength_loop(self.cbp,args)
 
+    def _do_laser_check_wavelength(self, args):
+        initialize_cbp.laser_check_wavelength(self.cbp, args)
+
     def default(self, line):
         try:
             args = self.parser.parse_args(shlex.split(line))

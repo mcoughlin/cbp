@@ -16,9 +16,7 @@ class LaserSerialInterface:
     def __init__(self, loop=True):
         self.state = None
         self.error = None
-        self.states = {'[PC:READY=0\NL]': ['ready', 'The device is ready'],
-                       '[PC:BUSY=0\NL]': ['busy', 'The device is busy'], '[PC:OFF=0\NL]': ['off', 'The device is off'],
-                       '[PC:READY=2048\NL]': ['ready', 'The device is ready but with cooling error.']}
+        self.states = {'[PC:READY=0\NL]': ['ready', 'The device is ready'],'[PC:BUSY=0\NL]': ['busy', 'The device is busy'], '[PC:OFF=0\NL]': ['off', 'The device is off'], '[PC:READY=2048\NL]': ['ready', 'The device is ready but with cooling error.']}
         if loop:
             self.serial = serial.serial_for_url('loop://')
         else:
@@ -122,8 +120,7 @@ class LaserSerialInterface:
 
 def create_parser():
     parser = argparse.ArgumentParser(description='Program to change the wavelength of the laser using rs232 interface.')
-    parser.add_argument('wavelength', nargs=1,
-                        help='This is for setting the value of the wavelength of the laser.')
+    parser.add_argument('wavelength', nargs=1, help='This is for setting the value of the wavelength of the laser.')
     return parser
 
 def main(wavelength):
