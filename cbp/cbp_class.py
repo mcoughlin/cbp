@@ -202,20 +202,31 @@ class CBP:
             wavelength, intensity = self.spectograph.get_spectograph(duration=duration)
             return wavelength, intensity
 
-    def write_status_log(self,output_dir='/home/pi/CBP/status_log/'):
+    def write_status_log(self,output_dir='/home/pi/CBP/status_logs/'):
+        date_at_run = time.strftime("%m_%d_%Y")
+        time_at_run = time.strftime("%m_%d_%Y_%H_%M")
         if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+            os.makedirs(output_dir + '{0}/{1}/keithley/'.format(date_at_run,time_at_run))
+        status_directory = output_dir + '{0}/{1}/'.format(date_at_run,time_at_run)
+        keithley_directory = status_directory + 'keithley/'
         x,y,z,angle = self.phidget.do_phidget()
         potentiometer1, potentiometer2 = self.potentiometer.get_potentiometer()
         mask, filter = self.filter_wheel.get_position()
         birger_status = self.birger.do_status()
-        keithley_status = self.keithley.get_keithley()
-        status_log_file = open(output_dir + '{0}_status.dat'.format(time.strftime("%m_%d_%Y_%H_%M")), 'w')
-        headings_line = "{0:20} {1:20} {2:20} {3:20} {4:20} {5:20} {6:20} {7:20} {8:20} {9:20}\n".format("X", "Y", "Z", "ANGLE","POTENTIOMETER 1", "POTENTIOMETER 2", "MASK", "FILTER", "BIRGER", "KEITHLEY")
+        keithley_status = self.keithley.get_charge_timeseries()
+        status_log_file = open(status_directory + '{0}_status.dat'.format(time_at_run), 'w')
+        headings_line = "{0:5} {1:5} {2:5} {3:5} {4:5} {5:5} {6:5} {7:5} {8:5}\n".format("X", "Y", "Z", "ANGLE","POTENTIOMETER 1", "POTENTIOMETER 2", "MASK", "FILTER", "BIRGER")
         status_log_file.write(headings_line)
-        data_line = "{0:20} {1:20} {2:20} {3:20} {4:20} {5:20} {6:20} {7:20} {8:20} {9:20}\n".format(x,y,z,angle,potentiometer1,potentiometer2,mask,filter,birger_status,keithley_status)
+        data_line = "{0:5} {1:5} {2:5} {3:5} {4:5} {5:5} {6:5} {7:5} {8:5}\n".format(x,y,z,angle,potentiometer1,potentiometer2,mask,filter,birger_status)
         status_log_file.write(data_line)
         status_log_file.close()
+        status_keithley_log_file = open(keithley_directory + '{0}_keithley_status.dat'.format(time_at_run))
+        keithley_headings_line = "{0:5} {1:5}\n".format("TIME", "READING")
+        status_keithley_log_file.write(keithley_headings_line)
+        for keithley_time, reading in keithley_status:
+            keithley_data_line = "{0:5} {1:5}".format(keithley_time, reading)
+            status_keithley_log_file.write(keithley_data_line)
+        status_keithley_log_file.close()
 
 if __name__ == '__main__':
     pass

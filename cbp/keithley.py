@@ -284,6 +284,34 @@ class Keithley:
         photo2 = [-1, -1, -1]
         return photo1[0], photo2[0]
 
+    def get_charge_timeseries(self,duration=10,charge=10 ** -6):
+        times = []
+        photo1 = []
+        totphotons = []
+        start_time = time.time()
+        totphoton = 0
+        intsphere_charge = 0
+        for ii in xrange(duration):
+            photo = self.getread()[0]
+            elapsed_time = time.time() - start_time
+
+            photo1.append(photo)
+            times.append(elapsed_time)
+
+            intsphere_charge = photo1
+            intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+
+            while intsphere_charge < charge:
+                photo = self.getread()[0]
+                elapsed_time = time.time() - start_time
+
+                photo1.append(photo)
+                times.append(elapsed_time)
+
+                intsphere_charge = photo1
+                intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+        return times, photo1
+
 
 def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, mode='curr',
                  analysis_type='duration', do_single=False, do_reset=True, photon_file='test.dat',
