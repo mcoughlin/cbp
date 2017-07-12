@@ -21,6 +21,7 @@ class Birger:
 
         try:
             ser = serial.Serial(dev_usb, 115200, 8, 'N', 1, timeout=5)
+            self.status = "connected"
             return ser
         except:
             print("Error opening com port. Quitting.")

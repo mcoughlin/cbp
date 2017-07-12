@@ -9,12 +9,17 @@ import pexpect
 class Potentiometer:
     def __init__(self):
         self.serial = self.create_serial()
+        self.status = None
 
     def create_serial(self):
-        PORT = '/dev/ttyACM.ADS'
-        BAUD_RATE = 57600
-        ser2 = serial.Serial(PORT, BAUD_RATE)
-        return ser2
+        try:
+            PORT = '/dev/ttyACM.ADS'
+            BAUD_RATE = 57600
+            ser2 = serial.Serial(PORT, BAUD_RATE)
+            self.status = "connected"
+            return ser2
+        except:
+            self.status = "not connected"
 
     def receiving(self):
         ser = self.serial

@@ -71,7 +71,7 @@ class Keithley:
         self.ins.write('SYST:ZCOR ON')
         self.ins.write('SYST:ZCH OFF')
         self.ins.write('SYST:ZCOR OFF')
-        print("keithley connected")
+        self.status = "connected"
 
     def selectmode(self, mode, nplc):
         assert mode.lower() in ['volt', 'char', 'curr', 'res'], "No mode %s" % mode.lower()
@@ -286,7 +286,7 @@ class Keithley:
 
     def get_charge_timeseries(self,duration=10,charge=10 ** -6):
         times = []
-        photo1 = []
+        photol = []
         totphotons = []
         start_time = time.time()
         totphoton = 0
@@ -295,22 +295,24 @@ class Keithley:
             photo = self.getread()[0]
             elapsed_time = time.time() - start_time
 
-            photo1.append(photo)
+            photol.append(photo)
             times.append(elapsed_time)
 
-            intsphere_charge = photo1
-            intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
+            intsphere_charge = photol[ii]
+            photosl = []
+            times_photosl = []
 
             while intsphere_charge < charge:
                 photo = self.getread()[0]
                 elapsed_time = time.time() - start_time
 
-                photo1.append(photo)
-                times.append(elapsed_time)
+                photosl.append(photo)
+                times_photosl.append(elapsed_time)
 
-                intsphere_charge = photo1
-                intsphere_electrons = intsphere_charge / (1.6 * 10 ** (-19))
-        return times, photo1
+                intsphere_charge = photo
+            photol.append(photosl)
+            times.append(times_photosl)
+        return times, photol
 
 
 def get_keithley(rm, duration=1, photons=100000, charge=10**-6, wavelength=550, mode='curr',

@@ -8,7 +8,7 @@ import pexpect
 
 class Lamp:
     def __init__(self):
-        self.status = None
+        self.status = "connected"
 
     def run_lamp(self,val):
         if val > 255 or val < 0:

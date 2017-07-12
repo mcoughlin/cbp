@@ -23,7 +23,7 @@ class Altaz:
     """
 
     def __init__(self):
-        pass
+        self.status = "connected"
 
     def send(self, device, command, data=0):
         """

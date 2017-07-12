@@ -26,11 +26,13 @@ from Phidgets.Phidget import PhidgetLogLevel
 class CbpPhidget:
     def __init__(self):
         self.spatial = self.create_spatial()
+        self.status = None
         
 
     def create_spatial(self):
         try:
             spatial = Spatial()
+            self.status = "connected"
             return spatial
         except RuntimeError as e:
             print("Runtime Exception: %s" % e.details)

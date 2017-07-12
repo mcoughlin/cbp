@@ -11,11 +11,14 @@ class Temperature:
         self.status = None
 
     def create_serial(self):
-        PORT = '/dev/ttyACM.TEMP'
-        BAUD_RATE = 9600
-        ser2 = serial.Serial(PORT, BAUD_RATE)
-        self.status = "connected"
-        return ser2
+        try:
+            PORT = '/dev/ttyACM.TEMP'
+            BAUD_RATE = 9600
+            ser2 = serial.Serial(PORT, BAUD_RATE)
+            self.status = "connected"
+            return ser2
+        except:
+            self.status = "not connected"
 
     def receiving(self):
         ser = self.serial

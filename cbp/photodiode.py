@@ -8,12 +8,17 @@ import pexpect
 class Photodiode:
     def __init__(self):
         self.serial = self.create_serial()
+        self.status = None
 
     def create_serial(self):
-        PORT = '/dev/ttyACM.PD'
-        BAUD_RATE = 9600
-        ser2 = serial.Serial(PORT, BAUD_RATE)
-        return ser2
+        try:
+            PORT = '/dev/ttyACM.PD'
+            BAUD_RATE = 9600
+            ser2 = serial.Serial(PORT, BAUD_RATE)
+            self.status = "connected"
+            return ser2
+        except:
+            self.status = "not connected"
 
     def get_photodiode(self):
         conversion = 1.0

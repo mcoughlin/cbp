@@ -22,6 +22,7 @@ class LaserSerialInterface:
         else:
             try:
                 self.serial = serial.Serial(port='/dev/ttyUSB.LASER', baudrate=19200, timeout=5)
+                self.status = "connected"
             except:
                 self.status = "not connected"
         self.commands = {'say_state_msg': '[NL:SAY\PC]'}

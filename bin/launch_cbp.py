@@ -77,6 +77,22 @@ class LaunchCbp(cmd.Cmd):
     def _do_laser_check_wavelength(self, args):
         initialize_cbp.laser_check_wavelength(self.cbp, args)
 
+    def do_status(self,line):
+        print("altaz: {0}".format(self.cbp.altaz.status))
+        print("birger: {0}".format(self.cbp.birger.status))
+        print("filter wheel: {0}".format(self.cbp.filter_wheel.status))
+        print("keithley: {0}".format(self.cbp.keithley.status))
+        print("lamp: {0}".format(self.cbp.lamp.status))
+        print("laser: {0}".format(self.cbp.laser.status))
+        print("lockin: {0}".format(self.cbp.lockin.status))
+        print("monochromater: {0}".format(self.cbp.monochromater.status))
+        print("phidget: {0}".format(self.cbp.phidget.status))
+        print("photodiode: {0}".format(self.cbp.photodiode.status))
+        print("potentiometer: {0}".format(self.cbp.potentiometer.status))
+        print("shutter: {0}".format(self.cbp.shutter.status))
+        print("spectrograph: {0}".format(self.cbp.spectrograph.status))
+        print("temperature: {0}".format(self.cbp.temperature.status))
+
     def default(self, line):
         try:
             args = self.parser.parse_args(shlex.split(line))
