@@ -14,10 +14,13 @@ class Spectrograph:
 
     def create_connection(self):
         devices = sb.list_devices()
-        spec = sb.Spectrometer(devices[0])
-        self.status = "connected"
-        print("Spectograph connected")
-        return spec
+        try:
+            spec = sb.Spectrometer(devices[0])
+            self.status = "connected"
+            print("Spectograph connected")
+            return spec
+        except:
+            self.status = "not connected"
 
     def get_spectograph(self, duration = 1000000, spectrumFile='test.dat'):
         spec = self.spectrometer

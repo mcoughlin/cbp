@@ -73,7 +73,7 @@ class CBP:
             self.potentiometer = cbp.potentiometer.Potentiometer()
             self.shutter = cbp.shutter.Shutter()
             self.spectrograph = cbp.spectrograph.Spectrograph()
-            self.lockin = cbp.lockin.LockIn(rm=rm)
+            #self.lockin = cbp.lockin.LockIn(rm=rm)
             self.temperature = cbp.temperature.Temperature()
             self.laser = cbp.laser.LaserSerialInterface(loop=False)
 
@@ -211,9 +211,10 @@ class CBP:
         birger_status = self.birger.do_status()
         keithley_status = self.keithley.get_keithley()
         status_log_file = open(output_dir + '{0}_status.dat'.format(time.strftime("%m_%d_%Y_%H_%M")), 'w')
-        headings_line = "{0:10} {1:10} {2:10} {3:10} {4:10} {5:10} {6:10} {7:10} {8:10} {9:10}".format("X", "Y", "Z", "ANGLE","POTENTIOMETER 1", "POTENTIOMETER 2", "MASK", "FILTER", "BIRGER", "KEITHLEY")
+        headings_line = "{0:20} {1:20} {2:20} {3:20} {4:20} {5:20} {6:20} {7:20} {8:20} {9:20}\n".format("X", "Y", "Z", "ANGLE","POTENTIOMETER 1", "POTENTIOMETER 2", "MASK", "FILTER", "BIRGER", "KEITHLEY")
         status_log_file.write(headings_line)
-        data_line = "{0:10} {1:10} {2:10} {3:10} {4:10} {5:10} {6:10} {7:10} {8:10} {9:10}".format(x,y,z,angle,potentiometer1,potentiometer2,mask,filter,birger_status,keithley_status)
+        data_line = "{0:20} {1:20} {2:20} {3:20} {4:20} {5:20} {6:20} {7:20} {8:20} {9:20}\n".format(x,y,z,angle,potentiometer1,potentiometer2,mask,filter,birger_status,keithley_status)
+        status_log_file.write(data_line)
         status_log_file.close()
 
 if __name__ == '__main__':
