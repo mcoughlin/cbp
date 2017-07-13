@@ -252,17 +252,18 @@ class CBP:
         potentiometer1, potentiometer2 = self.potentiometer.get_potentiometer()
         mask, filter = self.filter_wheel.get_position()
         birger_status = self.birger.do_status()
+        wavelength = self.laser.check_wavelength()
         keithley_status = self.keithley.get_charge_timeseries()
         spectrograph_status = self.spectrograph.do_spectograph(duration=duration)
         status_log_file = open(status_directory + '{0}_status.xml'.format(time_at_run), 'w')
         root = etree.Element('log')
-        instrument_status = etree.SubElement(root,'instrument_status',x=x,y=y,z=z,angle=angle,potentiometer_1=potentiometer1,potentiometer_2=potentiometer2,mask=mask,filter=filter,focus=birger_status[0],aperture=birger_status[1])
+        instrument_status = etree.SubElement(root,'instrument_status',x=str(x),y=str(y),z=str(z),angle=str(angle),potentiometer_1=str(potentiometer1),potentiometer_2=str(potentiometer2),mask=str(mask),filter=str(filter),focus=str(birger_status[0]),aperture=str(birger_status[1]),wavelength=str(wavelength))
         keithley = etree.SubElement(root,'keithley')
         for t, current in zip(keithley_status[0], keithley_status[1]):
-            keithley_element = etree.SubElement(keithley,'keithley_element',time=t,current=current)
+            keithley_element = etree.SubElement(keithley,'keithley_element',time=str(t),current=str(current))
         spectrograph = etree.SubElement(root,'spectrograph')
         for wavelength, intensity in zip(spectrograph_status[0], spectrograph_status[1]):
-            spectrograph_element = etree.SubElement(spectrograph,'spectrograph_element',wavelength=wavelength,intensity=intensity)
+            spectrograph_element = etree.SubElement(spectrograph,'spectrum',wavelength=str(wavelength),intensity=str(intensity))
         et = etree.ElementTree(root)
         et.write(status_log_file,pretty_print=True, xml_declaration=True, encoding='utf-8')
 

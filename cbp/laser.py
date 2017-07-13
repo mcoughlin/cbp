@@ -91,12 +91,14 @@ class LaserSerialInterface:
         wavelength_check_msg = '[W0/?]'
         self.serial.write(wavelength_check_msg)
         response = self.serial.read(size=25)
+        if response == "":
+           return 0
         print(response)
         if comparison:
             wavelength = self.parse_wavelength(response)
             return wavelength
         else:
-            wavelength = self.parse_wavelength()
+            wavelength = self.parse_wavelength(response)
             print(wavelength)
 
     @staticmethod
