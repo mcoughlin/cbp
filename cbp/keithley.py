@@ -298,18 +298,12 @@ class Keithley:
             photol.append(photo)
             times.append(elapsed_time)
 
-            intsphere_charge = photol[ii]
-            photosl = []
-            times_photosl = []
-
             while elapsed_time < duration:
                 photo = self.getread()[0]
                 elapsed_time = time.time() - start_time
 
                 photol.append(photo)
                 times.append(elapsed_time)
-
-                intsphere_charge = photo
         return times, photol
 
 

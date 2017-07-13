@@ -63,7 +63,7 @@ class CBP:
         if laser:
             self.laser = cbp.laser.LaserSerialInterface(loop=False)
         if everything:
-            self.altaz = cbp.altaz.Altaz()
+            self.altar = cbp.altaz.altaz()
             self.birger = cbp.birger.Birger()
             self.filter_wheel = cbp.filter_wheel.FilterWheel()
             rm = visa.ResourceManager('@py')
@@ -205,7 +205,7 @@ class CBP:
     def write_status_log(self,output_dir='/home/pi/CBP/status_logs/'):
         date_at_run = time.strftime("%m_%d_%Y")
         time_at_run = time.strftime("%m_%d_%Y_%H_%M")
-        if not os.path.exists(output_dir):
+        if not os.path.exists(output_dir + '{0}/{1}/keithley/'.format(date_at_run,time_at_run)):
             os.makedirs(output_dir + '{0}/{1}/keithley/'.format(date_at_run,time_at_run))
         status_directory = output_dir + '{0}/{1}/'.format(date_at_run,time_at_run)
         keithley_directory = status_directory + 'keithley/'
@@ -220,11 +220,11 @@ class CBP:
         data_line = "{0:5} {1:5} {2:5} {3:5} {4:5} {5:5} {6:5} {7:5} {8:5}\n".format(x,y,z,angle,potentiometer1,potentiometer2,mask,filter,birger_status)
         status_log_file.write(data_line)
         status_log_file.close()
-        status_keithley_log_file = open(keithley_directory + '{0}_keithley_status.dat'.format(time_at_run))
+        status_keithley_log_file = open(keithley_directory + '{0}_keithley_status.dat'.format(time_at_run),'w')
         keithley_headings_line = "{0:5} {1:5}\n".format("TIME", "READING")
         status_keithley_log_file.write(keithley_headings_line)
-        for keithley_time, reading in keithley_status:
-            keithley_data_line = "{0:5} {1:5}".format(keithley_time, reading)
+        for things, stuff in zip(keithley_status[0], keithley_status[1]):
+            keithley_data_line = "{0:5} {1:5}\n".format(things, stuff)
             status_keithley_log_file.write(keithley_data_line)
         status_keithley_log_file.close()
 
