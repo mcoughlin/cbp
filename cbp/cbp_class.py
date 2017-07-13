@@ -16,6 +16,7 @@ import numpy as np
 import thorlabs
 import os
 import time
+from lxml import etree
 
 import visa
 
@@ -240,6 +241,31 @@ class CBP:
             spectrograph_data_line = "{0:5} {1:5}\n".format(wavelength, intensity)
             status_spectrograph_log_file.write(spectrograph_data_line)
         status_spectrograph_log_file.close()
+
+    def write_status_log_xml(self,output_dir='/home/pi/CBP/status_log_xml/',duration=1000000):
+        date_at_run = time.strftime("%m_%d_%Y")
+        time_at_run = time.strftime("%m_%d_%Y_%H_%M")
+        if not os.path.exists(output_dir + '{0}/{1}/'.format(date_at_run, time_at_run)):
+            os.makedirs(output_dir + '{0}/{1}'.format(date_at_run, time_at_run))
+        status_directory = output_dir + '{0}/{1}/'.format(date_at_run, time_at_run)
+        x, y, z, angle = self.phidget.do_phidget()
+        potentiometer1, potentiometer2 = self.potentiometer.get_potentiometer()
+        mask, filter = self.filter_wheel.get_position()
+        birger_status = self.birger.do_status()
+        keithley_status = self.keithley.get_charge_timeseries()
+        spectrograph_status = self.spectrograph.do_spectograph(duration=duration)
+        status_log_file = open(status_directory + '{0}_status.xml'.format(time_at_run), 'w')
+        root = etree.Element('log')
+        instrument_status = etree.SubElement(root,'instrument_status',x=x,y=y,z=z,angle=angle,potentiometer_1=potentiometer1,potentiometer_2=potentiometer2,mask=mask,filter=filter,focus=birger_status[0],aperture=birger_status[1])
+        keithley = etree.SubElement(root,'keithley')
+        for t, current in zip(keithley_status[0], keithley_status[1]):
+            keithley_element = etree.SubElement(keithley,'keithley_element',time=t,current=current)
+        spectrograph = etree.SubElement(root,'spectrograph')
+        for wavelength, intensity in zip(spectrograph_status[0], spectrograph_status[1]):
+            spectrograph_element = etree.SubElement(spectrograph,'spectrograph_element',wavelength=wavelength,intensity=intensity)
+        et = etree.ElementTree(root)
+        et.write(status_log_file,pretty_print=True, xml_declaration=True, encoding='utf-8')
+
 
 if __name__ == '__main__':
     pass
