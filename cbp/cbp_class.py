@@ -55,7 +55,7 @@ class CBP:
         if shutter:
             self.shutter = cbp.shutter.Shutter()
         if spectrograph:
-            self.spectograph = cbp.spectrograph.Spectrograph()
+            self.spectrograph = cbp.spectrograph.Spectrograph()
         if lockin:
             self.lockin = cbp.lockin.LockIn(rm=rm)
         if temperature:

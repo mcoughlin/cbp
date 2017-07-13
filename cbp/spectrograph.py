@@ -14,6 +14,7 @@ class Spectrograph:
 
     def create_connection(self):
         devices = sb.list_devices()
+        print(devices)
         try:
             spec = sb.Spectrometer(devices[0])
             self.status = "connected"
