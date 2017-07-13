@@ -32,7 +32,7 @@ class CBP:
     """
     This is the class that contains all of the written cbp instrument modules.
     """
-    def __init__(self,altaz=False,birger=False,filter_wheel=False,keithley=False,lamp=False,monochromater=False,phidget=False,photodiode=False,potentiometer=False,shutter=False,spectograph=False,sr830=False,temperature=False,laser=False,everything=False):
+    def __init__(self,altaz=False,birger=False,filter_wheel=False,keithley=False,lamp=False,monochromater=False,phidget=False,photodiode=False,potentiometer=False,shutter=False,spectrograph=False,lockin=False,temperature=False,laser=False,everything=False):
         if altaz:
             self.altaz = cbp.altaz.Altaz()
         if birger:
@@ -54,22 +54,24 @@ class CBP:
             self.potentiometer = cbp.potentiometer.Potentiometer()
         if shutter:
             self.shutter = cbp.shutter.Shutter()
-        if spectograph:
+        if spectrograph:
             self.spectograph = cbp.spectrograph.Spectrograph()
-        if sr830:
+        if lockin:
             self.lockin = cbp.lockin.LockIn(rm=rm)
         if temperature:
             self.temperature = cbp.temperature.Temperature()
         if laser:
             self.laser = cbp.laser.LaserSerialInterface(loop=False)
         if everything:
-            self.altar = cbp.altaz.altaz()
+            self.altaz = cbp.altaz.Altaz()
             self.birger = cbp.birger.Birger()
             self.filter_wheel = cbp.filter_wheel.FilterWheel()
             rm = visa.ResourceManager('@py')
             self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0)
             self.monochromater = cbp.monochromater.Monochromater()
             self.phidget = cbp.phidget.CbpPhidget()
+            if self.phidget.status == "connected":
+                self.altaz.status = "connected"
             self.potentiometer = cbp.potentiometer.Potentiometer()
             self.shutter = cbp.shutter.Shutter()
             self.spectrograph = cbp.spectrograph.Spectrograph()
@@ -191,7 +193,7 @@ class CBP:
                     break
 
             for i,time in enumerate(list_of_times):
-                wavelength, intensity = self.spectograph.get_spectograph(duration=time)
+                wavelength, intensity = self.spectrograph.get_spectograph(duration=time)
                 if i == 0:
                     intensity_list = intensity
                 else:
@@ -202,31 +204,42 @@ class CBP:
             wavelength, intensity = self.spectograph.get_spectograph(duration=duration)
             return wavelength, intensity
 
-    def write_status_log(self,output_dir='/home/pi/CBP/status_logs/'):
+    def write_status_log(self,output_dir='/home/pi/CBP/status_logs/',duration=1000000):
         date_at_run = time.strftime("%m_%d_%Y")
         time_at_run = time.strftime("%m_%d_%Y_%H_%M")
         if not os.path.exists(output_dir + '{0}/{1}/keithley/'.format(date_at_run,time_at_run)):
             os.makedirs(output_dir + '{0}/{1}/keithley/'.format(date_at_run,time_at_run))
+        if not os.path.exists(output_dir + '{0}/{1}/spectrograph/'.format(date_at_run,time_at_run)):
+            os.makedirs(output_dir + '{0}/{1}/spectrograph/'.format(date_at_run,time_at_run))
         status_directory = output_dir + '{0}/{1}/'.format(date_at_run,time_at_run)
         keithley_directory = status_directory + 'keithley/'
+        spectrograph_directory = status_directory + 'spectrograph/'
         x,y,z,angle = self.phidget.do_phidget()
         potentiometer1, potentiometer2 = self.potentiometer.get_potentiometer()
         mask, filter = self.filter_wheel.get_position()
         birger_status = self.birger.do_status()
         keithley_status = self.keithley.get_charge_timeseries()
+        spectrograph_status = self.spectrograph.do_spectograph(duration=duration)
         status_log_file = open(status_directory + '{0}_status.dat'.format(time_at_run), 'w')
-        headings_line = "{0:5} {1:5} {2:5} {3:5} {4:5} {5:5} {6:5} {7:5} {8:5}\n".format("X", "Y", "Z", "ANGLE","POTENTIOMETER 1", "POTENTIOMETER 2", "MASK", "FILTER", "BIRGER")
+        headings_line = "{0:5} {1:5} {2:5} {3:5} {4:5} {5:5} {6:5} {7:5} {8:5} {9:5}\n".format("X", "Y", "Z", "ANGLE","POTENTIOMETER 1", "POTENTIOMETER 2", "MASK", "FILTER", "WAVELENGTH", "INTENSITIES")
         status_log_file.write(headings_line)
-        data_line = "{0:5} {1:5} {2:5} {3:5} {4:5} {5:5} {6:5} {7:5} {8:5}\n".format(x,y,z,angle,potentiometer1,potentiometer2,mask,filter,birger_status)
+        data_line = "{0:5} {1:5} {2:5} {3:5} {4:5} {5:5} {6:5} {7:5} {8:5} {9:5}\n".format(x,y,z,angle,potentiometer1,potentiometer2,mask,filter,birger_status[0], birger_status[1])
         status_log_file.write(data_line)
         status_log_file.close()
         status_keithley_log_file = open(keithley_directory + '{0}_keithley_status.dat'.format(time_at_run),'w')
-        keithley_headings_line = "{0:5} {1:5}\n".format("TIME", "READING")
+        keithley_headings_line = "{0:5} {1:5}\n".format("TIME", "PHOTODIODE CURRENT")
         status_keithley_log_file.write(keithley_headings_line)
         for things, stuff in zip(keithley_status[0], keithley_status[1]):
             keithley_data_line = "{0:5} {1:5}\n".format(things, stuff)
             status_keithley_log_file.write(keithley_data_line)
         status_keithley_log_file.close()
+        status_spectrograph_log_file = open(spectrograph_directory + '{0}_spectrograph_status'.format(time_at_run),'w')
+        spectrograph_headings_line = "{0:5} {1:5}\n".format("WAVELENGTH", "INTENSITY")
+        status_spectrograph_log_file.write(spectrograph_headings_line)
+        for wavelength, intensity in zip(spectrograph_status[0], spectrograph_status[1]):
+            spectrograph_data_line = "{0:5} {1:5}\n".format(wavelength, intensity)
+            status_spectrograph_log_file.write(spectrograph_data_line)
+        status_spectrograph_log_file.close()
 
 if __name__ == '__main__':
     pass

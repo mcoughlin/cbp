@@ -19,7 +19,8 @@ class Spectrograph:
             self.status = "connected"
             print("Spectrograph connected")
             return spec
-        except:
+        except Exception as e:
+            print(e)
             self.status = "not connected"
 
     def get_spectograph(self, duration = 1000000, spectrumFile='test.dat'):
