@@ -202,7 +202,8 @@ class CBP:
             intensity_list_added = np.sum(intensity_list,axis=0)
             return wavelength, intensity_list_added
         else:
-            wavelength, intensity = self.spectograph.get_spectograph(duration=duration)
+            wavelength, intensity = self.spectrograph.get_spectograph(duration=duration)
+            wavelength, intensity = self.spectrograph.get_spectograph(duration=duration)
             return wavelength, intensity
 
     def write_status_log(self,output_dir='/home/pi/CBP/status_logs/',duration=1000000):

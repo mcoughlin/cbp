@@ -180,10 +180,10 @@ def spectograph(cbp, opts):
     cbp.spectograph.do_spectograph()
 
 def laser_change_wavelength(cbp, opts):
-    cbp.laser.do_change_wavelength()
+    cbp.laser.do_change_wavelength(opts.wavelength)
 
 def laser_change_wavelength_loop(cbp, opts):
-    cbp.laser.do_change_wavelength_loop()
+    cbp.laser.do_change_wavelength_loop(opts.wavelength_min,opts.wavelength_max)
 
 def laser_check_wavelength(cbp, opts):
     cbp.laser.check_wavelength()

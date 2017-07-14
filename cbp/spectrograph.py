@@ -11,6 +11,7 @@ class Spectrograph:
     def __init__(self):
         self.status = None
         self.spectrometer = self.create_connection()
+        self.temperature = self.get_temperature()
 
     def create_connection(self):
         devices = sb.list_devices()
@@ -44,6 +45,12 @@ class Spectrograph:
         # fid.close()
 
         return wavelengths, intensities
+
+    def get_temperature(self):
+        return self.spectrometer.tec_get_temperature_C()
+
+    def set_temperature(self,temperature):
+        self.spectrometer.tec_set_temperature_C(temperature)
 
     def do_spectograph(self, duration=10000000, spectrumFile='test.dat'):
         wavelengths, intensities = self.get_spectograph(duration=duration, spectrumFile=spectrumFile)
