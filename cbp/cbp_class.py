@@ -69,7 +69,6 @@ class CBP:
             self.filter_wheel = cbp.filter_wheel.FilterWheel()
             rm = visa.ResourceManager('@py')
             self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0)
-            self.monochromater = cbp.monochromater.Monochromater()
             self.phidget = cbp.phidget.CbpPhidget()
             if self.phidget.status == "connected":
                 self.altaz.status = "connected"
@@ -112,13 +111,13 @@ class CBP:
             spectograph_shutter_closed_file = open(shutter_closed_directory + 'specto_%.0f.dat'%wave, 'w')
             spectograph_shutter_opened_file = open(shutter_opened_directory + 'specto_%.0f.dat'%wave, 'w')
 
-            self.get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
-            self.get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
+            self._get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
+            self._get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
 
         shutter_closed_file.close()
         shutter_opened_file.close()
 
-    def get_photodiode_spectograph_averages(self, shutter_position, wave, n_averages, shutter_closed_file, spectograph_shutter_closed_file, shutter_open_file, spectograph_shutter_opened_file, duration):
+    def _get_photodiode_spectograph_averages(self, shutter_position, wave, n_averages, shutter_closed_file, spectograph_shutter_closed_file, shutter_open_file, spectograph_shutter_opened_file, duration):
         thorlabs.thorlabs.main(val=shutter_position)
         if shutter_position == 2:
             print("shutter closed")

@@ -23,9 +23,11 @@ class LaserSerialInterface:
             try:
                 self.serial = serial.Serial(port='/dev/ttyUSB.LASER', baudrate=19200, timeout=5)
                 self.status = "connected"
+                self.check_state()
             except Exception as e:
                 print(e)
                 self.status = "not connected"
+                self.state = "not connected"
         self.commands = {'say_state_msg': '[NL:SAY\PC]'}
         self.responses = {'[NL:What\PC]': 'Unrecognized string', '[NL:Ignored\PC]': 'Unrecognized command'}
 
@@ -52,6 +54,9 @@ class LaserSerialInterface:
         say_state_msg = self.commands['say_state_msg']
         self.serial.write(say_state_msg)
         response = self.serial.read(size=25)
+        if response == "":
+            self.state = "off"
+            self.status = "off"
         if response in self.states:
             self.state = self.states[response][0]
             print(self.states[response][1])
@@ -64,7 +69,7 @@ class LaserSerialInterface:
 
         :return:
         """
-        while self.state != 'ready':
+        while self.state != 'ready' and self.state != "off" and self.state != "not connected":
             print("checking state...")
             self.check_state()
 
@@ -79,27 +84,35 @@ class LaserSerialInterface:
 
         """
         self.get_ready_state()
-        wavelength_change_msg = '[W0/S{0}]'.format(str(wavelength))
-        self.serial.write(wavelength_change_msg)
-        check_response = self.check_wavelength(comparison=True)
-        if int(wavelength) == check_response:
-            print("Wavelength set correctly")
-        else:
-            print("Something went wrong")
+        if self.state != "off" and self.state != "not connected":
+            wavelength_change_msg = '[W0/S{0}]'.format(str(wavelength))
+            self.serial.write(wavelength_change_msg)
+            check_response = self.check_wavelength(comparison=True)
+            if int(wavelength) == check_response:
+                print("Wavelength set correctly")
+            else:
+                print("Something went wrong")
+        elif self.state == "off":
+            raise Exception('The laser is turned off')
+        elif self.state == "not connected":
+            raise Exception('The laser is not connected properly')
 
     def check_wavelength(self, comparison=False):
-        wavelength_check_msg = '[W0/?]'
-        self.serial.write(wavelength_check_msg)
-        response = self.serial.read(size=25)
-        if response == "":
-           return 0
-        print(response)
-        if comparison:
-            wavelength = self.parse_wavelength(response)
-            return wavelength
+        if self.state == "not connected":
+            wavelength_check_msg = '[W0/?]'
+            self.serial.write(wavelength_check_msg)
+            response = self.serial.read(size=25)
+            if response == "":
+               return 0
+            print(response)
+            if comparison:
+                wavelength = self.parse_wavelength(response)
+                return wavelength
+            else:
+                wavelength = self.parse_wavelength(response)
+                print(wavelength)
         else:
-            wavelength = self.parse_wavelength(response)
-            print(wavelength)
+            raise Exception('The laser is not connected properly')
 
     @staticmethod
     def parse_wavelength(msg='[MS:W0/S520\NL]'):
@@ -116,7 +129,11 @@ class LaserSerialInterface:
     def loop_change_wavelength(self, min, max,diagnostic):
             np_array = np.arange(min,max+1)
             for item in np_array:
-                self.change_wavelength(item)
+                try:
+                    self.change_wavelength(item)
+                except Exception as e:
+                    print(e)
+                    break
                 if not diagnostic:
                     raw_input("Press Enter to continue")
             print("done.")
@@ -134,7 +151,7 @@ def main(wavelength):
     :return: None
     """
 
-    laser_interface = LaserSerialInterface(loop=True)
+    laser_interface = LaserSerialInterface(loop=False)
     laser_interface.loop_change_wavelength(500, 520, False)
     #laser_interface.change_wavelength(wavelength)
 

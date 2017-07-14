@@ -44,8 +44,11 @@ class Keithley:
                 print("resource found")
             else:
                 devtty = rm.list_resources()[resnum]
-
-            self.ins = self.rm.open_resource(devtty)
+            try:
+                self.ins = self.rm.open_resource(devtty)
+            except Exception as e:
+                print(e)
+                self.status = "not connected"
         else:
             self.rm = visa.ResourceManager('@py')
             self.ins = self.rm.open_resource(self.rm.list_resources()[0])
