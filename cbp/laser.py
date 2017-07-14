@@ -17,6 +17,8 @@ class LaserSerialInterface:
         self.state = None
         self.error = None
         self.states = {'[PC:READY=0\NL]': ['ready', 'The device is ready'],'[PC:BUSY=0\NL]': ['busy', 'The device is busy'], '[PC:OFF=0\NL]': ['off', 'The device is off'], '[PC:READY=2048\NL]': ['ready', 'The device is ready but with cooling error.']}
+        self.commands = {'say_state_msg': '[NL:SAY\PC]'}
+        self.responses = {'[NL:What\PC]': 'Unrecognized string', '[NL:Ignored\PC]': 'Unrecognized command'}
         if loop:
             self.serial = serial.serial_for_url('loop://')
         else:
@@ -28,8 +30,6 @@ class LaserSerialInterface:
                 print(e)
                 self.status = "not connected"
                 self.state = "not connected"
-        self.commands = {'say_state_msg': '[NL:SAY\PC]'}
-        self.responses = {'[NL:What\PC]': 'Unrecognized string', '[NL:Ignored\PC]': 'Unrecognized command'}
 
     def test_state(self):
         """
@@ -57,6 +57,8 @@ class LaserSerialInterface:
         if response == "":
             self.state = "off"
             self.status = "off"
+            print("The laser is off")
+            return 
         if response in self.states:
             self.state = self.states[response][0]
             print(self.states[response][1])

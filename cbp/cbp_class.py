@@ -78,6 +78,7 @@ class CBP:
             self.lockin = cbp.lockin.LockIn(rm=rm)
             self.temperature = cbp.temperature.Temperature()
             self.laser = cbp.laser.LaserSerialInterface(loop=False)
+            self.lamp = cbp.lamp.Lamp()
 
 
     def keithley_change_wavelength_loop(self, output_dir='data', wavelength_min=500, wavelength_max=700, wavelength_steps=10, n_averages=3, duration=1000000):
