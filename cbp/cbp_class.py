@@ -164,10 +164,13 @@ class CBP:
            spectograph_file = open(output_dir + 'specto_{0}_{1}_dark.dat'.format(duration, n_averages), 'w')
         else:
             spectograph_file = open(output_dir + 'specto_{0}_{1}_light.dat'.format(duration, n_averages), 'w')
-        for i in range(n_averages):
+        self.spectrograph.set_temperature(-20.0)
+        for i in range(n_averages + 1):
             wavelength, intensity = self._add_spectra(duration=duration)
 
             if i == 0:
+                pass
+            elif i == 1:
                 intensity_list = intensity
             else:
                 intensity_list = np.vstack((intensity_list,intensity))

@@ -2,7 +2,7 @@ import cbp.cbp_class as cbp_instrument
 
 def main():
     output_dir = '/home/pi/CBP/lightsource/'
-    n_averages = 10
+    n_averages = 5
     duration = 10000000
     dark = True
     collimated_beam_projector = cbp_instrument.CBP(spectrograph=True)
