@@ -130,7 +130,7 @@ class CBP:
         for i in range(n_averages):
             photo1, photo2 = self.keithley.get_photodiode_reading()
             photodiode_list.append(photo1)
-            wavelength, intensity = self.spectograph.do_spectograph(duration=duration)
+            wavelength, intensity = self._add_spectra(duration=duration)
 
             if i == 0:
                 intensity_list = intensity
