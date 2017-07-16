@@ -71,7 +71,7 @@ class LaserSerialInterface:
 
         :return:
         """
-        while self.state != 'ready' and self.state != "off" and self.state != "not connected":
+        while self.state != 'ready':
             print("checking state...")
             self.check_state()
 
@@ -100,7 +100,7 @@ class LaserSerialInterface:
             raise Exception('The laser is not connected properly')
 
     def check_wavelength(self, comparison=False):
-        if self.state == "not connected":
+        if self.state != "not connected":
             wavelength_check_msg = '[W0/?]'
             self.serial.write(wavelength_check_msg)
             response = self.serial.read(size=25)

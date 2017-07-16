@@ -42,7 +42,7 @@ class CBP:
             self.filter_wheel = cbp.filter_wheel.FilterWheel()
         rm = visa.ResourceManager('@py')
         if keithley:
-            self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0)
+            self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0,do_reset=True)
         if lamp:
             self.lamp = cbp.lamp.Lamp()
         if monochromater:
@@ -112,9 +112,14 @@ class CBP:
             spectograph_shutter_closed_file = open(shutter_closed_directory + 'specto_%.0f.dat'%wave, 'w')
             spectograph_shutter_opened_file = open(shutter_opened_directory + 'specto_%.0f.dat'%wave, 'w')
 
-            self._get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
-            self._get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
+            print("starting change_wavelength")
+            self.laser.change_wavelength(wave)
 
+            self._get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
+            self._get_photodiode_spectograph_averages(1, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
+        
+            spectograph_shutter_opened_file.close()
+            spectograph_shutter_closed_file.close()
         shutter_closed_file.close()
         shutter_opened_file.close()
 
@@ -124,8 +129,6 @@ class CBP:
             print("shutter closed")
         elif shutter_position == 1:
             print("shutter open")
-        print("starting change_wavelength")
-        self.laser.change_wavelength(wave)
         photodiode_list = []
         for i in range(n_averages):
             photo1, photo2 = self.keithley.get_photodiode_reading()
@@ -143,7 +146,6 @@ class CBP:
         intensity_std = np.std(intensity_list, axis=0)
 
         line = "{0} {1} {2}\n".format(wave, photodiode_avg, photodiode_std)
-        spectograph_shutter_closed_file.write(line)
         if shutter_position == 2:
             shutter_closed_file.write(line)
             for i in xrange(len(wavelength)):
@@ -154,8 +156,6 @@ class CBP:
             for i in xrange(len(wavelength)):
                 line = "{0} {1} {2}\n".format(wavelength[i],intensity_avg[i],intensity_std[i])
                 spectograph_shutter_opened_file.write(line)
-        spectograph_shutter_opened_file.close()
-        spectograph_shutter_closed_file.close()
 
     def get_spectograph_average(self, output_dir='/home/pi/CBP/keithley/', n_averages=3, duration=1000000, dark=False):
         if not os.path.exists(output_dir):
