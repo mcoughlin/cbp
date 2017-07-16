@@ -18,6 +18,7 @@ class Spectrograph:
         print(devices)
         try:
             spec = sb.Spectrometer(devices[0])
+            spec.tec_set_enable(True)
             self.status = "connected"
             print("Spectrograph connected")
             return spec
