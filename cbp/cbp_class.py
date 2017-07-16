@@ -125,17 +125,23 @@ class CBP:
 
     def _get_photodiode_spectograph_averages(self, shutter_position, wave, n_averages, shutter_closed_file, spectograph_shutter_closed_file, shutter_open_file, spectograph_shutter_opened_file, duration):
         thorlabs.thorlabs.main(val=shutter_position)
+        time.sleep(1)
         if shutter_position == 2:
             print("shutter closed")
         elif shutter_position == 1:
             print("shutter open")
         photodiode_list = []
-        for i in range(n_averages):
+        for i in range(n_averages + 1):
+            self.keithley.do_reset()
             photo1, photo2 = self.keithley.get_photodiode_reading()
             photodiode_list.append(photo1)
             wavelength, intensity = self._add_spectra(duration=duration)
+ 
+            print(photo1)
 
             if i == 0:
+                pass
+            elif i == 1:
                 intensity_list = intensity
             else:
                 intensity_list = np.vstack((intensity_list, intensity))
@@ -164,10 +170,9 @@ class CBP:
            spectograph_file = open(output_dir + 'specto_{0}_{1}_dark.dat'.format(duration, n_averages), 'w')
         else:
             spectograph_file = open(output_dir + 'specto_{0}_{1}_light.dat'.format(duration, n_averages), 'w')
-        self.spectrograph.set_temperature(-20.0)
+        self.spectrograph.spectrometer.tec_set_enable(True)
         for i in range(n_averages + 1):
             wavelength, intensity = self._add_spectra(duration=duration)
-
             if i == 0:
                 pass
             elif i == 1:
@@ -182,6 +187,7 @@ class CBP:
             line = "{0} {1} {2}\n".format(wavelength[i],intensity_avg[i],intensity_std[i])
             spectograph_file.write(line)
         spectograph_file.close()
+        self.spectrograph.spectrometer.tec_set_enable(False)
 
     def _add_spectra(self,duration):
         if duration > 60000000:

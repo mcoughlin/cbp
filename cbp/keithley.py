@@ -103,6 +103,17 @@ class Keithley:
         self.ins.close()
         self.rm.close()
 
+    def do_reset(self,mode="curr",nplc=1):
+        self.ins.write('*RST')
+        self.ins.write('INIT')
+
+        self.selectmode(mode, nplc=nplc)
+
+        self.ins.write('SYST:ZCH ON')
+        self.ins.write('SYST:ZCOR ON')
+        self.ins.write('SYST:ZCH OFF')
+        self.ins.write('SYST:ZCOR OFF')
+
     def get_keithley(rm, duration=1, photons=100000, charge=10 ** -6, wavelength=550, mode='curr',
                      analysis_type='duration', do_single=False, do_reset=True, photon_file='test.dat',
                      do_shutter=True):

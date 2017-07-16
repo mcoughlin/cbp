@@ -18,9 +18,9 @@ class Spectrograph:
         print(devices)
         try:
             spec = sb.Spectrometer(devices[0])
-            spec.tec_set_enable(True)
             self.status = "connected"
             print("Spectrograph connected")
+            spec.tec_set_enable(True)
             return spec
         except Exception as e:
             print(e)
@@ -52,6 +52,12 @@ class Spectrograph:
 
     def set_temperature(self,temperature):
         self.spectrometer.tec_set_temperature_C(temperature)
+
+    def enable_temperature_control():
+        self.spectrometer.tec_set_enable(True)
+
+    def disable_temperature_control():
+        self.spectrometer.tec_set_enable(False)
 
     def do_spectograph(self, duration=10000000, spectrumFile='test.dat'):
         wavelengths, intensities = self.get_spectograph(duration=duration, spectrumFile=spectrumFile)
