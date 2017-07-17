@@ -13,6 +13,10 @@ class Birger:
         self.ser = self.open_serial()
 
     def open_serial(self):
+        """
+
+        :return: returns the open serial port otherwise exits the program with a error code.
+        """
         dev_usb = "/dev/ttyUSB.BIRGER"
 
         # open serial port
@@ -23,11 +27,17 @@ class Birger:
             ser = serial.Serial(dev_usb, 115200, 8, 'N', 1, timeout=5)
             self.status = "connected"
             return ser
-        except:
-            print("Error opening com port. Quitting.")
-            sys.exit(0)
+        except Exception as e:
+            print(e)
+            self.status = "not connected"
 
     def send_and_receive(self, command, dt=1):
+        """
+
+        :param command: The command to send.
+        :param dt: The time to wait for the response.
+        :return: returns the response of the device.
+        """
         self.send(command)
         time.sleep(dt)  # wait for 1 second
         reply = self.receive()

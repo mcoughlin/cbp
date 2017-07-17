@@ -102,6 +102,12 @@ class Altaz:
         self.takesteps(mag=mag, direction=direction, motornum=motornum)
 
     def do_altangle(self, val, motornum):
+        """
+
+        :param val: The angle to move by.
+        :param motornum: the motor to move by. 1 is left to right, 2 is up to down.
+        :return:
+        """
         print "Moving in angle..."
         target_angle = val
         nave = 10000
@@ -134,6 +140,12 @@ class Altaz:
             self.takesteps(mag=mag, direction=direction, motornum=motornum)
 
     def do_azangle(self, val, motornum):
+        """
+
+        :param val: The angle to move by
+        :param motornum: The axis to move on by motor.
+        :return:
+        """
         print "Moving in angle..."
         target_angle = val
         angle_1, angle_2 = cbp.potentiometer.main()
