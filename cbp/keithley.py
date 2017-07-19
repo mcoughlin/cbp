@@ -32,6 +32,9 @@ def parse_commandline():
 
 
 class Keithley:
+    """
+    This is the class that stores the methods for communicating with the keithley devices.
+    """
     def __init__(self, rm=None, resnum=None, mode='curr', nplc=1, do_reset=False):
         if rm is not None and resnum is not None:
             self.rm = rm
@@ -77,6 +80,12 @@ class Keithley:
         self.status = "connected"
 
     def selectmode(self, mode, nplc):
+        """
+
+        :param mode: the mode to switch keithley to.
+        :param nplc:
+        :return: switches the keithley to a particular mode
+        """
         assert mode.lower() in ['volt', 'char', 'curr', 'res'], "No mode %s" % mode.lower()
         assert type(nplc) == type(1)  # assert that nplc is an int
         # self.ins.write('CONF:%s' % mode.upper())
@@ -84,12 +93,21 @@ class Keithley:
         self.ins.write("FUNC '%s'" % (mode.upper()))
 
     def dispon(self, on):
+        """
+
+        :param on: a boolean that tells the display to be on or off.
+        :return: a keithley that has a display off or on.
+        """
         if on:
             self.ins.write('DISP:ENAB 1')
         else:
             self.ins.write('DISP:ENAB 0')
 
     def getread(self):
+        """
+
+        :return: a numpy array of a float from the keithley reading.
+        """
         '''Array returned is of the form
             [READING, TIME, STATUS]
             Where status is defined in the manual via bitmasks
@@ -97,13 +115,29 @@ class Keithley:
         return np.array(self.ins.query('READ?').split(',')).astype(np.float)
 
     def getquery(self, query):
+        """
+
+        :param query: a query to send to the keithley
+        :return: returns the response to the query.
+        """
         return self.ins.query(query)
 
     def close(self):
+        """
+        closes the connection to the keithley
+
+        :return: a closed connection to the keithley
+        """
         self.ins.close()
         self.rm.close()
 
     def do_reset(self,mode="curr",nplc=1):
+        """
+
+        :param mode:
+        :param nplc:
+        :return:
+        """
         self.ins.write('*RST')
         self.ins.write('INIT')
 
@@ -292,6 +326,13 @@ class Keithley:
             return photo1[0], photo2[0]
 
     def get_photodiode_reading(self, rm=visa.ResourceManager('@py'), mode='curr', do_reset=True):
+        """
+
+        :param rm:
+        :param mode:
+        :param do_reset:
+        :return:
+        """
         time.sleep(1)
         photo1 = self.getread()
         print("Diode read")
@@ -299,6 +340,11 @@ class Keithley:
         return photo1[0], photo2[0]
 
     def get_charge_timeseries(self,duration=10):
+        """
+
+        :param duration:
+        :return:
+        """
         times = []
         photol = []
         totphotons = []

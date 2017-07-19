@@ -77,6 +77,11 @@ class Birger:
         reply = self.send_and_receive(command)
 
     def do_focus(self, val):
+        """
+
+        :param val: This is the value that the focus will be set to.
+        :return: sets the focus of the birger.
+        """
         self.setup_lens()
         if (val < 0) or (val > 16383):
             raise Exception("Focus should be integer between 0-16383")
@@ -97,6 +102,11 @@ class Birger:
         reply = self.send_and_receive(command)
 
     def do_aperture(self, val):
+        """
+
+        :param val: This is the value of the aperture
+        :return:
+        """
         self.setup_lens()
         if (val < 0) or (val > 24):
             raise Exception("Focus should be integer between 0-24")
@@ -108,6 +118,10 @@ class Birger:
         reply = self.send_and_receive(command)
 
     def do_status(self):
+        """
+
+        :return: This returns the focus and aperture of the birger.
+        """
         self.setup_lens()
         command = 'fp'
         reply = self.send_and_receive(command)

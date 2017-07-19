@@ -7,6 +7,9 @@ import pexpect
 
 
 class Lamp:
+    """
+    This is the class for communicating with the lamp.
+    """
     def __init__(self):
         self.status = None
 

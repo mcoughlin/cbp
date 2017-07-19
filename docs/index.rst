@@ -10,8 +10,7 @@ Welcome to CBP's |version| documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   altaz
-   cbp_class
+   cbp_package
 
 
 Indices and tables

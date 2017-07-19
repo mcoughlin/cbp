@@ -133,7 +133,17 @@ class CBP:
         photodiode_list = []
         for i in range(n_averages + 1):
             self.keithley.do_reset()
-            photo1, photo2 = self.keithley.get_photodiode_reading()
+            retry = 0
+            while retry <= 10:
+                try:
+                    photo1, photo2 = self.keithley.get_photodiode_reading()
+                    break
+                except Exception as e:
+                    print(e)
+                    retry += 1
+            if retry > 10:
+                raise Exception('Keithley failed to read in the alloted number of retries')
+
             photodiode_list.append(photo1)
             wavelength, intensity = self._add_spectra(duration=duration)
  

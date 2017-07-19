@@ -7,6 +7,9 @@ import FLI
 
 
 class FilterWheel:
+    """
+    This is the class for communicating with the Filter Wheel.
+    """
     def __init__(self):
         self.status = None
         self.center_line_filter_wheel = self.initialize_connection()
@@ -14,6 +17,10 @@ class FilterWheel:
         self.filter = None
 
     def initialize_connection(self):
+        """
+
+        :return: returns the connection to the Filter Wheel.
+        """
         fws = FLI.filter_wheel.USBFilterWheel.find_devices()
 
         for fw in fws:
@@ -23,6 +30,10 @@ class FilterWheel:
         return fw0
 
     def error_raised(self):
+        """
+
+        :return: either raises an exception if parameters out of bounds or returns false to continue the program
+        """
         if self.mask > 4 or self.mask < 0:
             raise Exception("Mask position must be integer 0-4")
         elif self.filter > 4 or self.filter < 0:
@@ -30,6 +41,12 @@ class FilterWheel:
         return False
 
     def do_position(self, mask, filter):
+        """
+
+        :param mask: This is the value of the mask
+        :param filter: This is the value of the filter.
+        :return: sets the position of the Filter Wheel.
+        """
         self.mask = mask
         self.filter = filter
         if not self.error_raised():
@@ -38,6 +55,10 @@ class FilterWheel:
             pos = self.center_line_filter_wheel.get_filter_pos()
 
     def get_position(self):
+        """
+
+        :return: returns the current mask and filter values of the Filter Wheel.
+        """
         pos = self.center_line_filter_wheel.get_filter_pos()
 
         self.mask = pos / 5
@@ -47,6 +68,10 @@ class FilterWheel:
         return self.mask, self.filter
 
     def check_status(self):
+        """
+
+        :return: changes the status of the Filter Wheel depending on location of device in kernel.
+        """
         fws = FLI.filter_wheel.USBFilterWheel.find_devices()
         if not len(fws) == 2:
             print("Focuser or Filter Wheel not connected")

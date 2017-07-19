@@ -41,6 +41,8 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages']
 
+autodoc_mock_imports = ['FLI', 'visa', 'seabreeze','thorlabs']
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
