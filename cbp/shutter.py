@@ -13,7 +13,7 @@ class Shutter:
 
     def create_connection(self):
         try:
-            shutter_command = "picocom -b 57600 /dev/ttyACM.SHUTTER"
+            shutter_command = "picocom -b 57600 /dev/ttyACM.SHUTTER2"
             child = pexpect.spawn(shutter_command)
             self.status = "connected"
             return child

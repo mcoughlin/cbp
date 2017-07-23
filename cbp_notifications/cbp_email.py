@@ -11,7 +11,7 @@ class CbpEmail:
 
     def send(self):
         config = ConfigParser.RawConfigParser()
-        config.read("D:\gitrepo\cbp\pushbullet_api.cfg")
+        config.read("/home/pi/Code/cbp_2/pushbullet_api.cfg")
 
         msg = MIMEText(self.msg)
         msg['Subject'] = self.subject

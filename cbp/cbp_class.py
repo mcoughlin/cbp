@@ -125,7 +125,6 @@ class CBP:
 
     def _get_photodiode_spectograph_averages(self, shutter_position, wave, n_averages, shutter_closed_file, spectograph_shutter_closed_file, shutter_open_file, spectograph_shutter_opened_file, duration):
         thorlabs.thorlabs.main(val=shutter_position)
-        time.sleep(1)
         if shutter_position == 2:
             print("shutter closed")
         elif shutter_position == 1:
