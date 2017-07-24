@@ -21,6 +21,12 @@ class Photodiode:
             print(e)
             self.status = "not connected"
 
+    def check_status(self):
+        try:
+            self.receiving()
+        except Exception as e:
+            self.status = "not connected"
+
     def get_photodiode(self):
         conversion = 1.0
 

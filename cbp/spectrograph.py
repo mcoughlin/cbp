@@ -53,10 +53,10 @@ class Spectrograph:
     def set_temperature(self,temperature):
         self.spectrometer.tec_set_temperature_C(temperature)
 
-    def enable_temperature_control():
+    def enable_temperature_control(self):
         self.spectrometer.tec_set_enable(True)
 
-    def disable_temperature_control():
+    def disable_temperature_control(self):
         self.spectrometer.tec_set_enable(False)
 
     def do_spectograph(self, duration=10000000, spectrumFile='test.dat'):

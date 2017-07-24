@@ -31,6 +31,16 @@ class Birger:
             print(e)
             self.status = "not connected"
 
+    def check_status(self):
+        try:
+            reply = self.send_and_receive('fp')
+            if reply != "":
+                self.status = "connected"
+            else:
+                self.status = "not connected"
+        except Exception as e:
+            raise e
+
     def send_and_receive(self, command, dt=1):
         """
 

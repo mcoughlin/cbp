@@ -226,6 +226,13 @@ class LockIn:
                 continue
         return photo[0]
 
+    def check_status(self):
+        try:
+            devtty = self.rm.list_resources()[0]
+        except Exception as e:
+            print(e)
+            self.status = "not connected"
+
 
 def main(runtype="sr830"):
     lockin = LockIn()

@@ -21,6 +21,12 @@ class Potentiometer:
         except:
             self.status = "not connected"
 
+    def check_status(self):
+        try:
+            self.receiving()
+        except Exception as e:
+            self.status = "not connected"
+
     def receiving(self):
         ser = self.serial
         buffer_string = ''

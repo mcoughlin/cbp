@@ -21,13 +21,17 @@ class FilterWheel:
 
         :return: returns the connection to the Filter Wheel.
         """
-        fws = FLI.filter_wheel.USBFilterWheel.find_devices()
+        try:
+            fws = FLI.filter_wheel.USBFilterWheel.find_devices()
 
-        for fw in fws:
-            if fw.model == "CenterLine Filter Wheel":
-                fw0 = fw
-                self.status = "Connected"
-        return fw0
+            for fw in fws:
+                if fw.model == "CenterLine Filter Wheel":
+                    fw0 = fw
+                    self.status = "Connected"
+            return fw0
+        except Exception as e:
+            print(e)
+            self.status = "not connected"
 
     def error_raised(self):
         """
@@ -72,10 +76,14 @@ class FilterWheel:
 
         :return: changes the status of the Filter Wheel depending on location of device in kernel.
         """
-        fws = FLI.filter_wheel.USBFilterWheel.find_devices()
-        if not len(fws) == 2:
-            print("Focuser or Filter Wheel not connected")
-            self.status = "Not connected"
+        try:
+            fws = FLI.filter_wheel.USBFilterWheel.find_devices()
+            for fw in fws:
+                if fw.model == "CenterLine Filter Wheel":
+                    fw0 = fw
+                    self.status = "Connected"
+        except Exception as e:
+            self.status = "not connected"
 
 
 def parse_commandline():

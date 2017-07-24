@@ -80,6 +80,19 @@ class CBP:
             self.laser = cbp.laser.LaserSerialInterface(loop=False)
             self.lamp = cbp.lamp.Lamp()
 
+    def check_status(self):
+        self.birger.check_status()
+        self.filter_wheel.check_status()
+        self.keithley.check_status()
+        self.phidget.check_status()
+        if self.phidget.status == "connected":
+            self.altaz.status = "connected"
+        self.potentiometer.check_status()
+        self.shutter.check_status()
+        self.lockin.check_status()
+        self.temperature.check_status()
+        self.laser.check_state()
+
 
     def keithley_change_wavelength_loop(self, output_dir='data', wavelength_min=500, wavelength_max=700, wavelength_steps=10, n_averages=3, duration=1000000):
         """

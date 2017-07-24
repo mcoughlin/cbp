@@ -36,48 +36,58 @@ class Keithley:
     This is the class that stores the methods for communicating with the keithley devices.
     """
     def __init__(self, rm=None, resnum=None, mode='curr', nplc=1, do_reset=False):
-        if rm is not None and resnum is not None:
-            self.rm = rm
-            print("finding resource")
-            if resnum == 0:
-                devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
-                print("resource found")
-            elif resnum == 1:
-                devtty = 'ASRL/dev/ttyUSB.KEITHLEY2::INSTR'
-                print("resource found")
+        try:
+            if rm is not None and resnum is not None:
+                self.rm = rm
+                print("finding resource")
+                if resnum == 0:
+                    devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
+                    print("resource found")
+                elif resnum == 1:
+                    devtty = 'ASRL/dev/ttyUSB.KEITHLEY2::INSTR'
+                    print("resource found")
+                else:
+                    devtty = rm.list_resources()[resnum]
+                try:
+                    self.ins = self.rm.open_resource(devtty)
+                except Exception as e:
+                    print(e)
+                    self.status = "not connected"
             else:
-                devtty = rm.list_resources()[resnum]
-            try:
-                self.ins = self.rm.open_resource(devtty)
-            except Exception as e:
-                print(e)
-                self.status = "not connected"
-        else:
-            self.rm = visa.ResourceManager('@py')
-            self.ins = self.rm.open_resource(self.rm.list_resources()[0])
-        self.ins.write_termination = '\n'
-        self.ins.read_termination = '\n'
-        self.ins.timeout = 5000
-        self.ins.query_delay = 0.0
+                self.rm = visa.ResourceManager('@py')
+                self.ins = self.rm.open_resource(self.rm.list_resources()[0])
+            self.ins.write_termination = '\n'
+            self.ins.read_termination = '\n'
+            self.ins.timeout = 5000
+            self.ins.query_delay = 0.0
 
-        # ins.write('SYST:ZCH OFF')  #see page 2-2
-        # ins.write('SYST:AZER:STAT OFF') #see page 2-13+
-        # self.selectmode(mode,nplc=nplc)
-        # self.ins.write('CURR:RANG:AUTO ON')
-        # self.ins.write('CHAR:RANG:AUTO ON')
-        # self.ins.write('VOLT:RANG:AUTO ON')
-        self.dispon(True)
+            # ins.write('SYST:ZCH OFF')  #see page 2-2
+            # ins.write('SYST:AZER:STAT OFF') #see page 2-13+
+            # self.selectmode(mode,nplc=nplc)
+            # self.ins.write('CURR:RANG:AUTO ON')
+            # self.ins.write('CHAR:RANG:AUTO ON')
+            # self.ins.write('VOLT:RANG:AUTO ON')
+            self.dispon(True)
 
-        if do_reset:
-            self.ins.write('*RST')
-            self.ins.write('INIT')
-        self.selectmode(mode, nplc=nplc)
+            if do_reset:
+                self.ins.write('*RST')
+                self.ins.write('INIT')
+            self.selectmode(mode, nplc=nplc)
 
-        self.ins.write('SYST:ZCH ON')
-        self.ins.write('SYST:ZCOR ON')
-        self.ins.write('SYST:ZCH OFF')
-        self.ins.write('SYST:ZCOR OFF')
-        self.status = "connected"
+            self.ins.write('SYST:ZCH ON')
+            self.ins.write('SYST:ZCOR ON')
+            self.ins.write('SYST:ZCH OFF')
+            self.ins.write('SYST:ZCOR OFF')
+            self.status = "connected"
+        except Exception as e:
+            print(e)
+            self.status = "not connected"
+
+    def check_status(self):
+        try:
+            self.getread()
+        except Exception as e:
+            self.status = "not connected"
 
     def selectmode(self, mode, nplc):
         """
