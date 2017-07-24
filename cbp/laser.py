@@ -23,7 +23,7 @@ class LaserSerialInterface:
             self.serial = serial.serial_for_url('loop://')
         else:
             try:
-                self.serial = serial.Serial(port='/dev/ttyUSB.LASER', baudrate=19200, timeout=5)
+                self.serial = serial.Serial(port='/dev/ttyUSB.LASER', baudrate=19200, timeout=3)
                 self.status = "connected"
                 self.check_state()
             except Exception as e:
