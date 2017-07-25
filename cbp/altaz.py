@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+"""
+.. module:: altaz
+    :platform: unix
+    :synopsis: This is a module for controlling the vertical and horizontal axis of the device.
+"""
 
 import optparse
 import os
@@ -9,12 +14,6 @@ import pexpect
 
 import cbp.phidget
 import cbp.potentiometer
-
-"""
-.. module:: altaz
-    :platform: unix
-    :synopsis: This is a module for controlling the vertical and horizontal axis of the device.
-"""
 
 
 class Altaz:
@@ -108,36 +107,13 @@ class Altaz:
         :param motornum: the motor to move by. 1 is left to right, 2 is up to down.
         :return:
         """
-        print "Moving in angle..."
         target_angle = val
         nave = 10000
         x, y, z, angle = cbp.phidget.main(nave)
         current_angle = angle
         diff_angle = target_angle - current_angle
-
-        while np.abs(diff_angle) > 0.1:
-            x, y, z, angle = cbp.phidget.main(nave)
-            current_angle = angle
-            diff_angle = target_angle - current_angle
-
-            print "Current: %.5f, Diff: %.5f" % (current_angle, diff_angle)
-
-            if diff_angle < 0:
-                direction = 1
-            else:
-                direction = 2
-
-            if np.abs(diff_angle) > 2:
-                mag = 500
-            elif np.abs(diff_angle) > 1:
-                mag = 100
-            elif np.abs(diff_angle) > 0.5:
-                mag = 100
-            else:
-                mag = 10
-
-            print(mag, direction, motornum)
-            self.takesteps(mag=mag, direction=direction, motornum=motornum)
+        print(current_angle)
+        return current_angle
 
     def do_azangle(self, val, motornum):
         """
@@ -151,28 +127,8 @@ class Altaz:
         angle_1, angle_2 = cbp.potentiometer.main()
         current_angle = angle_2
         diff_angle = target_angle - current_angle
-
-        while np.abs(diff_angle) > 0.1:
-            angle_1, angle_2 = cbp.potentiometer.main()
-            current_angle = angle_2
-            diff_angle = target_angle - current_angle
-
-            print "Current: %.5f, Diff: %.5f" % (current_angle, diff_angle)
-            if diff_angle < 0:
-                direction = 2
-            else:
-                direction = 1
-
-            if np.abs(diff_angle) > 2:
-                mag = 500
-            elif np.abs(diff_angle) > 1:
-                mag = 100
-            elif np.abs(diff_angle) > 0.5:
-                mag = 50
-            else:
-                mag = 10
-
-            self.takesteps(mag=mag, direction=direction, motornum=motornum)
+        print(current_angle)
+        return current_angle
 
 
 def parse_commandline():

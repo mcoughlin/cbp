@@ -37,13 +37,16 @@ class LaserSerialInterface:
 
         :return:
         """
-        responses = ['[PC:OFF=0\NL]', '[PC:BUSY=0\NL]', '[PC:BUSY=0\NL]', '[PC:READY=0\NL]']
-        for response in responses:
-            say_state_msg = self.commands['say_state_msg']
-            self.serial.write(say_state_msg)
-            if response in self.states:
-                self.state = self.states[response][0]
-                print(self.states[response][1])
+        if self.status != "not connected":
+            responses = ['[PC:OFF=0\NL]', '[PC:BUSY=0\NL]', '[PC:BUSY=0\NL]', '[PC:READY=0\NL]']
+            for response in responses:
+                say_state_msg = self.commands['say_state_msg']
+                self.serial.write(say_state_msg)
+                if response in self.states:
+                    self.state = self.states[response][0]
+                    print(self.states[response][1])
+        else:
+            pass
 
     def check_state(self):
         """
@@ -51,19 +54,22 @@ class LaserSerialInterface:
 
         :return:
         """
-        say_state_msg = self.commands['say_state_msg']
-        self.serial.write(say_state_msg)
-        response = self.serial.read(size=25)
-        if response == "":
-            self.state = "off"
-            self.status = "off"
-            print("The laser is off")
-            return 
-        if response in self.states:
-            self.state = self.states[response][0]
-            print(self.states[response][1])
+        if self.status != "not connected":
+            say_state_msg = self.commands['say_state_msg']
+            self.serial.write(say_state_msg)
+            response = self.serial.read(size=25)
+            if response == "":
+                self.state = "off"
+                self.status = "off"
+                print("The laser is off")
+                return
+            if response in self.states:
+                self.state = self.states[response][0]
+                print(self.states[response][1])
+            else:
+                print("Not found.")
         else:
-            print("Not found.")
+            pass
 
     def get_ready_state(self):
         """
@@ -71,9 +77,12 @@ class LaserSerialInterface:
 
         :return:
         """
-        while self.state != 'ready' and self.state != 'off' and self.state != 'not connected':
-            print("checking state...")
-            self.check_state()
+        if self.status != "not connected":
+            while self.state != 'ready' and self.state != 'off' and self.state != 'not connected':
+                print("checking state...")
+                self.check_state()
+        else:
+            pass
 
     def change_wavelength(self, wavelength):
         """
@@ -84,50 +93,59 @@ class LaserSerialInterface:
         :return:
 
         """
-        self.get_ready_state()
-        if self.state != "off" and self.state != "not connected":
-            wavelength_change_msg = '[W0/S{0}]'.format(str(wavelength))
-            self.serial.write(wavelength_change_msg)
-            check_response = self.check_wavelength(comparison=True)
-            if int(wavelength) == check_response:
-                print("Wavelength set correctly")
-            else:
-                print("Something went wrong")
-        elif self.state == "off":
-            raise Exception('The laser is turned off')
-        elif self.state == "not connected":
-            raise Exception('The laser is not connected properly')
+        if self.status != "not connected":
+            self.get_ready_state()
+            if self.state != "off" and self.state != "not connected":
+                wavelength_change_msg = '[W0/S{0}]'.format(str(wavelength))
+                self.serial.write(wavelength_change_msg)
+                check_response = self.check_wavelength(comparison=True)
+                if int(wavelength) == check_response:
+                    print("Wavelength set correctly")
+                else:
+                    print("Something went wrong")
+            elif self.state == "off":
+                raise Exception('The laser is turned off')
+            elif self.state == "not connected":
+                raise Exception('The laser is not connected properly')
+        else:
+            pass
 
     def check_wavelength(self, comparison=False):
-        if self.state != "not connected":
-            wavelength_check_msg = '[W0/?]'
-            self.serial.write(wavelength_check_msg)
-            response = self.serial.read(size=25)
-            if response == "":
-               return 0
-            print(response)
-            if comparison:
-                wavelength = self.parse_wavelength(response)
-                return wavelength
+        if self.status != "not connected":
+            if self.state != "not connected":
+                wavelength_check_msg = '[W0/?]'
+                self.serial.write(wavelength_check_msg)
+                response = self.serial.read(size=25)
+                if response == "":
+                   return 0
+                print(response)
+                if comparison:
+                    wavelength = self.parse_wavelength(response)
+                    return wavelength
+                else:
+                    wavelength = self.parse_wavelength(response)
+                    print(wavelength)
             else:
-                wavelength = self.parse_wavelength(response)
-                print(wavelength)
+                raise Exception('The laser is not connected properly')
         else:
-            raise Exception('The laser is not connected properly')
+            pass
 
-    @staticmethod
-    def parse_wavelength(msg='[MS:W0/S520\NL]'):
-        msg_parse = msg
-        remove_chars = []
-        for char in string.letters:
-            remove_chars.append(char)
-        for char in string.punctuation:
-            remove_chars.append(char)
-        split_msg = msg_parse.translate(None, ''.join(remove_chars))
-        split_msg = split_msg[1:]
-        return int(split_msg)
+    def parse_wavelength(self,msg='[MS:W0/S520\NL]'):
+        if self.status != "not connected":
+            msg_parse = msg
+            remove_chars = []
+            for char in string.letters:
+                remove_chars.append(char)
+            for char in string.punctuation:
+                remove_chars.append(char)
+            split_msg = msg_parse.translate(None, ''.join(remove_chars))
+            split_msg = split_msg[1:]
+            return int(split_msg)
+        else:
+            pass
 
     def loop_change_wavelength(self, min, max,diagnostic):
+        if self.status != "not connected":
             np_array = np.arange(min,max+1)
             for item in np_array:
                 try:
@@ -138,6 +156,8 @@ class LaserSerialInterface:
                 if not diagnostic:
                     raw_input("Press Enter to continue")
             print("done.")
+        else:
+            pass
 
 
 def create_parser():

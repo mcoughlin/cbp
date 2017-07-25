@@ -51,25 +51,31 @@ class FilterWheel:
         :param filter: This is the value of the filter.
         :return: sets the position of the Filter Wheel.
         """
-        self.mask = mask
-        self.filter = filter
-        if not self.error_raised():
-            position = 5 * self.mask + self.filter
-            self.center_line_filter_wheel.set_filter_pos(position)
-            pos = self.center_line_filter_wheel.get_filter_pos()
+        if self.status != "not connected":
+            self.mask = mask
+            self.filter = filter
+            if not self.error_raised():
+                position = 5 * self.mask + self.filter
+                self.center_line_filter_wheel.set_filter_pos(position)
+                pos = self.center_line_filter_wheel.get_filter_pos()
+        else:
+            pass
 
     def get_position(self):
         """
 
         :return: returns the current mask and filter values of the Filter Wheel.
         """
-        pos = self.center_line_filter_wheel.get_filter_pos()
+        if self.status != "not connected":
+            pos = self.center_line_filter_wheel.get_filter_pos()
 
-        self.mask = pos / 5
-        self.filter = np.mod(pos, 5)
+            self.mask = pos / 5
+            self.filter = np.mod(pos, 5)
 
-        print("Mask:{0} Filter:{1}".format(self.mask, self.filter))
-        return self.mask, self.filter
+            print("Mask:{0} Filter:{1}".format(self.mask, self.filter))
+            return self.mask, self.filter
+        else:
+            pass
 
     def check_status(self):
         """

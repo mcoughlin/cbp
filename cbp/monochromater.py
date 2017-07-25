@@ -34,163 +34,204 @@ class Monochromater:
 
     def get_info(self):
         """Asks the monochromator for its ID info. Returns a string to output window."""
-        m = self.serial
-        m.write("info?" + "\r\n")
-        info = m.read(100)
-        info = info[7:]
-        result = string.strip(info)
-        return result
+        if self.status != "not connected":
+            m = self.serial
+            m.write("info?" + "\r\n")
+            info = m.read(100)
+            info = info[7:]
+            result = string.strip(info)
+            return result
+        else:
+            pass
 
     def gograt(self, grat):
-        m = self.serial
-        if grat not in [1, 2, 3]:
-            raise
-        m.write('GRAT %d\r\n' % grat)
-        m.read()
-        return
+        if self.status != "not connected":
+            m = self.serial
+            if grat not in [1, 2, 3]:
+                raise
+            m.write('GRAT %d\r\n' % grat)
+            m.read()
+            return
+        else:
+            pass
 
     def getgrat(self):
-        m = self.serial
-        m.write('GRAT?\r\n')
-        r = m.read(200)
-        # print r
-        r = r[4]
-        result = string.strip(r)
-        return result
+        if self.status != "not connected":
+            m = self.serial
+            m.write('GRAT?\r\n')
+            r = m.read(200)
+            # print r
+            r = r[4]
+            result = string.strip(r)
+            return result
+        else:
+            pass
 
     def gowave(self, wave):
         """
         Checks longpass filter, goes to wavelength wave (nm), and writes wavelength to file filename. Also returns
         result to commander.
         """
-        m = self.serial
-        m.write("filter?\r\n")
-        r = m.read(100)
-        # m.write("filter 1\r\n")
+        if self.status != "not connected":
+            m = self.serial
+            m.write("filter?\r\n")
+            r = m.read(100)
+            # m.write("filter 1\r\n")
 
-        # adjust order blocking filter, if necessary
-        if wave < 600:
-            if int(r[9:]) != 1:
-                m.write("filter 1\r\n")
-            # print "out.monochrom: Moving to filter 1 (no filter)"
-            else:
-                # print "out.monochrom: Filter 1 already in place"
-                pass
-        elif wave >= 600:
-            if int(r[9:]) != 2:
-                m.write("filter 2\r\n")
-            # print "out.monochrom: Moving to filter 2"
-            else:
-                # print "out.monochrom: Filter 2 already in place"
-                pass
-        # elif wave <= 1050:
-        #        if int(r[9:]) != 2:
-        #                m.write("filter 2\r\n")
-        #                print "out.monochrom: Moving to filter 2"
-        #        else:
-        #                print "out.monochrom: Filter 2 already in place"
-        # elif wave > 1050:
-        #	if int(r[9:]) == 3:
-        #		m.write("filter 3\r\n")
-        #		print "out.monochrom: Moving to filter 3"
-        #	else:
-        #		if int(r[9:]) == 0:
-        #			print "out.monochrom: Filter 3 already in place"
-        m.write("gowave " + str(wave) + "\r\n")
-        r = m.read(100)
-        result = wave
-        return result
+            # adjust order blocking filter, if necessary
+            if wave < 600:
+                if int(r[9:]) != 1:
+                    m.write("filter 1\r\n")
+                # print "out.monochrom: Moving to filter 1 (no filter)"
+                else:
+                    # print "out.monochrom: Filter 1 already in place"
+                    pass
+            elif wave >= 600:
+                if int(r[9:]) != 2:
+                    m.write("filter 2\r\n")
+                # print "out.monochrom: Moving to filter 2"
+                else:
+                    # print "out.monochrom: Filter 2 already in place"
+                    pass
+            # elif wave <= 1050:
+            #        if int(r[9:]) != 2:
+            #                m.write("filter 2\r\n")
+            #                print "out.monochrom: Moving to filter 2"
+            #        else:
+            #                print "out.monochrom: Filter 2 already in place"
+            # elif wave > 1050:
+            #	if int(r[9:]) == 3:
+            #		m.write("filter 3\r\n")
+            #		print "out.monochrom: Moving to filter 3"
+            #	else:
+            #		if int(r[9:]) == 0:
+            #			print "out.monochrom: Filter 3 already in place"
+            m.write("gowave " + str(wave) + "\r\n")
+            r = m.read(100)
+            result = wave
+            return result
+        else:
+            pass
 
     def askwave(self):
         """Returns current wavelength to commander."""
-        m = self.serial
-        m.write("wave?" + "\r\n")
-        r = m.read(100)
-        r = r[7:]
-        result = string.strip(r)
-        return result
+        if self.status != "not connected":
+            m = self.serial
+            m.write("wave?" + "\r\n")
+            r = m.read(100)
+            r = r[7:]
+            result = string.strip(r)
+            return result
+        else:
+            pass
 
     def closeinstance(self):
         """Closes the monochromator connection."""
-        m = self.serial
-        m.close()
-        result = "out.monochrom: Closed monochromator connection."
-        return result
+        if self.status != "not connected":
+            m = self.serial
+            m.close()
+            result = "out.monochrom: Closed monochromator connection."
+            return result
+        else:
+            pass
 
     def scan(self, start, end, stepsize, sleeptime, filename='test.txt'):
         """Scans from start (nm) to end (nm) in steps of stepsize (nm). Sleeps for sleeptime seconds at each wavelength. Writes list of wavelengths to file filename"""
-        gowave(start, filename)
-        time.sleep(5)
-        wave = start
-        while wave <= end:
-            time.sleep(sleeptime)
-            gowave(wave + stepsize, filename)
-            wave = wave + stepsize
-        result = "out.monochrom: Finished scanning from " + str(start) + " to " + str(end) + "nm."
-        return result
+        if self.status != "not connected":
+            self.gowave(start)
+            time.sleep(5)
+            wave = start
+            while wave <= end:
+                time.sleep(sleeptime)
+                self.gowave(wave + stepsize)
+                wave = wave + stepsize
+            result = "out.monochrom: Finished scanning from " + str(start) + " to " + str(end) + "nm."
+            return result
+        else:
+            pass
 
     def gofilter(self, filt):
         """Moves to a filter numbered 1-6 in filter wheel attached to monochromator."""
-        m = self.serial
-        m.write("filter " + str(filt) + "\r\n")
-        m.read(100)
-        result = "out.monochrom: Moving to filter " + str(filt)
-        return filt
+        if self.status != "not connected":
+            m = self.serial
+            m.write("filter " + str(filt) + "\r\n")
+            m.read(100)
+            result = "out.monochrom: Moving to filter " + str(filt)
+            return filt
+        else:
+            pass
 
     def askfilter(self):
         """Returns current wavelength to commander."""
-        m = self.serial
-        m.write("filter?" + "\r\n")
-        r = m.read(100)
-        r = r[9:]
-        result = string.strip(r)
-        return result
+        if self.status != "not connected":
+            m = self.serial
+            m.write("filter?" + "\r\n")
+            r = m.read(100)
+            r = r[9:]
+            result = string.strip(r)
+            return result
+        else:
+            pass
 
     def shutter(self, state):
         """Opens ('O') or closes ('C') the monochromator shutter."""
-        m = self.serial
-        m.write("shutter " + str(state) + "\r\n")
-        r = m.read(100)
-        if state == 'O':
-            st = "open"
+        if self.status != "not connected":
+            m = self.serial
+            m.write("shutter " + str(state) + "\r\n")
+            r = m.read(100)
+            if state == 'O':
+                st = "open"
+            else:
+                st = "closed"
+            result = "out.monochrom: Shutter is " + st
+            return result
         else:
-            st = "closed"
-        result = "out.monochrom: Shutter is " + st
-        return result
+            pass
 
     def disconnect(self):
         """Disconnects the monochromator."""
-        return "disconnect"
+        if self.status != "not connected":
+            return "disconnect"
+        else:
+            pass
 
     def monowavelength(self, val):
-        self.gowave(val)
+        if self.status != "not connected":
+            self.gowave(val)
+        else:
+            pass
 
     def monofilter(self, val):
-        self.gofilter(val)
+        if self.status != "not connected":
+            self.gofilter(val)
+        else:
+            pass
 
     def monograting(self, val):
-        self.gograt(val)
-        grat = self.getgrat()
-        print grat
+        if self.status != "not connected":
+            self.gograt(val)
+            grat = self.getgrat()
+            print grat
+        else:
+            pass
 
     def get_mono(self):
-        wave = self.askwave()
-        filter = self.askfilter()
-        try:
-            wave = float(wave)
-        except:
-            wave = -1
-        try:
-            filter = float(filter)
-        except:
-            filter = -1
+        if self.status != "not connected":
+            wave = self.askwave()
+            filter = self.askfilter()
+            try:
+                wave = float(wave)
+            except:
+                wave = -1
+            try:
+                filter = float(filter)
+            except:
+                filter = -1
 
-        print wave, filter
-        return wave, filter
-
-
-
-
+            print wave, filter
+            return wave, filter
+        else:
+            pass
 
 
 def parse_commandline():

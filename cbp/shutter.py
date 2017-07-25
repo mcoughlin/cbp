@@ -29,24 +29,31 @@ class Shutter:
             self.status = "not connected"
 
     def close_connection(self):
-        self.shutter.close()
+        if self.status != "not connected":
+            self.shutter.close()
 
     def run_shutter(self, shutter):
-        done = False
-        while not done:
-            i = self.shutter.expect([pexpect.TIMEOUT, '\n'], timeout=2)
-            # print child.before, child.after
-            if i == 0:  # Timeout
-                argstring = 'args {0:d}\r'.format(shutter)
-                # print argstring
-                self.shutter.sendline(argstring)
-                done = True
-            if i == 1:
-                continue
+        if self.status != "not connected":
+            done = False
+            while not done:
+                i = self.shutter.expect([pexpect.TIMEOUT, '\n'], timeout=2)
+                # print child.before, child.after
+                if i == 0:  # Timeout
+                    argstring = 'args {0:d}\r'.format(shutter)
+                    # print argstring
+                    self.shutter.sendline(argstring)
+                    done = True
+                if i == 1:
+                    continue
+        else:
+            pass
 
     def do_compile(self):
-        steps_command = "cd /home/pi/Code/arduino/shutter/; ./compile.sh"
-        os.system(steps_command)
+        if self.status != "not connected":
+            steps_command = "cd /home/pi/Code/arduino/shutter/; ./compile.sh"
+            os.system(steps_command)
+        else:
+            pass
 
 
 def parse_commandline():

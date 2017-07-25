@@ -27,42 +27,52 @@ class Spectrograph:
             self.status = "not connected"
 
     def get_spectograph(self, duration = 1000000, spectrumFile='test.dat'):
-        spec = self.spectrometer
-        spec.integration_time_micros(duration)
-        time.sleep(duration * 1e-6)
-        wavelengths = spec.wavelengths()
-        intensities = spec.intensities()
+        if self.status != "not connected":
+            spec = self.spectrometer
+            spec.integration_time_micros(duration)
+            time.sleep(duration * 1e-6)
+            wavelengths = spec.wavelengths()
+            intensities = spec.intensities()
 
-        idx1 = np.where(wavelengths >= 350.0)[0]
-        idx2 = np.where(wavelengths <= 1100.0)[0]
-        idx = np.intersect1d(idx1, idx2)
-        wavelengths = wavelengths[idx]
-        intensities = intensities[idx]
-        print("get_spectrograph done")
+            idx1 = np.where(wavelengths >= 350.0)[0]
+            idx2 = np.where(wavelengths <= 1100.0)[0]
+            idx = np.intersect1d(idx1, idx2)
+            wavelengths = wavelengths[idx]
+            intensities = intensities[idx]
+            print("get_spectrograph done")
 
-        # fid = open(spectrumFile, "w")
-        # for wavelength, intensity in zip(wavelengths, intensities):
-            # fid.write("%.5e %.5e\n" % (wavelength, intensity))
-        # fid.close()
+            # fid = open(spectrumFile, "w")
+            # for wavelength, intensity in zip(wavelengths, intensities):
+                # fid.write("%.5e %.5e\n" % (wavelength, intensity))
+            # fid.close()
 
-        return wavelengths, intensities
+            return wavelengths, intensities
+        else:
+            pass
 
     def get_temperature(self):
-        return self.spectrometer.tec_get_temperature_C()
+        if self.status != "not connected":
+            return self.spectrometer.tec_get_temperature_C()
 
     def set_temperature(self,temperature):
-        self.spectrometer.tec_set_temperature_C(temperature)
+        if self.status != "not connected":
+            self.spectrometer.tec_set_temperature_C(temperature)
 
     def enable_temperature_control(self):
-        self.spectrometer.tec_set_enable(True)
+        if self.status != "not connected":
+            self.spectrometer.tec_set_enable(True)
 
     def disable_temperature_control(self):
-        self.spectrometer.tec_set_enable(False)
+        if self.status != "not connected":
+            self.spectrometer.tec_set_enable(False)
 
     def do_spectograph(self, duration=10000000, spectrumFile='test.dat'):
-        wavelengths, intensities = self.get_spectograph(duration=duration, spectrumFile=spectrumFile)
+        if self.status != "not connected":
+            wavelengths, intensities = self.get_spectograph(duration=duration, spectrumFile=spectrumFile)
 
-        return wavelengths, intensities
+            return wavelengths, intensities
+        else:
+            pass
 
 def parse_commandline():
     """

@@ -1,4 +1,4 @@
-import cbp.cbp_class as cbp_instrument
+import cbp.cbp_instrument as cbp_instrument
 
 def main():
     output_dir = '/home/pi/CBP/lightsource/7_17_2017/'

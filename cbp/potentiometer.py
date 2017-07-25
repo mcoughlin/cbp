@@ -28,53 +28,62 @@ class Potentiometer:
             self.status = "not connected"
 
     def receiving(self):
-        ser = self.serial
-        buffer_string = ''
-        last_received = ''
-        while last_received == "":
-            buffer_string = buffer_string + ser.read(ser.inWaiting())
-            if '\n' in buffer_string:
-                lines = buffer_string.split('\n') # Guaranteed to have at least 2 entries
-                last_received = lines[-2]
-                #If the Arduino sends lots of empty lines, you'll lose the
-                #last filled line, so you could make the above statement conditional
-                #like so: if lines[-2]: last_received = lines[-2]
-                buffer_string = lines[-1]
+        if self.status != "not connected":
+            ser = self.serial
+            buffer_string = ''
+            last_received = ''
+            while last_received == "":
+                buffer_string = buffer_string + ser.read(ser.inWaiting())
+                if '\n' in buffer_string:
+                    lines = buffer_string.split('\n') # Guaranteed to have at least 2 entries
+                    last_received = lines[-2]
+                    #If the Arduino sends lots of empty lines, you'll lose the
+                    #last filled line, so you could make the above statement conditional
+                    #like so: if lines[-2]: last_received = lines[-2]
+                    buffer_string = lines[-1]
 
-        return last_received
+            return last_received
+        else:
+            pass
 
     def get_potentiometer(self):
-        conversion = 360.0 / 32767.0
+        if self.status != "not connected":
+            conversion = 360.0 / 32767.0
 
-        success = 0
-        numlines = 5
-        linenum = 0
-        while success == 0:
-            line = self.receiving()
+            success = 0
+            numlines = 5
+            linenum = 0
+            while success == 0:
+                line = self.receiving()
 
-            if linenum < numlines:
-                linenum = linenum + 1
-                continue
-            line = line.replace("\n", "").replace("\r", "")
-            lineSplit = line.split(" ")
-            lineSplit = filter(None, lineSplit)
+                if linenum < numlines:
+                    linenum = linenum + 1
+                    continue
+                line = line.replace("\n", "").replace("\r", "")
+                lineSplit = line.split(" ")
+                lineSplit = filter(None, lineSplit)
 
-            if not len(lineSplit) == 2:
-                continue
+                if not len(lineSplit) == 2:
+                    continue
 
-            data_out_1 = float(lineSplit[0])
-            data_out_2 = float(lineSplit[1])
+                data_out_1 = float(lineSplit[0])
+                data_out_2 = float(lineSplit[1])
 
-            data_out_1 = 90.0 - (data_out_1 * conversion)
-            data_out_2 = data_out_2 * conversion
+                data_out_1 = 90.0 - (data_out_1 * conversion)
+                data_out_2 = data_out_2 * conversion
 
-            success = 1
+                success = 1
 
-        return data_out_1, data_out_2
+            return data_out_1, data_out_2
+        else:
+            pass
 
     def do_compile(self):
-        steps_command = "cd /home/pi/Code/arduino/potentiometer/; ./compile.sh"
-        os.system(steps_command)
+        if self.status != "not connected":
+            steps_command = "cd /home/pi/Code/arduino/potentiometer/; ./compile.sh"
+            os.system(steps_command)
+        else:
+            pass
 
 
 def parse_commandline():

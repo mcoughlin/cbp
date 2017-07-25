@@ -1,3 +1,11 @@
+"""
+.. module:: cbp_class
+    :platform: unix
+    :synopsis: This is a module inside of package cbp which is designed to hold the complete cbp instrumentation inside of class CBP.
+
+.. moduleauthor:: Michael Coughlin, Eric Coughlin
+"""
+
 import cbp.altaz
 import cbp.birger
 import cbp.filter_wheel
@@ -20,49 +28,71 @@ from lxml import etree
 
 import visa
 
-"""
-.. module:: cbp_class
-    :platform: unix
-    :synopsis: This is a module inside of package cbp which is designed to hold the complete cbp instrumentation inside of class CBP.
-
-.. moduleauthor:: Michael Coughlin, Eric Coughlin
-"""
-
 
 class CBP:
     """
     This is the class that contains all of the written cbp instrument modules.
     """
     def __init__(self,altaz=False,birger=False,filter_wheel=False,keithley=False,lamp=False,monochromater=False,phidget=False,photodiode=False,potentiometer=False,shutter=False,spectrograph=False,lockin=False,temperature=False,laser=False,everything=False):
+        self.instrument_connected_list = []
+        self.instrument_dictionary = {}
         if altaz:
             self.altaz = cbp.altaz.Altaz()
+            self.instrument_connected_list.append("altaz")
+            self.instrument_dictionary["altaz"] = self.altaz
         if birger:
             self.birger = cbp.birger.Birger()
+            self.instrument_connected_list.append("birger")
+            self.instrument_dictionary["birger"] = self.birger
         if filter_wheel:
             self.filter_wheel = cbp.filter_wheel.FilterWheel()
+            self.instrument_connected_list.append("filter wheel")
+            self.instrument_dictionary["filter wheel"] = self.filter_wheel
         rm = visa.ResourceManager('@py')
         if keithley:
             self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0,do_reset=True)
+            self.instrument_connected_list.append("keithley")
+            self.instrument_dictionary["keithley"] = self.keithley
         if lamp:
             self.lamp = cbp.lamp.Lamp()
+            self.instrument_connected_list.append("lamp")
+            self.instrument_dictionary["lamp"] = self.lamp
         if monochromater:
             self.monochromater = cbp.monochromater.Monochromater()
+            self.instrument_connected_list.append("monochromater")
+            self.instrument_dictionary["monochromater"] = self.monochromater
         if phidget:
             self.phidget = cbp.phidget.CbpPhidget()
+            self.instrument_connected_list.append("phidget")
+            self.instrument_dictionary["phidget"] = self.phidget
         if photodiode:
             self.photodiode = cbp.photodiode.Photodiode()
+            self.instrument_connected_list.append("photodiode")
+            self.instrument_dictionary["photodiode"] = self.photodiode
         if potentiometer:
             self.potentiometer = cbp.potentiometer.Potentiometer()
+            self.instrument_connected_list.append("potentiometer")
+            self.instrument_dictionary["potentiometer"] = self.potentiometer
         if shutter:
             self.shutter = cbp.shutter.Shutter()
+            self.instrument_connected_list.append("shutter")
+            self.instrument_dictionary["shutter"] = self.shutter
         if spectrograph:
             self.spectrograph = cbp.spectrograph.Spectrograph()
+            self.instrument_connected_list.append("spectrograph")
+            self.instrument_dictionary["spectrograph"] = self.spectrograph
         if lockin:
             self.lockin = cbp.lockin.LockIn(rm=rm)
+            self.instrument_connected_list.append("lockin")
+            self.instrument_dictionary["lockin"] = self.lockin
         if temperature:
             self.temperature = cbp.temperature.Temperature()
+            self.instrument_connected_list.append("temperature")
+            self.instrument_dictionary["temperature"] = self.temperature
         if laser:
             self.laser = cbp.laser.LaserSerialInterface(loop=False)
+            self.instrument_connected_list.append("laser")
+            self.instrument_dictionary["laser"] = self.laser
         if everything:
             self.altaz = cbp.altaz.Altaz()
             self.birger = cbp.birger.Birger()
@@ -79,6 +109,32 @@ class CBP:
             self.temperature = cbp.temperature.Temperature()
             self.laser = cbp.laser.LaserSerialInterface(loop=False)
             self.lamp = cbp.lamp.Lamp()
+            for instrument in ["altaz","birger","filter wheel","keithley","phidget","potentiometer","shutter","spectrograph","lockin","temperature","laser","lamp"]:
+                self.instrument_connected_list.append(instrument)
+                if instrument == "altaz":
+                    self.instrument_dictionary[instrument] = self.altaz
+                if instrument == "birger":
+                    self.instrument_dictionary[instrument] = self.birger
+                if instrument == "filter wheel":
+                    self.instrument_dictionary[instrument] = self.filter_wheel
+                if instrument == "keithley":
+                    self.instrument_dictionary[instrument] = self.keithley
+                if instrument == "phidget":
+                    self.instrument_dictionary[instrument] = self.phidget
+                if instrument == "potentiometer":
+                    self.instrument_dictionary[instrument] = self.potentiometer
+                if instrument == "shutter":
+                    self.instrument_dictionary[instrument] = self.shutter
+                if instrument == "spectrograph":
+                    self.instrument_dictionary[instrument] = self.spectrograph
+                if instrument == "lockin":
+                    self.instrument_dictionary[instrument] = self.lockin
+                if instrument == "temperature":
+                    self.instrument_dictionary[instrument] = self.temperature
+                if instrument == "laser":
+                    self.instrument_dictionary[instrument] = self.laser
+                if instrument == "lamp":
+                    self.instrument_dictionary[instrument] = self.lamp
 
     def check_status(self):
         self.birger.check_status()

@@ -89,10 +89,16 @@ class LockIn:
             self.status = "not connected"
 
     def initialize(self):
-        return 1      
+        if self.status != "not connected":
+            return 1
+        else:
+            pass
         
     def query_unit_Id(self):
-        return self.io.ask("*IDN?")
+        if self.status != "not connected":
+            return self.io.ask("*IDN?")
+        else:
+            pass
 
     #def set_harmonic(self,i=1):
         #"""set the i-th harmonic to measure"""
@@ -115,116 +121,192 @@ class LockIn:
 
     def set_ref_mode(self,i):
         """set the reference source. The parameter i selects internal (i=1) or external (i=0)"""
-        conv={'Internal':1,'External':0,1:1,0:0}
-        self.io.write("FMOD"+str(conv[i]))
+        if self.status != "not connected":
+            conv={'Internal':1,'External':0,1:1,0:0}
+            self.io.write("FMOD"+str(conv[i]))
+        else:
+            pass
         
     def query_ref_mode(self):
         """returns 1 (internal) or 0 (external)"""
-        return int(self.io.ask("FMOD?"))
+        if self.status != "not connected":
+            return int(self.io.ask("FMOD?"))
+        else:
+            pass
         
     def set_AUX1(self,value):
-        if type(value)==float:
-            self.io.write('AUXV1,'+str(value))
+        if self.status != "not connected":
+            if type(value)==float:
+                self.io.write('AUXV1,'+str(value))
+            else:
+                raise TypeError
         else:
-            raise TypeError
+            pass
 
     def query_AUX1_out(self):
-        return float(self.io.ask('AUXV?1'))
+        if self.status != "not connected":
+            return float(self.io.ask('AUXV?1'))
+        else:
+            pass
 
 
     def set_frequency(self,f):
         """set the reference frequency"""
-        self.io.write("FREQ"+str(f))
+        if self.status != "not connected":
+            self.io.write("FREQ"+str(f))
+        else:
+            pass
 
     def query_frequency(self):
         """query the reference frequency"""
-        return float(self.io.ask("FREQ?"))
+        if self.status != "not connected":
+            return float(self.io.ask("FREQ?"))
+        else:
+            pass
 
     def set_amplitude(self,value):
-        if type(value)==float:
-            self.io.write('SLVL'+str(value))
+        if self.status != "not connected":
+            if type(value)==float:
+                self.io.write('SLVL'+str(value))
+            else:
+                raise TypeError
         else:
-            raise TypeError
+            pass
 
     def query_amplitude(self):
-        return float(self.io.ask('SLVL?'))
+        if self.status != "not connected":
+            return float(self.io.ask('SLVL?'))
+        else:
+            pass
         
     def query_phase(self):
-        return float(self.io.ask('PHAS?'))
+        if self.status != "not connected":
+            return float(self.io.ask('PHAS?'))
+        else:
+            pass
     
     def set_phase(self,value):
-        if value>=-360.0:
-            if value <=729.99:
-                self.io.write('PHAS'+str(value))
+        if self.status != "not connected":
+            if value>=-360.0:
+                if value <=729.99:
+                    self.io.write('PHAS'+str(value))
+        else:
+            pass
 
     def query_f_R_theta(self):
         """query the frequency, radius and phase of signal"""
-        return self.io.ask_for_values("SNAP?9,3,4")
+        if self.status != "not connected":
+            return self.io.ask_for_values("SNAP?9,3,4")
+        else:
+            pass
         
     def query_R_theta(self):
         """query the radius and phase of signal at the exact same instant"""
-        return self.io.ask_for_values("SNAP?3,4")
+        if self.status != "not connected":
+            return self.io.ask_for_values("SNAP?3,4")
+        else:
+            pass
 
     def query_XY(self):
         """query the X and Y of signal at the exact same instant"""
-        return self.io.ask_for_values("SNAP?1,2")
+        if self.status != "not connected":
+            return self.io.ask_for_values("SNAP?1,2")
+        else:
+            pass
         
     def set_harmonic(self,i=1):
         """set the i-th harmonic to measure"""
-        self.io.write("HARM"+str(i))
+        if self.status != "not connected":
+            self.io.write("HARM"+str(i))
+        else:
+            pass
         #NB: HARM1 is the fundamental, HARM2 is the 2f harmonic
 
     def query_sensitivity(self):
-        return int(self.io.ask("SENS?"))
+        if self.status != "not connected":
+            return int(self.io.ask("SENS?"))
+        else:
+            pass
     
     def set_sensitivity(self,value=12):
-        self.io.write('SENS'+str(value))
+        if self.status != "not connected":
+            self.io.write('SENS'+str(value))
     
     def query_time_cste(self):
-        return int(self.io.ask("OFLT?"))
+        if self.status != "not connected":
+            return int(self.io.ask("OFLT?"))
+        else:
+            pass
     
     def set_time_cste(self,value=10):
-        self.io.write('OFLT'+str(value))
+        if self.status != "not connected":
+            self.io.write('OFLT'+str(value))
+        else:
+            pass
         
     def query_filter_slop(self):
-        return int(self.io.ask("OFSL?"))     
+        if self.status != "not connected":
+            return int(self.io.ask("OFSL?"))
+        else:
+            pass
 
     def set_filter_slop(self,value=3):
-        self.io.write('OFSL'+str(value))
+        if self.status != "not connected":
+            self.io.write('OFSL'+str(value))
+        else:
+            pass
         
     def set_ch1_display(self,x):
-        ch1={'X':'0','R':'1','X Noise':'2','Aux In 1':'3','Aux In 2':'4'}
-        if x in ch1:
-            self.io.write('DDEF1,'+ch1[x]+',0')
+        if self.status != "not connected":
+            ch1={'X':'0','R':'1','X Noise':'2','Aux In 1':'3','Aux In 2':'4'}
+            if x in ch1:
+                self.io.write('DDEF1,'+ch1[x]+',0')
+        else:
+            pass
             
     def set_ch2_display(self,y):
-        ch2={'Y':'0','theta':'1','Y Noise':'2','Aux In 3':'3','Aux In 4':'4'}
-        if y in ch2:
-            self.io.write('DDEF2,'+ch2[y]+',0')
+        if self.status != "not connected":
+            ch2={'Y':'0','theta':'1','Y Noise':'2','Aux In 3':'3','Aux In 4':'4'}
+            if y in ch2:
+                self.io.write('DDEF2,'+ch2[y]+',0')
+        else:
+            pass
             
     def query_ch1_display(self):
-        return int(self.io.ask_for_values("DDEF?1")[0])
+        if self.status != "not connected":
+            return int(self.io.ask_for_values("DDEF?1")[0])
+        else:
+            pass
     
     def query_ch2_display(self):
-        return int(self.io.ask_for_values("DDEF?2")[0])
+        if self.status != "not connected":
+            return int(self.io.ask_for_values("DDEF?2")[0])
+        else:
+            pass
         
     def query_ch1_ch2(self,x,y):
         """query the ch1 and ch2 of signal at the same instant"""
-        conv={'X':'1','Y':'2','R':'3','theta':'4','Aux In 1':'5','Aux In 2':'6','Aux In 3':'7','Aux In 4':'8','Reference Frequency':'9','CH1 display':'10','CH2 display':'11'}
-        return float(self.io.query("OUTP?"+conv[x])),float(self.io.query("OUTP?"+conv[y]))
+        if self.status != "not connected":
+            conv={'X':'1','Y':'2','R':'3','theta':'4','Aux In 1':'5','Aux In 2':'6','Aux In 3':'7','Aux In 4':'8','Reference Frequency':'9','CH1 display':'10','CH2 display':'11'}
+            return float(self.io.query("OUTP?"+conv[x])),float(self.io.query("OUTP?"+conv[y]))
+        else:
+            pass
         #return self.io.ask_for_values("SNAP?"+conv[x]+','+conv[y])
 
     def get_lockin(self):
+        if self.status != "not connected":
 
-        ins = self
+            ins = self
 
-        photo = []
-        while len(photo) == 0:
-            try:
-                photo = ins.query_ch1_ch2('R','theta')
-            except:
-                continue
-        return photo[0]
+            photo = []
+            while len(photo) == 0:
+                try:
+                    photo = ins.query_ch1_ch2('R','theta')
+                except:
+                    continue
+            return photo[0]
+        else:
+            pass
 
     def check_status(self):
         try:
