@@ -67,7 +67,7 @@ class Altaz:
             # print child.before, child.after
             if i == 0:  # Timeout
                 argstring = 'args %d %d %d\r' % (mag, direction, motornum)
-                print argstring
+                #print argstring
                 child.sendline(argstring)
                 loop = False
             if i == 1:
@@ -90,7 +90,7 @@ class Altaz:
         :param val:
         :return:
         """
-        print "Moving in steps..."
+        #print "Moving in steps..."
         steps = abs(val)
         if val < 0:
             direction = 1
@@ -110,7 +110,7 @@ class Altaz:
         nave = 10000
         x, y, z, angle = cbp.phidget.main(nave)
         current_angle = angle
-        print(current_angle)
+        #print(current_angle)
         return current_angle
 
     def do_azangle(self):
@@ -122,7 +122,7 @@ class Altaz:
         """
         angle_1, angle_2 = cbp.potentiometer.main()
         current_angle = angle_2
-        print(current_angle)
+        #print(current_angle)
         return current_angle
 
 

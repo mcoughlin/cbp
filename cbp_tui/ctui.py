@@ -1,4 +1,4 @@
-test = True
+test = False
 from asciimatics.screen import Screen
 from asciimatics.scene import Scene
 from asciimatics.widgets import Layout, ListBox, Button, Frame, Text, Label
@@ -83,24 +83,28 @@ class AltazView(Frame):
             pass
         else:
             cbp.altaz.do_steps(1,-100)
+            self.az_angle_text.value = str(cbp.altaz.do_azangle())
 
     def _right(self):
         if test:
             pass
         else:
             cbp.altaz.do_steps(1,100)
+            self.az_angle_text.value = str(cbp.altaz.do_azangle())
 
     def _up(self):
         if test:
             pass
         else:
             cbp.altaz.do_steps(2,100)
+            self.alt_angle_text.value = str(cbp.altaz.do_altangle())
 
     def _down(self):
         if test:
             pass
         else:
             cbp.altaz.do_steps(2,-100)
+            self.alt_angle_text.value = str(cbp.altaz.do_altangle())
 
     def _display_alt_angle(self):
         if test:
