@@ -1,4 +1,4 @@
-test = False
+test = True
 from asciimatics.screen import Screen
 from asciimatics.scene import Scene
 from asciimatics.widgets import Layout, ListBox, Button, Frame, Text, Label
@@ -177,15 +177,15 @@ class BirgerView(Frame):
         if test:
             pass
         else:
-            focus = cbp.birger.do_status()
-            self.focus_text.value = str(focus[0])
+            focus, aperture = cbp.birger.do_status()
+            self.focus_text.value = str(focus)
 
     def _display_aperture(self):
         if test:
             pass
         else:
-            aperture = cbp.birger.do_status()
-            self.aperture_text.value = str(aperture[1])
+            focus, aperture = cbp.birger.do_status()
+            self.aperture_text.value = str(aperture)
 
     def _go_back(self):
         raise NextScene("Main")

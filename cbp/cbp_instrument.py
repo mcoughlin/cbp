@@ -98,7 +98,7 @@ class CBP:
             self.birger = cbp.birger.Birger()
             self.filter_wheel = cbp.filter_wheel.FilterWheel()
             rm = visa.ResourceManager('@py')
-            self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0)
+            self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0,do_reset=True)
             self.phidget = cbp.phidget.CbpPhidget()
             if self.phidget.status == "connected":
                 self.altaz.status = "connected"

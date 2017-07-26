@@ -100,33 +100,28 @@ class Altaz:
 
         self.takesteps(mag=mag, direction=direction, motornum=motornum)
 
-    def do_altangle(self, val, motornum):
+    def do_altangle(self):
         """
 
         :param val: The angle to move by.
         :param motornum: the motor to move by. 1 is left to right, 2 is up to down.
         :return:
         """
-        target_angle = val
         nave = 10000
         x, y, z, angle = cbp.phidget.main(nave)
         current_angle = angle
-        diff_angle = target_angle - current_angle
         print(current_angle)
         return current_angle
 
-    def do_azangle(self, val, motornum):
+    def do_azangle(self):
         """
 
         :param val: The angle to move by
         :param motornum: The axis to move on by motor.
         :return:
         """
-        print "Moving in angle..."
-        target_angle = val
         angle_1, angle_2 = cbp.potentiometer.main()
         current_angle = angle_2
-        diff_angle = target_angle - current_angle
         print(current_angle)
         return current_angle
 
@@ -165,10 +160,10 @@ def main(runtype="steps", val=1000, motornum=1):
         altaz.do_steps(motornum, val)
 
     elif runtype == "altangle":
-        altaz.do_altangle(val, motornum)
+        altaz.do_altangle()
 
     elif runtype == "azangle":
-        altaz.do_azangle(val, motornum)
+        altaz.do_azangle()
 
 
 if __name__ == "__main__":

@@ -5,12 +5,12 @@
 """
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = 'b76be8c4d52d07f31887f611fe714576a3f818ac'
-__date__ = '2017-07-26 16:22:42 +0000'
+__version__ = '263f277926c1d8c056ccce8d91384760eb2f15d7'
+__date__ = '2017-07-26 18:09:24 +0000'
 
-git_id = 'b76be8c4d52d07f31887f611fe714576a3f818ac'
+git_id = '263f277926c1d8c056ccce8d91384760eb2f15d7'
 git_branch = 'master'
 git_tag = None
-git_author = 'Darkmind14 <eric.coughlin2014@gmail.com>'
-git_committer = 'Darkmind14 <eric.coughlin2014@gmail.com>'
+git_author = 'Michael Coughlin <michael.w.coughlin@gmail.com>'
+git_committer = 'Michael Coughlin <michael.w.coughlin@gmail.com>'
 git_status = None
