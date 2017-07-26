@@ -175,7 +175,8 @@ class Birger:
 
                 aperture = float(reply_split[0])
                 fstop = float(reply_split[1].replace("f", ""))
-            except:
+            except Exception as e:
+                print(e)
                 aperture = 0
 
             return focus, aperture

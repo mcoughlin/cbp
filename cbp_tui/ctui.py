@@ -1,4 +1,4 @@
-test = True
+test = False
 from asciimatics.screen import Screen
 from asciimatics.scene import Scene
 from asciimatics.widgets import Layout, ListBox, Button, Frame, Text, Label
@@ -356,6 +356,6 @@ def main():
 
 if not test:
     cbp = CBP.CBP(everything=True)
-cbp_instrument_options = [("altaz", 0), ("birger", 1), ("filter wheel", 2), ("keithley", 3), ("laser", 4), ("lockin", 5),("phidget", 6), ("photodiode", 7), ("shutter", 8), ("spectrograph", 9)]
-cbp_instrument_list = ["altaz","birger","filter wheel","keithley","laser","lockin","phidget","photodiode","shutter","spectrograph"]
+cbp_instrument_options = [("altaz", 0), ("birger", 1), ("filter wheel", 2), ("keithley", 3), ("laser", 4), ("lockin", 5),("phidget", 6), ("photodiode", 7),("potentiometer",8), ("shutter", 9), ("spectrograph", 10),("temperature",11),("lamp",12)]
+cbp_instrument_list = ["altaz","birger","filter wheel","keithley","laser","lockin","phidget","photodiode","potentiometer","shutter","spectrograph","temperature","lamp"]
 main()
