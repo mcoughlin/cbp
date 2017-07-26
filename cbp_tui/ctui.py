@@ -135,21 +135,54 @@ class BirgerView(Frame):
         self.aperture_text = Text("Aperture",on_change=self._display_aperture)
         self.aperture_text.disabled = True
         self.layout2.add_widget(self.focus_text,0)
+        self.layout2.add_widget(Label(""),0)
+        self.layout2.add_widget(Label(""),0)
         self.layout2.add_widget(self.aperture_text,0)
+        self.layout2.add_widget(Button(u"\u2191",self._focus_up),1)
+        self.layout2.add_widget(Button(u"\u2193",self._focus_down),1)
+        self.layout2.add_widget(Label(""),1)
+        self.layout2.add_widget(Button(u"\u2191",self._aperture_up),1)
+        self.layout2.add_widget(Button(u"\u2193",self._aperture_down),1)
         self.fix()
+
+    def _focus_up(self):
+        if test:
+            pass
+        else:
+            cf = cbp.birger.do_status()
+            cbp.birger.do_focus(cf[0]+1)
+
+    def _focus_down(self):
+        if test:
+            pass
+        else:
+            cf = cbp.birger.do_status()
+            cbp.birger.do_focus(cf[0]-1)
+
+    def _aperture_up(self):
+        if test:
+            pass
+        else:
+            ca = cbp.birger.do_status()
+            cbp.birger.do_aperture(ca[1]+10)
+
+    def _aperture_down(self):
+        if test:
+            pass
+        else:
+            ca = cbp.birger.do_status()
+            cbp.birger.do_aperture(ca[1]-10)
 
     def _display_focus(self):
         if test:
-            focus = 12
-            self.focus_text.value = str(focus)
+            pass
         else:
             focus = cbp.birger.do_status()
             self.focus_text.value = str(focus[0])
 
     def _display_aperture(self):
         if test:
-            aperture = 1655
-            self.aperture_text.value = str(aperture)
+            pass
         else:
             aperture = cbp.birger.do_status()
             self.aperture_text.value = str(aperture[1])
@@ -164,6 +197,10 @@ class FilterWheelView(Frame):
     def __init__(self,screen):
         super(FilterWheelView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Filter Wheel View")
         self._screen = screen
+        self.filters_dictionary = {0:"568 nm inteference",1:"700 nm (10 nm)",2:"671 nm (10 nm)",3:"DECam (2.2 deg)",4:"680 nm (10 nm)"}
+        self.masks_dictionary = {0:"200 micron slit",1:"20 micron pinhole",2:"ronchi grating",3:"20 micron pinhole decam",4:"USAF target"}
+        self.filter_options = [("568 nm inteference",0),("700 nm (10 nm)",1),("671 nm (10 nm)",2),("DECam (2.2 deg)",3),("680 nm (10 nm)",4)]
+        self.mask_options = [("200 micron slit",0),("20 micron pinhole",1),("ronchi grating",2),("20 micron pinhole decam",3),("USAF target",4)]
         self.layout = Layout([1])
         self.add_layout(self.layout)
         self.layout.add_widget(Button("QUIT", self._quit))
@@ -174,19 +211,52 @@ class FilterWheelView(Frame):
         self.mask_text.disabled = True
         self.filter_text = Text("Filter", on_change=self._display_filter)
         self.filter_text.disabled = True
+        self.filter_options_list_box = ListBox(label="Filter Options",height=len(self.filter_options),options=self.filter_options,on_select=self._select_filter)
+        self.mask_options_list_box = ListBox(label="Mask Options",height=len(self.mask_options),options=self.mask_options,on_select=self._select_mask)
         self.layout2.add_widget(self.mask_text)
         self.layout2.add_widget(self.filter_text)
+        self.layout2.add_widget(self.mask_options_list_box,1)
+        self.layout2.add_widget(Label(""),1)
+        self.layout2.add_widget(self.filter_options_list_box,1)
         self.fix()
+
+    def _select_filter(self):
+        if self.filter_options_list_box.value == 0:
+            cbp.filter_wheel.filter = 0
+        if self.filter_options_list_box.value == 1:
+            cbp.filter_wheel.filter = 1
+        if self.filter_options_list_box.value == 2:
+            cbp.filter_wheel.filter = 2
+        if self.filter_options_list_box.value == 3:
+            cbp.filter_wheel.filter = 3
+        if self.filter_options_list_box.value == 4:
+            cbp.filter_wheel.filter = 4
+
+    def _select_mask(self):
+        if self.mask_options_list_box.value == 0:
+            cbp.filter_wheel.mask = 0
+        if self.mask_options_list_box.value == 1:
+            cbp.filter_wheel.mask = 1
+        if self.mask_options_list_box.value == 2:
+            cbp.filter_wheel.mask = 2
+        if self.mask_options_list_box.value == 3:
+            cbp.filter_wheel.mask = 3
+        if self.mask_options_list_box.value == 4:
+            cbp.filter_wheel.mask = 4
 
     def _display_mask(self):
         if test:
-            mask = "200 micron slit"
-            self.mask_text.value = str(mask)
+            pass
+        else:
+            mask, filter = cbp.filter_wheel.get_position()
+            self.mask_text.value = self.masks_dictionary[mask]
 
     def _display_filter(self):
         if test:
-            filter = "568 nm interference"
-            self.filter_text.value = str(filter)
+            pass
+        else:
+            mask, filter = cbp.filter_wheel.get_position()
+            self.filter_text.value = self.filters_dictionary[filter]
 
     def _go_back(self):
         raise NextScene("Main")
