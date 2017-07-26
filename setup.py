@@ -24,6 +24,7 @@
 import glob
 import os.path
 from setuptools import (find_packages, setup)
+import versioneer
 
 from utils import version
 
@@ -54,7 +55,8 @@ packagenames = find_packages(exclude=['utils'])
 scripts = glob.glob('bin/*')
 
 setup(name=PACKAGENAME,
-      version=VERSION,
+      version=versioneer.get_version(),
+      cmdclass=versioneer.get_cmdclass(),
       description=DESCRIPTION,
       scripts=scripts,
       packages=packagenames,

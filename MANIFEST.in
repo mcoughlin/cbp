@@ -1,0 +1,2 @@
+include versioneer.py
+include cbp/_version.py

@@ -7,6 +7,7 @@ if not test:
     import cbp.cbp_instrument as CBP
 import logging
 import time
+from cbp._version import get_versions
 
 
 class MainView(Frame):
@@ -15,6 +16,7 @@ class MainView(Frame):
         self._screen = screen
         self.main_button_layout = Layout([1])
         self.add_layout(self.main_button_layout)
+        self.main_button_layout.add_widget(Label('Version:{0}'.format(get_versions()['version'])))
         self.main_button_layout.add_widget(Button("QUIT",self._quit))
         self.instrument_list_layout = Layout([1])
         height = 4
@@ -26,15 +28,18 @@ class MainView(Frame):
         self.add_layout(self.status_layout)
         self.instument_text_dictionary = {}
         for idx, item in enumerate(cbp_instrument_list):
-            instrument_text = Text("{0}".format(item),name=item)
+            instrument_text = Text("{0}".format(item),name=item,on_change=self._display_status)
             instrument_text.disabled = True
-            instrument_text.value = "not connected"
             self.instument_text_dictionary[item] = instrument_text
             self.status_layout.add_widget(instrument_text,0 if idx < 5 else 1)
         self.fix()
 
     def _display_status(self):
-        pass
+        if test:
+            pass
+        else:
+            for key, item in cbp.instrument_dictionary.iteritems():
+                self.instument_text_dictionary[key].value = cbp.instrument_dictionary[key].status
 
     def _quit(self):
         raise StopApplication("User stopped application")
@@ -74,32 +79,40 @@ class AltazView(Frame):
         self.fix()
 
     def _left(self):
-        pass
+        if test:
+            pass
+        else:
+            cbp.altaz.do_steps(1,-100)
 
     def _right(self):
-        pass
+        if test:
+            pass
+        else:
+            cbp.altaz.do_steps(1,100)
 
     def _up(self):
-        pass
+        if test:
+            pass
+        else:
+            cbp.altaz.do_steps(2,100)
 
     def _down(self):
-        pass
+        if test:
+            pass
+        else:
+            cbp.altaz.do_steps(2,-100)
 
     def _display_alt_angle(self):
         if test:
-            alt_angle = str(1.5)
-            self.alt_angle_text.value = alt_angle
+            pass
         else:
-            alt_angle = cbp.altaz.do_altangle()
-            self.alt_angle_text.value = str(alt_angle)
+            self.az_angle_text.value = str(cbp.altaz.do_azangle())
 
     def _display_az_angle(self):
         if test:
-            az_angle = str(2)
-            self.az_angle_text.value = az_angle
+            pass
         else:
-            az_angle = cbp.altaz.do_azangle()
-            self.az_angle_text.value = str(az_angle)
+            self.alt_angle_text.value = str(cbp.altaz.do_altangle())
 
     def _go_back(self):
         raise NextScene("Main")
@@ -126,10 +139,20 @@ class BirgerView(Frame):
         self.fix()
 
     def _display_focus(self):
-        pass
+        if test:
+            focus = 12
+            self.focus_text.value = str(focus)
+        else:
+            focus = cbp.birger.do_status()
+            self.focus_text.value = str(focus[0])
 
     def _display_aperture(self):
-        pass
+        if test:
+            aperture = 1655
+            self.aperture_text.value = str(aperture)
+        else:
+            aperture = cbp.birger.do_status()
+            self.aperture_text.value = str(aperture[1])
 
     def _go_back(self):
         raise NextScene("Main")
@@ -145,7 +168,25 @@ class FilterWheelView(Frame):
         self.add_layout(self.layout)
         self.layout.add_widget(Button("QUIT", self._quit))
         self.layout.add_widget(Button("GO BACK", self._go_back))
+        self.layout2 = Layout([1,1])
+        self.add_layout(self.layout2)
+        self.mask_text = Text("Mask",on_change=self._display_mask)
+        self.mask_text.disabled = True
+        self.filter_text = Text("Filter", on_change=self._display_filter)
+        self.filter_text.disabled = True
+        self.layout2.add_widget(self.mask_text)
+        self.layout2.add_widget(self.filter_text)
         self.fix()
+
+    def _display_mask(self):
+        if test:
+            mask = "200 micron slit"
+            self.mask_text.value = str(mask)
+
+    def _display_filter(self):
+        if test:
+            filter = "568 nm interference"
+            self.filter_text.value = str(filter)
 
     def _go_back(self):
         raise NextScene("Main")
