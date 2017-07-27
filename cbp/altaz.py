@@ -15,6 +15,8 @@ import pexpect
 import cbp.phidget
 import cbp.potentiometer
 
+import logging
+
 
 class Altaz:
     """
@@ -23,8 +25,8 @@ class Altaz:
 
     def __init__(self):
         self.status = None
-        self.altangle = None
-        self.azangle = None
+        self.altangle = self.do_altangle()
+        self.azangle = self.do_azangle()
 
     def send(self, device, command, data=0):
         """
@@ -101,6 +103,8 @@ class Altaz:
         mag = steps
 
         self.takesteps(mag=mag, direction=direction, motornum=motornum)
+        self.do_azangle()
+        self.do_altangle()
 
     def do_altangle(self):
         """

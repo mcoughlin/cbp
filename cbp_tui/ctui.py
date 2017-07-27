@@ -1,4 +1,4 @@
-test = True
+test = False
 from asciimatics.screen import Screen
 from asciimatics.scene import Scene
 from asciimatics.widgets import Layout, ListBox, Button, Frame, Text, Label
@@ -85,6 +85,7 @@ class AltazView(Frame):
             pass
         else:
             cbp.altaz.do_steps(1,-100)
+            logging.info(cbp.altaz.azangle)
             self.az_angle_text.value = str(cbp.altaz.azangle)
 
     def _right(self):
@@ -92,6 +93,7 @@ class AltazView(Frame):
             pass
         else:
             cbp.altaz.do_steps(1,100)
+            logging.info(cbp.altaz.azangle)
             self.az_angle_text.value = str(cbp.altaz.azangle)
 
     def _up(self):
@@ -99,6 +101,7 @@ class AltazView(Frame):
             pass
         else:
             cbp.altaz.do_steps(2,100)
+            logging.info(cbp.altaz.altangle)
             self.alt_angle_text.value = str(cbp.altaz.altangle)
 
     def _down(self):
@@ -106,19 +109,20 @@ class AltazView(Frame):
             pass
         else:
             cbp.altaz.do_steps(2,-100)
+            logging.info(cbp.altaz.altangle)
             self.alt_angle_text.value = str(cbp.altaz.altangle)
 
     def _display_alt_angle(self):
         if test:
             pass
         else:
-            self.az_angle_text.value = str(cbp.altaz.do_azangle())
+            self.alt_angle_text.value = str(cbp.altaz.altangle)
 
     def _display_az_angle(self):
         if test:
             pass
         else:
-            self.alt_angle_text.value = str(cbp.altaz.do_altangle())
+            self.az_angle_text.value = str(cbp.altaz.azangle)
 
     def _go_back(self):
         raise NextScene("Main")
@@ -128,7 +132,7 @@ class AltazView(Frame):
 
 class BirgerView(Frame):
     def __init__(self,screen):
-        super(BirgerView, self).__init__(screen,height=screen.height * 2 // 3, width=screen.width * 2 // 3, hover_focus=True,title="Birger View")
+        super(BirgerView, self).__init__(screen,height=screen.height * 2 // 3, width=screen.width * 3 // 3, hover_focus=True,title="Birger View")
         self._screen = screen
         self.layout = Layout([1])
         self.add_layout(self.layout)
@@ -140,57 +144,47 @@ class BirgerView(Frame):
         self.focus_text.disabled = True
         self.aperture_text = Text("Aperture",on_change=self._display_aperture)
         self.aperture_text.disabled = True
+        self.set_focus_text = Text("Set Focus")
+        self.set_aperture_text = Text("Set Birger")
         self.layout2.add_widget(self.focus_text,0)
         self.layout2.add_widget(Label(""),0)
         self.layout2.add_widget(Label(""),0)
         self.layout2.add_widget(self.aperture_text,0)
-        self.layout2.add_widget(Button(u"\u2191",self._focus_up),1)
-        self.layout2.add_widget(Button(u"\u2193",self._focus_down),1)
+        self.layout2.add_widget(self.set_focus_text,1)
+        self.layout2.add_widget(Button("SET FOCUS",self._focus_up),1)
         self.layout2.add_widget(Label(""),1)
-        self.layout2.add_widget(Button(u"\u2191",self._aperture_up),1)
-        self.layout2.add_widget(Button(u"\u2193",self._aperture_down),1)
+        self.layout2.add_widget(self.set_aperture_text,1)
+        self.layout2.add_widget(Button("SET APERTURE",self._aperture_up),1)
         self.fix()
 
     def _focus_up(self):
         if test:
             pass
         else:
-            cf = cbp.birger.do_status()
-            cbp.birger.do_focus(cf[0]+1)
-
-    def _focus_down(self):
-        if test:
-            pass
-        else:
-            cf = cbp.birger.do_status()
-            cbp.birger.do_focus(cf[0]-1)
+            val = int(self.set_focus_text.value)
+            cbp.birger.do_focus(val)
+            self.focus_text.value = str(val)
 
     def _aperture_up(self):
         if test:
             pass
         else:
-            ca = cbp.birger.do_status()
-            cbp.birger.do_aperture(ca[1]+10)
-
-    def _aperture_down(self):
-        if test:
-            pass
-        else:
-            ca = cbp.birger.do_status()
-            cbp.birger.do_aperture(ca[1]-10)
+            val = int(self.set_aperture_text.value)
+            cbp.birger.do_aperture(val)
+            self.aperture_text.value = str(val)
 
     def _display_focus(self):
         if test:
             pass
         else:
-            focus, aperture = cbp.birger.do_status()
+            focus = cbp.birger.focus
             self.focus_text.value = str(focus)
 
     def _display_aperture(self):
         if test:
             pass
         else:
-            focus, aperture = cbp.birger.do_status()
+            aperture = cbp.birger.aperture
             self.aperture_text.value = str(aperture)
 
     def _go_back(self):

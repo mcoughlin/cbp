@@ -16,6 +16,7 @@ class LaserSerialInterface:
     def __init__(self, loop=True):
         self.state = None
         self.error = None
+        self.wavelength = None
         self.states = {'[PC:READY=0\NL]': ['ready', 'The device is ready'],'[PC:BUSY=0\NL]': ['busy', 'The device is busy'], '[PC:OFF=0\NL]': ['off', 'The device is off'], '[PC:READY=2048\NL]': ['ready', 'The device is ready but with cooling error.'], '': ['off', 'The device is off']}
         self.commands = {'say_state_msg': '[NL:SAY\PC]'}
         self.responses = {'[NL:What\PC]': 'Unrecognized string', '[NL:Ignored\PC]': 'Unrecognized command'}

@@ -11,6 +11,8 @@ class Birger:
     def __init__(self):
         self.status = None
         self.ser = self.open_serial()
+        self.focus = None
+        self.aperture = None
 
     def open_serial(self):
         """
@@ -126,6 +128,7 @@ class Birger:
 
             command = 'eh%s,%s' % (focusstr, checksumstr)
             reply = self.send_and_receive(command)
+            self.focus = val
         else:
             pass
 
@@ -145,6 +148,7 @@ class Birger:
 
             command = 'ma%d' % (val)
             reply = self.send_and_receive(command)
+            self.aperture = val
         else:
             pass
 
