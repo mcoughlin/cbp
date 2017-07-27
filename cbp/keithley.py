@@ -37,6 +37,7 @@ class Keithley:
     """
     def __init__(self, rm=None, resnum=None, mode='curr', nplc=1, do_reset=False):
         try:
+            self.status = None
             if rm is not None and resnum is not None:
                 self.rm = rm
                 print("finding resource")
@@ -79,6 +80,8 @@ class Keithley:
             self.ins.write('SYST:ZCH OFF')
             self.ins.write('SYST:ZCOR OFF')
             self.status = "connected"
+            self.photodiode_reading_1 = None
+            self.photodiode_reading_2 = None
         except Exception as e:
             print(e)
             self.status = "not connected"

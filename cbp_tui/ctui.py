@@ -54,6 +54,10 @@ class MainView(Frame):
             raise NextScene("Filter Wheel")
         if self.instrument_list_box.value == 3:
             raise NextScene("Keithley")
+        if self.instrument_list_box.value == 4:
+            raise NextScene("Laser")
+        if self.instrument_list_box.value == 9:
+            raise NextScene("Shutter")
 
 
 class AltazView(Frame):
@@ -294,6 +298,7 @@ class KeithleyView(Frame):
 
     def _get_photodiode_reading(self):
         cbp.keithley.get_photodiode_reading()
+        self.keithley_text.value = None
 
     def _display_keithley_1(self):
         if test:
@@ -333,6 +338,7 @@ class LaserView(Frame):
     def _set_wavelength(self):
         set_wavelength = int(self.set_wavelength_text.value)
         cbp.laser.change_wavelength(set_wavelength)
+        self.wavelength_text.value = None
 
     def _go_back(self):
         raise NextScene("Main")
@@ -384,7 +390,7 @@ class ShutterView(Frame):
 
     def _display_flipper_status(self):
         pos, flipper_status = thorlabs.thorlabs.get_flipper()
-        if flipper_status == 0:
+        if pos == 1:
             self.flipper_status_text.value = "closed"
         else:
             self.flipper_status_text.value = "open"
@@ -392,18 +398,22 @@ class ShutterView(Frame):
     def _open_shutter(self):
         val = 1
         cbp.shutter.run_shutter(val)
+        self.shutter_status_text.value = None
 
     def _close_shutter(self):
         val = 0
         cbp.shutter.run_shutter(val)
+        self.shutter_status_text.value = None
 
     def _open_flipper(self):
-        val = 1
+        val = 2
         thorlabs.thorlabs.run_flipper(val)
+        self.flipper_status_text.value = None
 
     def _close_flipper(self):
-        val = 0
+        val = 1
         thorlabs.thorlabs.run_flipper(val)
+        self.flipper_status_text.value = None
 
     def _go_back(self):
         raise NextScene("Main")
