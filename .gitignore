@@ -11,3 +11,4 @@
 .DS_store
 *.html
 *.pyc
+*.log

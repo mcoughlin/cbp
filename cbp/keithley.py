@@ -103,7 +103,11 @@ class Keithley:
             # self.ins.write('SENS:%s:NPLC %d' %(mode.upper(),nplc))
             self.ins.write("FUNC '%s'" % (mode.upper()))
         else:
-            pass
+            assert mode.lower() in ['volt', 'char', 'curr', 'res'], "No mode %s" % mode.lower()
+            assert type(nplc) == type(1)  # assert that nplc is an int
+            # self.ins.write('CONF:%s' % mode.upper())
+            # self.ins.write('SENS:%s:NPLC %d' %(mode.upper(),nplc))
+            self.ins.write("FUNC '%s'" % (mode.upper()))
 
     def dispon(self, on):
         """
@@ -117,7 +121,10 @@ class Keithley:
             else:
                 self.ins.write('DISP:ENAB 0')
         else:
-            pass
+            if on:
+                self.ins.write('DISP:ENAB 1')
+            else:
+                self.ins.write('DISP:ENAB 0')
 
     def getread(self):
         """
@@ -369,6 +376,8 @@ class Keithley:
             photo1 = self.getread()
             print("Diode read")
             photo2 = [-1, -1, -1]
+            self.photodiode_reading_1 = photo1[0]
+            self.photodiode_reading_2 = photo2[0]
             return photo1[0], photo2[0]
         else:
             pass

@@ -55,7 +55,7 @@ class LaserSerialInterface:
 
         :return:
         """
-        if self.status != "not connected":
+        if self.status != "not connected" and self.status != "off":
             say_state_msg = self.commands['say_state_msg']
             self.serial.write(say_state_msg)
             response = self.serial.read(size=25)
@@ -78,7 +78,7 @@ class LaserSerialInterface:
 
         :return:
         """
-        if self.status != "not connected":
+        if self.status != "not connected" and self.status != "off":
             while self.state != 'ready' and self.state != 'off' and self.state != 'not connected':
                 print("checking state...")
                 self.check_state()
@@ -94,7 +94,7 @@ class LaserSerialInterface:
         :return:
 
         """
-        if self.status != "not connected":
+        if self.status != "not connected" and self.status != "off":
             self.get_ready_state()
             if self.state != "off" and self.state != "not connected":
                 wavelength_change_msg = '[W0/S{0}]'.format(str(wavelength))
@@ -112,7 +112,7 @@ class LaserSerialInterface:
             pass
 
     def check_wavelength(self, comparison=False):
-        if self.status != "not connected":
+        if self.status != "not connected" and self.status != "off":
             if self.state != "not connected":
                 wavelength_check_msg = '[W0/?]'
                 self.serial.write(wavelength_check_msg)
@@ -122,9 +122,11 @@ class LaserSerialInterface:
                 print(response)
                 if comparison:
                     wavelength = self.parse_wavelength(response)
+                    self.wavelength = wavelength
                     return wavelength
                 else:
                     wavelength = self.parse_wavelength(response)
+                    self.wavelength = wavelength
                     print(wavelength)
             else:
                 raise Exception('The laser is not connected properly')
@@ -132,7 +134,7 @@ class LaserSerialInterface:
             pass
 
     def parse_wavelength(self,msg='[MS:W0/S520\NL]'):
-        if self.status != "not connected":
+        if self.status != "not connected" and self.status != "off":
             msg_parse = msg
             remove_chars = []
             for char in string.letters:
@@ -146,7 +148,7 @@ class LaserSerialInterface:
             pass
 
     def loop_change_wavelength(self, min, max,diagnostic):
-        if self.status != "not connected":
+        if self.status != "not connected" and self.status != "not connected":
             np_array = np.arange(min,max+1)
             for item in np_array:
                 try:

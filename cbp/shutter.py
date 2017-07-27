@@ -10,6 +10,7 @@ class Shutter:
     def __init__(self):
         self.status = None
         self.shutter = self.create_connection()
+        self.state = None
 
     def create_connection(self):
         try:
@@ -43,6 +44,10 @@ class Shutter:
                     # print argstring
                     self.shutter.sendline(argstring)
                     done = True
+                    if shutter == 0:
+                        self.state = "Closed"
+                    elif shutter == 1:
+                        self.state = "open"
                 if i == 1:
                     continue
         else:

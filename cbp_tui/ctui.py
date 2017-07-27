@@ -8,6 +8,7 @@ if not test:
 import logging
 import time
 from cbp._version import get_versions
+import thorlabs
 
 
 class MainView(Frame):
@@ -213,12 +214,23 @@ class FilterWheelView(Frame):
         self.filter_text.disabled = True
         self.filter_options_list_box = ListBox(label="Filter Options",height=len(self.filter_options),options=self.filter_options,on_select=self._select_filter)
         self.mask_options_list_box = ListBox(label="Mask Options",height=len(self.mask_options),options=self.mask_options,on_select=self._select_mask)
+        # TODO add set mask display
+        # TODO add set filter display
         self.layout2.add_widget(self.mask_text)
         self.layout2.add_widget(self.filter_text)
         self.layout2.add_widget(self.mask_options_list_box,1)
         self.layout2.add_widget(Label(""),1)
         self.layout2.add_widget(self.filter_options_list_box,1)
+        self.layout2.add_widget(Button("SET FILTER AND MASK",self._set_filter_and_mask),1)
         self.fix()
+
+    # TODO add set mask display function
+
+    # TODO add set filter display function
+
+    def _set_filter_and_mask(self):
+        pass
+    # TODO add set filter and mask button function
 
     def _select_filter(self):
         if self.filter_options_list_box.value == 0:
@@ -274,16 +286,20 @@ class KeithleyView(Frame):
         self.layout.add_widget(Button("GO BACK", self._go_back))
         self.layout2 = Layout([1,1])
         self.add_layout(self.layout2)
-        self.keithley_text = Text("Keithley: ",on_change=self._display_keithley)
+        self.keithley_text = Text("Keithley 1: ",on_change=self._display_keithley_1)
         self.keithley_text.disabled = True
         self.layout2.add_widget(self.keithley_text)
+        self.layout2.add_widget(Button("GET READING",self._get_photodiode_reading))
         self.fix()
 
-    def _display_keithley(self):
+    def _get_photodiode_reading(self):
+        cbp.keithley.get_photodiode_reading()
+
+    def _display_keithley_1(self):
         if test:
             pass
         else:
-            k = cbp.keithley.get_photodiode_reading()
+            k = cbp.keithley.photodiode_reading_1
             self.keithley_text.value = str(k)
 
     def _go_back(self):
@@ -300,7 +316,23 @@ class LaserView(Frame):
         self.add_layout(self.layout)
         self.layout.add_widget(Button("QUIT", self._quit))
         self.layout.add_widget(Button("GO BACK", self._go_back))
+        self.layout2 = Layout([1,1])
+        self.add_layout(self.layout2)
+        self.wavelength_text = Text("Wavelength",on_change=self._display_wavelength)
+        self.wavelength_text.disabled = True
+        self.set_wavelength_text = Text("Wavelength Set")
+        self.layout2.add_widget(self.wavelength_text)
+        self.layout2.add_widget(self.set_wavelength_text)
+        self.layout2.add_widget(Button("SET WAVELENGTH",self._set_wavelength))
         self.fix()
+
+    def _display_wavelength(self):
+        wavelength = cbp.laser.wavelength
+        self.wavelength_text.value = wavelength
+
+    def _set_wavelength(self):
+        set_wavelength = int(self.set_wavelength_text.value)
+        cbp.laser.change_wavelength(set_wavelength)
 
     def _go_back(self):
         raise NextScene("Main")
@@ -324,15 +356,54 @@ class LockinView(Frame):
     def _quit(self):
         raise StopApplication("User stopped application")
 
-class PhidgetView(Frame):
+class ShutterView(Frame):
     def __init__(self,screen):
-        super(PhidgetView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Phidget View")
+        super(ShutterView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Shutter View")
         self._screen = screen
         self.layout = Layout([1])
         self.add_layout(self.layout)
         self.layout.add_widget(Button("QUIT", self._quit))
         self.layout.add_widget(Button("GO BACK", self._go_back))
+        self.layout2 = Layout([1,1])
+        self.add_layout(self.layout2)
+        self.shutter_status_text = Text("Shutter Status",on_change=self._display_shutter_status)
+        self.shutter_status_text.disabled = True
+        self.flipper_status_text = Text("Flipper Status",on_change=self._display_flipper_status)
+        self.flipper_status_text.disabled = True
+        self.layout2.add_widget(self.shutter_status_text)
+        self.layout2.add_widget(self.flipper_status_text)
+        self.layout2.add_widget(Button("SHUTTER OPEN",self._open_shutter),1)
+        self.layout2.add_widget(Button("SHUTTER CLOSE",self._close_shutter),1)
+        self.layout2.add_widget(Button("FLIPPER OPEN",self._open_flipper),1)
+        self.layout2.add_widget(Button("FLIPPER CLOSE",self._close_flipper),1)
         self.fix()
+
+    def _display_shutter_status(self):
+        shutter_status = cbp.shutter.state
+        self.shutter_status_text.value = shutter_status
+
+    def _display_flipper_status(self):
+        pos, flipper_status = thorlabs.thorlabs.get_flipper()
+        if flipper_status == 0:
+            self.flipper_status_text.value = "closed"
+        else:
+            self.flipper_status_text.value = "open"
+
+    def _open_shutter(self):
+        val = 1
+        cbp.shutter.run_shutter(val)
+
+    def _close_shutter(self):
+        val = 0
+        cbp.shutter.run_shutter(val)
+
+    def _open_flipper(self):
+        val = 1
+        thorlabs.thorlabs.run_flipper(val)
+
+    def _close_flipper(self):
+        val = 0
+        thorlabs.thorlabs.run_flipper(val)
 
     def _go_back(self):
         raise NextScene("Main")
@@ -348,7 +419,16 @@ class SpectrographView(Frame):
         self.add_layout(self.layout)
         self.layout.add_widget(Button("QUIT", self._quit))
         self.layout.add_widget(Button("GO BACK", self._go_back))
+        self.layout2 = Layout([1,1])
+        self.add_layout(self.layout2)
+        self.spectrograph_reading_text = Text("Reading",on_change=self._display_spectrograph_reading)
+        self.spectrograph_reading_text.disabled = True
+        self.layout2.add_widget(self.spectrograph_reading_text)
         self.fix()
+
+    def _display_spectrograph_reading(self):
+        pass
+    # TODO add in spectrograph reading display function
 
     def _go_back(self):
         raise NextScene("Main")
@@ -358,7 +438,7 @@ class SpectrographView(Frame):
 
 
 def launch(screen):
-    scene = [Scene([MainView(screen)],-1,name="Main"),Scene([AltazView(screen)],-1,name="Altaz"),Scene([BirgerView(screen)],-1,name="Birger"),Scene([FilterWheelView(screen)],-1,name="Filter Wheel"),Scene([KeithleyView(screen)],-1,name="Keithley"),Scene([LaserView(screen)],-1,name="Laser"),Scene([LockinView(screen)],-1,name="Lockin"),Scene([PhidgetView(screen)],-1,name="Phidget"),Scene([SpectrographView(screen)],-1,name="Spectrograph")]
+    scene = [Scene([MainView(screen)],-1,name="Main"),Scene([AltazView(screen)],-1,name="Altaz"),Scene([BirgerView(screen)],-1,name="Birger"),Scene([FilterWheelView(screen)],-1,name="Filter Wheel"),Scene([KeithleyView(screen)],-1,name="Keithley"),Scene([LaserView(screen)],-1,name="Laser"),Scene([LockinView(screen)],-1,name="Lockin"),Scene([SpectrographView(screen)],-1,name="Spectrograph"),Scene([ShutterView(screen)],-1,name="Shutter")]
     screen.play(scene)
 
 
