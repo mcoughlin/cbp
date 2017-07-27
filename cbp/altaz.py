@@ -23,6 +23,8 @@ class Altaz:
 
     def __init__(self):
         self.status = None
+        self.altangle = None
+        self.azangle = None
 
     def send(self, device, command, data=0):
         """
@@ -111,6 +113,7 @@ class Altaz:
         x, y, z, angle = cbp.phidget.main(nave)
         current_angle = angle
         #print(current_angle)
+        self.altangle = current_angle
         return current_angle
 
     def do_azangle(self):
@@ -123,6 +126,7 @@ class Altaz:
         angle_1, angle_2 = cbp.potentiometer.main()
         current_angle = angle_2
         #print(current_angle)
+        self.azangle = current_angle
         return current_angle
 
 

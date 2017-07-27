@@ -1,4 +1,4 @@
-test = False
+test = True
 from asciimatics.screen import Screen
 from asciimatics.scene import Scene
 from asciimatics.widgets import Layout, ListBox, Button, Frame, Text, Label
@@ -51,6 +51,8 @@ class MainView(Frame):
             raise NextScene("Birger")
         if self.instrument_list_box.value == 2:
             raise NextScene("Filter Wheel")
+        if self.instrument_list_box.value == 3:
+            raise NextScene("Keithley")
 
 
 class AltazView(Frame):
@@ -83,28 +85,28 @@ class AltazView(Frame):
             pass
         else:
             cbp.altaz.do_steps(1,-100)
-            self.az_angle_text.value = str(cbp.altaz.do_azangle())
+            self.az_angle_text.value = str(cbp.altaz.azangle)
 
     def _right(self):
         if test:
             pass
         else:
             cbp.altaz.do_steps(1,100)
-            self.az_angle_text.value = str(cbp.altaz.do_azangle())
+            self.az_angle_text.value = str(cbp.altaz.azangle)
 
     def _up(self):
         if test:
             pass
         else:
             cbp.altaz.do_steps(2,100)
-            self.alt_angle_text.value = str(cbp.altaz.do_altangle())
+            self.alt_angle_text.value = str(cbp.altaz.altangle)
 
     def _down(self):
         if test:
             pass
         else:
             cbp.altaz.do_steps(2,-100)
-            self.alt_angle_text.value = str(cbp.altaz.do_altangle())
+            self.alt_angle_text.value = str(cbp.altaz.altangle)
 
     def _display_alt_angle(self):
         if test:
@@ -276,7 +278,19 @@ class KeithleyView(Frame):
         self.add_layout(self.layout)
         self.layout.add_widget(Button("QUIT", self._quit))
         self.layout.add_widget(Button("GO BACK", self._go_back))
+        self.layout2 = Layout([1,1])
+        self.add_layout(self.layout2)
+        self.keithley_text = Text("Keithley: ",on_change=self._display_keithley)
+        self.keithley_text.disabled = True
+        self.layout2.add_widget(self.keithley_text)
         self.fix()
+
+    def _display_keithley(self):
+        if test:
+            pass
+        else:
+            k = cbp.keithley.get_photodiode_reading()
+            self.keithley_text.value = str(k)
 
     def _go_back(self):
         raise NextScene("Main")
