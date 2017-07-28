@@ -98,6 +98,7 @@ class LaserSerialInterface:
             self.get_ready_state()
             if self.state != "off" and self.state != "not connected":
                 wavelength_change_msg = '[W0/S{0}]'.format(str(wavelength))
+                # TODO add in handling for wavelengths outside of bounds 355 to 1100
                 self.serial.write(wavelength_change_msg)
                 check_response = self.check_wavelength(comparison=True)
                 if int(wavelength) == check_response:

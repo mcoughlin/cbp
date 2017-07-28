@@ -348,6 +348,7 @@ class LaserView(Frame):
 
 class LockinView(Frame):
     def __init__(self,screen):
+        # REVIEW is this view necessary
         super(LockinView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Lockin View")
         self._screen = screen
         self.layout = Layout([1])
@@ -389,6 +390,7 @@ class ShutterView(Frame):
         self.shutter_status_text.value = shutter_status
 
     def _display_flipper_status(self):
+        # FIXME flipper status is not changing
         pos, flipper_status = thorlabs.thorlabs.get_flipper()
         if pos == 1:
             self.flipper_status_text.value = "closed"
@@ -422,6 +424,7 @@ class ShutterView(Frame):
         raise StopApplication("User stopped application")
 
 class SpectrographView(Frame):
+    # REVIEW is this view necessary
     def __init__(self,screen):
         super(SpectrographView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Spectrograph View")
         self._screen = screen
@@ -431,14 +434,13 @@ class SpectrographView(Frame):
         self.layout.add_widget(Button("GO BACK", self._go_back))
         self.layout2 = Layout([1,1])
         self.add_layout(self.layout2)
-        self.spectrograph_reading_text = Text("Reading",on_change=self._display_spectrograph_reading)
-        self.spectrograph_reading_text.disabled = True
-        self.layout2.add_widget(self.spectrograph_reading_text)
+        # TODO add in duration display
+        # TODO add in get spectrograph button
         self.fix()
 
-    def _display_spectrograph_reading(self):
-        pass
-    # TODO add in spectrograph reading display function
+    # TODO add in duration display function
+
+    # TODO add in get spectrograph button function
 
     def _go_back(self):
         raise NextScene("Main")
