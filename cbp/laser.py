@@ -16,7 +16,6 @@ class LaserSerialInterface:
     def __init__(self, loop=True):
         self.state = None
         self.error = None
-        self.wavelength = None
         self.states = {'[PC:READY=0\NL]': ['ready', 'The device is ready'],'[PC:BUSY=0\NL]': ['busy', 'The device is busy'], '[PC:OFF=0\NL]': ['off', 'The device is off'], '[PC:READY=2048\NL]': ['ready', 'The device is ready but with cooling error.'], '': ['off', 'The device is off']}
         self.commands = {'say_state_msg': '[NL:SAY\PC]'}
         self.responses = {'[NL:What\PC]': 'Unrecognized string', '[NL:Ignored\PC]': 'Unrecognized command'}
@@ -27,6 +26,7 @@ class LaserSerialInterface:
                 self.serial = serial.Serial(port='/dev/ttyUSB.LASER', baudrate=19200, timeout=3)
                 self.status = "connected"
                 self.check_state()
+                self.check_wavelength()
             except Exception as e:
                 print(e)
                 self.status = "not connected"
@@ -134,7 +134,7 @@ class LaserSerialInterface:
             else:
                 raise Exception('The laser is not connected properly')
         else:
-            pass
+            self.wavelength = None
 
     def parse_wavelength(self,msg='[MS:W0/S520\NL]'):
         if self.status != "not connected" and self.status != "off":

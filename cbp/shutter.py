@@ -7,7 +7,6 @@ import pexpect
 
 
 class Shutter:
-    # FIXME Shutter does not respond to commands
     def __init__(self):
         self.status = None
         self.shutter = self.create_connection()
@@ -34,10 +33,21 @@ class Shutter:
     def close_connection(self):
         if self.status != "not connected":
             self.shutter.close()
+    
+    def open_shutter(self):
+        if self.status != "not connected":
+            pass
+        else:
+            pass
+    # TODO write shutter open function that returns from idefinite length
 
     def run_shutter(self, shutter):
         if self.status != "not connected":
             done = False
+            if shutter == -1:
+               self.state = "open"
+            else:
+               self.state = "closed"
             while not done:
                 i = self.shutter.expect([pexpect.TIMEOUT, '\n'], timeout=2)
                 # print child.before, child.after
@@ -46,10 +56,6 @@ class Shutter:
                     # print argstring
                     self.shutter.sendline(argstring)
                     done = True
-                    if shutter == 0:
-                        self.state = "Closed"
-                    elif shutter == 1:
-                        self.state = "open"
                 if i == 1:
                     continue
         else:

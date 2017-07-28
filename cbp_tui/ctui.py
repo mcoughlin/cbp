@@ -74,8 +74,10 @@ class AltazView(Frame):
         self.alt_angle_text.disabled = True
         self.az_angle_text = Text("Az Angle",on_change=self._display_az_angle)
         self.az_angle_text.disabled = True
+        self.steps_text = Text("Steps")
         self.layout2.add_widget(self.alt_angle_text,0)
         self.layout2.add_widget(self.az_angle_text,0)
+        self.layout2.add_widget(self.steps_text)
         self.layout2.add_widget(Button(u"\u2191",self._up),2)
         self.layout2.add_widget(Label(""),2)
         self.layout2.add_widget(Button(u"\u2193",self._down),2)
@@ -89,7 +91,8 @@ class AltazView(Frame):
         if test:
             pass
         else:
-            cbp.altaz.do_steps(1,-100)
+            steps = abs(int(self.steps_text.value))
+            cbp.altaz.do_steps(1,-steps)
             logging.info(cbp.altaz.azangle)
             self.az_angle_text.value = str(cbp.altaz.azangle)
 
@@ -97,7 +100,8 @@ class AltazView(Frame):
         if test:
             pass
         else:
-            cbp.altaz.do_steps(1,100)
+            steps = abs(int(self.steps_text.value))
+            cbp.altaz.do_steps(1,steps)
             logging.info(cbp.altaz.azangle)
             self.az_angle_text.value = str(cbp.altaz.azangle)
 
@@ -105,7 +109,8 @@ class AltazView(Frame):
         if test:
             pass
         else:
-            cbp.altaz.do_steps(2,100)
+            steps = abs(int(self.steps_text.value))
+            cbp.altaz.do_steps(2,steps)
             logging.info(cbp.altaz.altangle)
             self.alt_angle_text.value = str(cbp.altaz.altangle)
 
@@ -113,7 +118,8 @@ class AltazView(Frame):
         if test:
             pass
         else:
-            cbp.altaz.do_steps(2,-100)
+            steps = abs(int(self.steps_text.value))
+            cbp.altaz.do_steps(2,-steps)
             logging.info(cbp.altaz.altangle)
             self.alt_angle_text.value = str(cbp.altaz.altangle)
 
@@ -242,9 +248,7 @@ class FilterWheelView(Frame):
         self.mask_text.value = None
         self.filter_text.value = None
         self.set_mask_text.value = None
-        self.set_filter_text.value = None
-        self.set_mask = None
-        self.set_filter = None
+        self.set_filter_text = None
 
     def _select_filter(self):
         if self.filter_options_list_box.value == 0:
@@ -335,7 +339,7 @@ class KeithleyView(Frame):
 
 class LaserView(Frame):
     def __init__(self,screen):
-        super(LaserView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Laser View")
+        super(LaserView, self).__init__(screen,screen.height * 2 // 3, screen.width * 3 // 3, hover_focus=True,title="Laser View")
         self._screen = screen
         self.layout = Layout([1])
         self.add_layout(self.layout)
@@ -352,13 +356,14 @@ class LaserView(Frame):
         self.fix()
 
     def _display_wavelength(self):
-        wavelength = cbp.laser.wavelength
+        wavelength = str(cbp.laser.wavelength)
         self.wavelength_text.value = wavelength
 
     def _set_wavelength(self):
         set_wavelength = int(self.set_wavelength_text.value)
         cbp.laser.change_wavelength(set_wavelength)
         self.wavelength_text.value = None
+        self.set_wavelength_text.value = ""
 
     def _go_back(self):
         raise NextScene("Main")
@@ -407,7 +412,7 @@ class ShutterView(Frame):
 
     def _display_shutter_status(self):
         logging.info(cbp.shutter.state)
-        shutter_status = cbp.shutter.state
+        shutter_status = str(cbp.shutter.state)
         self.shutter_status_text.value = shutter_status
 
     def _display_flipper_status(self):
@@ -420,7 +425,7 @@ class ShutterView(Frame):
             self.flipper_status_text.value = "open"
 
     def _open_shutter(self):
-        val = 1
+        val = -1
         cbp.shutter.run_shutter(val)
         self.shutter_status_text.value = None
 
