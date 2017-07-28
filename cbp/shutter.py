@@ -7,6 +7,7 @@ import pexpect
 
 
 class Shutter:
+    # FIXME Shutter does not respond to commands
     def __init__(self):
         self.status = None
         self.shutter = self.create_connection()
@@ -27,6 +28,7 @@ class Shutter:
             shutter_command = "picocom -b 57600 /dev/ttyACM.SHUTTER2"
             child = pexpect.spawn(shutter_command)
         except Exception as e:
+            print(e)
             self.status = "not connected"
 
     def close_connection(self):

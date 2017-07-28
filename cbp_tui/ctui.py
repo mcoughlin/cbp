@@ -375,7 +375,7 @@ class ShutterView(Frame):
         self.add_layout(self.layout2)
         self.shutter_status_text = Text("Shutter Status",on_change=self._display_shutter_status)
         self.shutter_status_text.disabled = True
-        self.flipper_status_text = Text("Flipper Status",on_change=self._display_flipper_status)
+        self.flipper_status_text = Text("Flipper Status",on_change=None)
         self.flipper_status_text.disabled = True
         self.layout2.add_widget(self.shutter_status_text)
         self.layout2.add_widget(self.flipper_status_text)
@@ -386,12 +386,14 @@ class ShutterView(Frame):
         self.fix()
 
     def _display_shutter_status(self):
+        logging.info(cbp.shutter.state)
         shutter_status = cbp.shutter.state
         self.shutter_status_text.value = shutter_status
 
     def _display_flipper_status(self):
         # FIXME flipper status is not changing
         pos, flipper_status = thorlabs.thorlabs.get_flipper()
+        logging.info(pos)
         if pos == 1:
             self.flipper_status_text.value = "closed"
         else:
@@ -407,15 +409,15 @@ class ShutterView(Frame):
         cbp.shutter.run_shutter(val)
         self.shutter_status_text.value = None
 
-    def _open_flipper(self):
-        val = 2
-        thorlabs.thorlabs.run_flipper(val)
-        self.flipper_status_text.value = None
-
     def _close_flipper(self):
         val = 1
         thorlabs.thorlabs.run_flipper(val)
-        self.flipper_status_text.value = None
+        self.flipper_status_text.value = "closed"
+
+    def _open_flipper(self):
+        val = 2
+        thorlabs.thorlabs.run_flipper(val)
+        self.flipper_status_text.value = "open"
 
     def _go_back(self):
         raise NextScene("Main")
