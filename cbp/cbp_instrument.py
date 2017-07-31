@@ -103,7 +103,6 @@ class CBP:
             if self.phidget.status == "connected":
                 self.altaz.status = "connected"
             self.potentiometer = cbp.potentiometer.Potentiometer()
-            self.shutter = cbp.shutter.Shutter()
             self.spectrograph = cbp.spectrograph.Spectrograph()
             self.lockin = cbp.lockin.LockIn(rm=rm)
             self.temperature = cbp.temperature.Temperature()
@@ -123,8 +122,6 @@ class CBP:
                     self.instrument_dictionary[instrument] = self.phidget
                 if instrument == "potentiometer":
                     self.instrument_dictionary[instrument] = self.potentiometer
-                if instrument == "shutter":
-                    self.instrument_dictionary[instrument] = self.shutter
                 if instrument == "spectrograph":
                     self.instrument_dictionary[instrument] = self.spectrograph
                 if instrument == "lockin":

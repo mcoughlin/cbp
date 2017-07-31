@@ -10,6 +10,8 @@ import time
 from cbp._version import get_versions
 import thorlabs
 import ConfigParser
+import subprocess
+import cbp.shutter as shutter
 
 
 class MainView(Frame):
@@ -167,8 +169,6 @@ class BirgerView(Frame):
         self.layout2.add_widget(Label(""),1)
         self.layout2.add_widget(self.set_aperture_text,1)
         self.layout2.add_widget(Button("SET APERTURE",self._aperture_up),1)
-        cbp.birger.do_aperture(int(config.get('birger','aperture')))
-        cbp.birger.do_focus(int(config.get('birger','focus')))
         self.fix()
 
     def _focus_up(self):
@@ -242,7 +242,6 @@ class FilterWheelView(Frame):
         self.layout2.add_widget(Label(""),1)
         self.layout2.add_widget(self.filter_options_list_box,1)
         self.layout2.add_widget(Button("SET FILTER AND MASK",self._set_filter_and_mask),1)
-        cbp.filter_wheel.do_position(int(config.get('filter wheel','mask')),int(config.get('filter wheel','filter')))
         self.fix()
 
     def _set_filter_and_mask(self):
@@ -330,10 +329,12 @@ class KeithleyView(Frame):
 
     def _get_timeseries(self):
         duration = int(self.duration_text.value)
+        cbp.keithley.selectmode('char',1)
         times, photosl = cbp.keithley.get_charge_timeseries(duration=duration)
         self.timeseries_text.value = str(photosl[-1])
 
     def _get_photodiode_reading(self):
+        cbp.keithley.selectmode('curr',1)
         cbp.keithley.get_photodiode_reading()
         self.keithley_text.value = None
 
@@ -403,7 +404,7 @@ class LockinView(Frame):
 
 class ShutterView(Frame):
     def __init__(self,screen):
-        super(ShutterView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Shutter View")
+        super(ShutterView, self).__init__(screen,screen.height * 2 // 3, screen.width * 3 // 3, hover_focus=True,title="Shutter View")
         self._screen = screen
         self.layout = Layout([1])
         self.add_layout(self.layout)
@@ -415,8 +416,11 @@ class ShutterView(Frame):
         self.shutter_status_text.disabled = True
         self.flipper_status_text = Text("Flipper Status",on_change=None)
         self.flipper_status_text.disabled = True
+        self.shutter_duration_text = Text("duration")
         self.layout2.add_widget(self.shutter_status_text)
         self.layout2.add_widget(self.flipper_status_text)
+        self.layout2.add_widget(self.shutter_duration_text)
+        self.layout2.add_widget(Button("Shutter OPEN DURATION",self._open_shutter_duration))
         self.layout2.add_widget(Button("SHUTTER OPEN",self._open_shutter),1)
         self.layout2.add_widget(Button("SHUTTER CLOSE",self._close_shutter),1)
         self.layout2.add_widget(Button("FLIPPER OPEN",self._open_flipper),1)
@@ -424,9 +428,7 @@ class ShutterView(Frame):
         self.fix()
 
     def _display_shutter_status(self):
-        logging.info(cbp.shutter.state)
-        shutter_status = str(cbp.shutter.state)
-        self.shutter_status_text.value = shutter_status
+        pass
 
     def _display_flipper_status(self):
         # FIXME flipper status is not changing
@@ -439,13 +441,13 @@ class ShutterView(Frame):
 
     def _open_shutter(self):
         val = -1
-        cbp.shutter.run_shutter(val)
-        self.shutter_status_text.value = None
+        shutter.main(runtype='shutter',val=-1)
+        self.shutter_status_text.value = "open"
 
     def _close_shutter(self):
         val = 0
-        cbp.shutter.run_shutter(val)
-        self.shutter_status_text.value = None
+        shutter.main(runtype='shutter',val=0)
+        self.shutter_status_text.value = "closed"
 
     def _close_flipper(self):
         val = 1
@@ -456,6 +458,10 @@ class ShutterView(Frame):
         val = 2
         thorlabs.thorlabs.run_flipper(val)
         self.flipper_status_text.value = "open"
+   
+    def _open_shutter_duration(self):
+        val = int(self.shutter_duration_text.value)
+        shutter.main(runtype='shutter',val=val)
 
     def _go_back(self):
         raise NextScene("Main")
@@ -502,6 +508,9 @@ if not test:
     cbp = CBP.CBP(everything=True)
     config = ConfigParser.RawConfigParser()
     config.read('/home/pi/Code/cbp_2/cbp_tui/ctui.cfg')
-cbp_instrument_options = [("altaz", 0), ("birger", 1), ("filter wheel", 2), ("keithley", 3), ("laser", 4), ("lockin", 5),("phidget", 6), ("photodiode", 7),("potentiometer",8), ("shutter", 9), ("spectrograph", 10),("temperature",11),("lamp",12)]
+cbp_instrument_options = [("altaz", 0), ("birger", 1), ("filter wheel", 2), ("keithley", 3), ("laser", 4), ("shutter", 9)]
 cbp_instrument_list = ["altaz","birger","filter wheel","keithley","laser","lockin","phidget","photodiode","potentiometer","shutter","spectrograph","temperature","lamp"]
+cbp.birger.do_aperture(int(config.get('birger','aperture')))
+cbp.birger.do_focus(int(config.get('birger','focus')))
+cbp.filter_wheel.do_position(int(config.get('filter wheel','mask')),int(config.get('filter wheel','filter')))
 main()

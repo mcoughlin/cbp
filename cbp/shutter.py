@@ -33,29 +33,16 @@ class Shutter:
     def close_connection(self):
         if self.status != "not connected":
             self.shutter.close()
-    
-    def open_shutter(self):
-        if self.status != "not connected":
-            args = 'args -1\r'
-            self.shutter.sendline(args)
-            self.state = "open"
-        else:
-            pass
-    # TODO write shutter open function that returns from idefinite length
 
     def run_shutter(self, shutter):
         if self.status != "not connected":
             done = False
-            if shutter == -1:
-               self.state = "open"
-            else:
-               self.state = "closed"
             while not done:
                 i = self.shutter.expect([pexpect.TIMEOUT, '\n'], timeout=2)
                 # print child.before, child.after
                 if i == 0:  # Timeout
                     argstring = 'args {0:d}\r'.format(shutter)
-                    # print argstring
+                    # print(argstring)
                     self.shutter.sendline(argstring)
                     done = True
                 if i == 1:
