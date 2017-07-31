@@ -6,6 +6,7 @@ import serial
 import argparse
 import string
 import numpy as np
+import logging
 
 
 class LaserSerialInterface:
@@ -13,6 +14,7 @@ class LaserSerialInterface:
     This class is for communicating with the laser through the RS232 serial interface.
 
     """
+
     def __init__(self, loop=True):
         self.state = None
         self.error = None
@@ -55,6 +57,7 @@ class LaserSerialInterface:
 
         :return:
         """
+
         if self.status != "not connected" and self.status != "off":
             say_state_msg = self.commands['say_state_msg']
             self.serial.write(say_state_msg)
@@ -62,13 +65,13 @@ class LaserSerialInterface:
             if response == "":
                 self.state = "off"
                 self.status = "off"
-                print("The laser is off")
+                logging.info("The laser is off")
                 return
             if response in self.states:
                 self.state = self.states[response][0]
                 print(self.states[response][1])
             else:
-                print("Not found.")
+                logging.info("Not found.")
         else:
             pass
 
@@ -80,7 +83,7 @@ class LaserSerialInterface:
         """
         if self.status != "not connected" and self.status != "off":
             while self.state != 'ready' and self.state != 'off' and self.state != 'not connected':
-                print("checking state...")
+                logging.info("checking state...")
                 self.check_state()
         else:
             pass
@@ -104,9 +107,9 @@ class LaserSerialInterface:
                     self.serial.write(wavelength_change_msg)
                 check_response = self.check_wavelength(comparison=True)
                 if int(wavelength) == check_response:
-                    print("Wavelength set correctly")
+                    logging.info("Wavelength set correctly")
                 else:
-                    print("Something went wrong")
+                    logging.info("Something went wrong")
             elif self.state == "off":
                 raise Exception('The laser is turned off')
             elif self.state == "not connected":
@@ -122,7 +125,7 @@ class LaserSerialInterface:
                 response = self.serial.read(size=25)
                 if response == "":
                    return 0
-                print(response)
+                logging.info(response)
                 if comparison:
                     wavelength = self.parse_wavelength(response)
                     self.wavelength = wavelength
@@ -130,7 +133,7 @@ class LaserSerialInterface:
                 else:
                     wavelength = self.parse_wavelength(response)
                     self.wavelength = wavelength
-                    print(wavelength)
+                    logging.info(wavelength)
             else:
                 raise Exception('The laser is not connected properly')
         else:
@@ -157,7 +160,7 @@ class LaserSerialInterface:
                 try:
                     self.change_wavelength(item)
                 except Exception as e:
-                    print(e)
+                    logging.exception(e)
                     break
                 if not diagnostic:
                     raw_input("Press Enter to continue")

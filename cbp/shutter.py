@@ -36,7 +36,9 @@ class Shutter:
     
     def open_shutter(self):
         if self.status != "not connected":
-            pass
+            args = 'args -1\r'
+            self.shutter.sendline(args)
+            self.state = "open"
         else:
             pass
     # TODO write shutter open function that returns from idefinite length

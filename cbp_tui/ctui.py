@@ -9,6 +9,7 @@ import logging
 import time
 from cbp._version import get_versions
 import thorlabs
+import ConfigParser
 
 
 class MainView(Frame):
@@ -166,6 +167,8 @@ class BirgerView(Frame):
         self.layout2.add_widget(Label(""),1)
         self.layout2.add_widget(self.set_aperture_text,1)
         self.layout2.add_widget(Button("SET APERTURE",self._aperture_up),1)
+        cbp.birger.do_aperture(int(config.get('birger','aperture')))
+        cbp.birger.do_focus(int(config.get('birger','focus')))
         self.fix()
 
     def _focus_up(self):
@@ -239,6 +242,7 @@ class FilterWheelView(Frame):
         self.layout2.add_widget(Label(""),1)
         self.layout2.add_widget(self.filter_options_list_box,1)
         self.layout2.add_widget(Button("SET FILTER AND MASK",self._set_filter_and_mask),1)
+        cbp.filter_wheel.do_position(int(config.get('filter wheel','mask')),int(config.get('filter wheel','filter')))
         self.fix()
 
     def _set_filter_and_mask(self):
@@ -247,8 +251,6 @@ class FilterWheelView(Frame):
         cbp.filter_wheel.do_position(mask=mask,filter=filter)
         self.mask_text.value = None
         self.filter_text.value = None
-        self.set_mask_text.value = None
-        self.set_filter_text = None
 
     def _select_filter(self):
         if self.filter_options_list_box.value == 0:
@@ -316,9 +318,20 @@ class KeithleyView(Frame):
         self.add_layout(self.layout2)
         self.keithley_text = Text("Keithley 1: ",on_change=self._display_keithley_1)
         self.keithley_text.disabled = True
+        self.duration_text = Text("Duration")
+        self.timeseries_text = Text("Timeseries Last Value:")
+        self.timeseries_text.disabled = True
         self.layout2.add_widget(self.keithley_text)
         self.layout2.add_widget(Button("GET READING",self._get_photodiode_reading))
+        self.layout2.add_widget(self.duration_text,1)
+        self.layout2.add_widget(self.timeseries_text,1)
+        self.layout2.add_widget(Button("Get Timeseries",self._get_timeseries),1)
         self.fix()
+
+    def _get_timeseries(self):
+        duration = int(self.duration_text.value)
+        times, photosl = cbp.keithley.get_charge_timeseries(duration=duration)
+        self.timeseries_text.value = str(photosl[-1])
 
     def _get_photodiode_reading(self):
         cbp.keithley.get_photodiode_reading()
@@ -482,11 +495,13 @@ def launch(screen):
 
 
 def main():
-    logging.basicConfig(filename='{0}_{1}.log'.format('foo', time.strftime("%m_%d_%Y")), level=logging.DEBUG,format='{0}: {3} in module {2}: {1}'.format('%(asctime)s', '%(message)s', '%(module)s','%(levelname)s'))
+    logging.basicConfig(filename='{0}_{1}.log'.format('ctui', time.strftime("%m_%d_%Y_%H_%M")), level=logging.DEBUG,format='{0}: {3} in module {2}: {1}'.format('%(asctime)s', '%(message)s', '%(module)s','%(levelname)s'))
     Screen.wrapper(launch)
 
 if not test:
     cbp = CBP.CBP(everything=True)
+    config = ConfigParser.RawConfigParser()
+    config.read('/home/pi/Code/cbp_2/cbp_tui/ctui.cfg')
 cbp_instrument_options = [("altaz", 0), ("birger", 1), ("filter wheel", 2), ("keithley", 3), ("laser", 4), ("lockin", 5),("phidget", 6), ("photodiode", 7),("potentiometer",8), ("shutter", 9), ("spectrograph", 10),("temperature",11),("lamp",12)]
 cbp_instrument_list = ["altaz","birger","filter wheel","keithley","laser","lockin","phidget","photodiode","potentiometer","shutter","spectrograph","temperature","lamp"]
 main()

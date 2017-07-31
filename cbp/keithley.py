@@ -7,6 +7,8 @@ import visa
 import cbp.monochromater
 import cbp.shutter
 
+import logging
+
 
 def parse_commandline():
     """
@@ -43,16 +45,16 @@ class Keithley:
                 print("finding resource")
                 if resnum == 0:
                     devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
-                    print("resource found")
+                    logging.info("keithley 1 found")
                 elif resnum == 1:
                     devtty = 'ASRL/dev/ttyUSB.KEITHLEY2::INSTR'
-                    print("resource found")
+                    logging.info("keithley 2 found")
                 else:
                     devtty = rm.list_resources()[resnum]
                 try:
                     self.ins = self.rm.open_resource(devtty)
                 except Exception as e:
-                    print(e)
+                    logging.exception(e)
                     self.status = "not connected"
             else:
                 self.rm = visa.ResourceManager('@py')
@@ -83,13 +85,14 @@ class Keithley:
             self.photodiode_reading_1 = None
             self.photodiode_reading_2 = None
         except Exception as e:
-            print(e)
+            logging.exception(e)
             self.status = "not connected"
 
     def check_status(self):
         try:
             self.getread()
         except Exception as e:
+            logging.exception(e)
             self.status = "not connected"
 
     def selectmode(self, mode, nplc):
@@ -210,7 +213,7 @@ class Keithley:
 
                 if True:
                     # try:
-                    print("entering true loop")
+                    logging.info("entering true loop")
                     ins1 = Keithley(rm=rm, resnum=0, mode=mode, do_reset=do_reset)
                     if analysis_type == 'duration':
                         start_time = time.time()
@@ -351,7 +354,7 @@ class Keithley:
                 return times, photo1, totphotons
             else:
                 try:
-                    print("entering else loop")
+                    logging.info("entering else loop")
                     ins1 = Keithley(rm=rm, resnum=0, mode=mode, do_reset=do_reset)
                     # ins2 = Keithley(rm = rm, resnum = 1, mode = mode, doReset = doReset)
                     time.sleep(duration)
@@ -377,7 +380,7 @@ class Keithley:
         if self.status != "not connected":
             time.sleep(1)
             photo1 = self.getread()
-            print("Diode read")
+            logging.info("Diode read")
             photo2 = [-1, -1, -1]
             self.photodiode_reading_1 = photo1[0]
             self.photodiode_reading_2 = photo2[0]
@@ -417,18 +420,19 @@ class Keithley:
 
 def main(runtype="keithley", duration=1, photons=100000, charge=10**-6, wavelength=550, mode='curr',
          analysis_type="duration", do_single=False, do_reset=False, photon_file='test.dat', do_shutter=True):
+    keithley = Keithley()
 
     if runtype == "keithley":
         rm = visa.ResourceManager('@py')
         if do_single:
-            times, photos, totphotons = get_keithley(rm = rm, duration = duration, mode = mode, photons = photons,
+            times, photos, totphotons = keithley.get_keithley(rm = rm, duration = duration, mode = mode, photons = photons,
                                                      charge = charge, wavelength = wavelength,
                                                      analysis_type= analysis_type, do_single= do_single, do_reset= do_reset,
                                                      photon_file= photon_file, do_shutter= do_shutter)
             print times, photos, totphotons
             return times, photos, totphotons
         else:
-            photo1, photo2 = get_keithley(rm = rm, duration = duration, mode = mode, photons = photons, charge = charge,
+            photo1, photo2 = keithley.get_keithley(rm = rm, duration = duration, mode = mode, photons = photons, charge = charge,
                                           wavelength = wavelength, analysis_type= analysis_type, do_single= do_single,
                                           do_reset= do_reset, photon_file= photon_file, do_shutter= do_shutter)
             print photo1, photo2 

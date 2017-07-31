@@ -5,6 +5,7 @@ import optparse
 import serial
 import sys
 import time
+import logging
 
 
 class Birger:
@@ -30,7 +31,7 @@ class Birger:
             self.status = "connected"
             return ser
         except Exception as e:
-            print(e)
+            logging.exception(e)
             self.status = "not connected"
 
     def check_status(self):
@@ -42,7 +43,7 @@ class Birger:
                 else:
                     self.status = "not connected"
             except Exception as e:
-                raise e
+                logging.exception(e)
         else:
             pass
 
@@ -180,7 +181,7 @@ class Birger:
                 aperture = float(reply_split[0])
                 fstop = float(reply_split[1].replace("f", ""))
             except Exception as e:
-                print(e)
+                logging.exception(e)
                 aperture = 0
 
             return focus, aperture

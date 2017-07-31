@@ -4,6 +4,7 @@ import serial, sys, time, glob, struct
 import optparse
 import numpy as np
 import FLI
+import logging
 
 
 class FilterWheel:
@@ -30,7 +31,7 @@ class FilterWheel:
                     self.status = "Connected"
             return fw0
         except Exception as e:
-            print(e)
+            logging.exception(e)
             self.status = "not connected"
 
     def error_raised(self):
