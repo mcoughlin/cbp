@@ -1,10 +1,22 @@
+"""
+.. module:: spectrograph
+    :platform: unix
+    :synopsis: This module is for communicating with the spectrograph instrument.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+"""
+
 import serial, sys, time, glob, struct, os
 import numpy as np
 import optparse
 
-import seabreeze
-seabreeze.use('pyseabreeze')
-import seabreeze.spectrometers as sb
+if 'TESTENVIRONMENT' in os.environ:
+    import mock
+    sys.modules['seabreeze'] = mock.Mock()
+else:
+    import seabreeze
+    seabreeze.use('pyseabreeze')
+    import seabreeze.spectrometers as sb
 
 
 class Spectrograph:

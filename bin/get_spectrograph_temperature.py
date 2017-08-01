@@ -1,4 +1,5 @@
-import cbp.cbp_class as CBP
+#!/usr/bin/env python
+import cbp.cbp_instrument as CBP
 import time
 
 def main():

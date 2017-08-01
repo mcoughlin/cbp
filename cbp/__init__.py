@@ -20,6 +20,8 @@
 """Collimated Beam Projector
 
 cbp is for measuring light produced by a laser based source.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
 """
 from cbp import version
 

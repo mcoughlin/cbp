@@ -10,6 +10,7 @@ Welcome to CBP's |version| documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   install
    cbp_cli
    cbp_package
 

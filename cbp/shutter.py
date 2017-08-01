@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+"""
+.. module:: shutter
+    :platform: unix
+    :synopsis: This module is for communicating with the shutter instrument.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+"""
+
 import serial, sys, time, glob, struct, os
 import numpy as np
 import optparse

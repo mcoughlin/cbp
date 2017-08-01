@@ -1,4 +1,10 @@
 """
+.. module:: laser
+    :platform: unix
+    :synopsis: This module is for communicating with the laser.
+
+.. codeauthor:: Eric Coughlin
+
 This is a module that communicates with the ESKPLA laser in the lab via RS232 port.
 """
 

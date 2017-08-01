@@ -1,5 +1,15 @@
 #! /usr/bin/env python
 
+"""
+.. module:: monochromater
+    :platform: unix
+    :synopsis: This module is for communicating with the monochromater.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+
+.. warning:: This module has been deprecated by the laser module
+"""
+
 import serial
 import time
 import string

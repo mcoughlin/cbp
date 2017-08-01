@@ -1,0 +1,3 @@
+git+https://github.com/cversek/python-FLI#egg=FLI-dev
+git+https://github.com/ap--/python-seabreeze#egg=seabreeze
+git+https://github.com/peterbrittain/asciimatics#egg=asciimatics

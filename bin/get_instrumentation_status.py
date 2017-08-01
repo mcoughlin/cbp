@@ -1,4 +1,5 @@
-import cbp.cbp_class as CBP
+#!/usr/bin/env python
+import cbp.cbp_instrument as CBP
 
 def main():
     cbp = CBP.CBP(phidget=True,birger=True,potentiometer=True,monochromater=True,filter_wheel=True,keithley=True,spectrograph=True)

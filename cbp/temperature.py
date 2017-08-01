@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+"""
+.. module:: temperature
+    :platform: unix
+    :synopsis: This module is for communicating with the temperature sensor.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+
+.. warning:: This module is currently inactive
+"""
 
 import serial, sys, time, glob, struct, os
 import numpy as np
@@ -6,11 +15,19 @@ import optparse
 import pexpect
 
 class Temperature:
+    """
+    This is the class for communicating with the temperature sensor.
+    """
     def __init__(self):
         self.status = None
         self.serial = self.create_serial()
 
     def create_serial(self):
+        """
+        This method returns the serial connection to the sensor
+
+        :return: a serial connection that is ostensibly from the sensor
+        """
         try:
             PORT = '/dev/ttyACM.TEMP'
             BAUD_RATE = 9600
@@ -22,12 +39,22 @@ class Temperature:
             self.status = "not connected"
 
     def check_status(self):
+        """
+        This method checks the status of the sensor
+
+        :return:
+        """
         try:
             self.receiving()
         except Exception as e:
             self.status = "not connected"
 
     def receiving(self):
+        """
+        This method returns the last message received from the port.
+
+        :return:
+        """
         if self.status != "not connected":
             ser = self.serial
             buffer_string = ''
@@ -47,6 +74,11 @@ class Temperature:
             pass
 
     def get_temperature(self):
+        """
+        This method returns the temperature reading from the sensor.
+
+        :return:
+        """
         if self.status != "not connected":
             ser2 = self.serial
             conversion = 1.0
@@ -77,6 +109,11 @@ class Temperature:
             pass
 
     def do_compile(self):
+        """
+        This method compiles the arduino code for the sensor.
+
+        :return:
+        """
         if self.status != "not connected":
             steps_command = "cd /home/pi/Code/arduino/Temperature/; ./compile.sh"
             os.system(steps_command)
@@ -84,6 +121,11 @@ class Temperature:
             pass
 
     def do_photodiode(self):
+        """
+        This method returns the temperature reading from the sensor.
+
+        :return:
+        """
         if self.status != "not connected":
             temp = self.get_temperature()
             conv = (0.5 / 10.0)  # 0.5 mv/1 bit * 1 degree C / 10 mV

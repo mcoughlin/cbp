@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import cbp.cbp_instrument as cbp_instrument
 import cbp_notifications
 import os

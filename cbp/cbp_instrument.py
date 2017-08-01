@@ -1,9 +1,10 @@
 """
-.. module:: cbp_class
+.. module:: cbp_instrument
     :platform: unix
     :synopsis: This is a module inside of package cbp which is designed to hold the complete cbp instrumentation inside of class CBP.
 
-.. moduleauthor:: Michael Coughlin, Eric Coughlin
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+
 """
 
 import cbp.altaz
@@ -21,12 +22,15 @@ import cbp.lockin
 import cbp.temperature
 import cbp.laser
 import numpy as np
-import thorlabs
 import os
 import time
 from lxml import etree
-
-import visa
+if 'TESTENVIRONMENT' in os.environ:
+    import sys
+    import mock
+    sys.modules['thorlabs'] = mock.Mock()
+else:
+    import thorlabs
 
 
 class CBP:

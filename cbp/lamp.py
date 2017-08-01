@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 
+"""
+.. module:: lamp
+    :platform: unix
+    :synopsis: This module is for communicating with the lamp.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+
+.. warning:: This module is currently inactive
+"""
+
 import optparse
 import os
 

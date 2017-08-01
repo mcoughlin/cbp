@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+"""
+.. module:: birger
+    :platform: unix
+    :synopsis: This is a module for controlling the birger instrument for cbp.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+"""
+
 import optparse
 
 import serial
@@ -9,6 +17,9 @@ import logging
 
 
 class Birger:
+    """
+    This is a class for communicating with the Birger instrument.
+    """
     def __init__(self):
         self.status = None
         self.ser = self.open_serial()
@@ -35,6 +46,11 @@ class Birger:
             self.status = "not connected"
 
     def check_status(self):
+        """
+        This methods checks the status of the birger
+
+        :return:
+        """
         if self.status != "not connected":
             try:
                 reply = self.send_and_receive('fp')
@@ -63,12 +79,23 @@ class Birger:
             pass
 
     def send(self, command):
+        """
+        Sends a command to the birger through the port
+
+        :param command: This is the command to send to the birger
+        :return:
+        """
         if self.status != "not connected":
             self.ser.write("{0}\r\n".format(command))
         else:
             pass
 
     def receive(self):
+        """
+        receives a message from the birger port
+
+        :return: returns the message from the port
+        """
         if self.status != "not connected":
             out = ''
             while self.ser.inWaiting() > 0:
@@ -78,6 +105,11 @@ class Birger:
             pass
 
     def setup_lens(self):
+        """
+        Method that sets up the lenses
+
+        :return:
+        """
         if self.status != "not connected":
             # Setup Lens
             command = 'sm12'

@@ -2,6 +2,6 @@ CBP Command Line
 ================
 
 .. argparse::
-    :module: cbp_interpretator.initialize_cbp.CbpParser
+    :module: cbp_interpretator.initialize_cbp
     :func: create_parser
-    :prog: cbp_CL
+    :prog: cbp.py

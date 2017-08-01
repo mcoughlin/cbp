@@ -1,4 +1,20 @@
-import visa
+"""
+.. module:: lockin
+    :platform: unix
+    :synopsis: This module is for communicating with the lockin instrument.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+
+.. warning:: This module is currently inactive
+"""
+
+import os
+if 'TESTENVIRONMENT' in os.environ:
+    import sys
+    import mock
+    sys.modules['visa'] = mock.Mock()
+else:
+    import visa
 import numpy as np
 
 import serial, sys, time, glob, struct, os
@@ -21,6 +37,9 @@ def parse_commandline():
 
 
 class LockIn:
+    """
+    This is a class for communicating with the lockin instrument
+    """
     def __init__(self,rm=None,resnum=None):
         if rm is not None and resnum is not None:
             self.rm = rm
@@ -89,12 +108,20 @@ class LockIn:
             self.status = "not connected"
 
     def initialize(self):
+        """
+        This method initializes the lockin
+        :return:
+        """
         if self.status != "not connected":
             return 1
         else:
             pass
         
     def query_unit_Id(self):
+        """
+        This method returns the unit id
+        :return:
+        """
         if self.status != "not connected":
             return self.io.ask("*IDN?")
         else:

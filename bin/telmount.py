@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ''' Method to handle connections to TheSkyX
 '''
 from __future__ import print_function

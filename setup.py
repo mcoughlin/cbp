@@ -61,13 +61,12 @@ setup(name=PACKAGENAME,
       scripts=scripts,
       packages=packagenames,
       ext_modules=[],
-      requires=['numpy','lxml','pyvisa'],
-      dependency_links=['https://github.com/cversek/python-FLI#egg=FLI','https://github.com/ap--/python-seabreeze#egg=pyseabreeze'],
+      install_requires=['numpy','lxml','pyvisa','pillow ==2.9.0','sphinx','sphinx-argparse','matplotlib'],
       provides=[PACKAGENAME],
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
       license=LICENSE,
       long_description=LONG_DESCRIPTION,
       zip_safe=False,
-      use_2to3=True
+      use_2to3=False
       )

@@ -2,7 +2,9 @@
 """
 .. module:: altaz
     :platform: unix
-    :synopsis: This is a module for controlling the vertical and horizontal axis of the device.
+    :synopsis: This is a module for controlling the vertical and horizontal axis of cbp.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
 """
 
 import optparse

@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 
-"""Copyright 2010 Phidgets Inc.
+"""
+This module is for communicating with the phidget instruments.
+
+.. module:: phidget
+    :platform: unix
+    :synopsis: This module is for communicating with phidget instruments.
+
+.. codeauthor:: Adam Stelmack, Michael Coughlin, Eric Coughlin
+
+Copyright 2010 Phidgets Inc.
 This work is licensed under the Creative Commons Attribution 2.5 Canada License. 
 To view a copy of this license, visit http://creativecommons.org/licenses/by/2.5/ca/
 """
@@ -14,16 +23,23 @@ from ctypes import *
 import sys
 
 import numpy as np
-
-#Phidget specific imports
-from Phidgets.Phidget import Phidget
-from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
-from Phidgets.Events.Events import SpatialDataEventArgs, AttachEventArgs, DetachEventArgs, ErrorEventArgs
-from Phidgets.Devices.Spatial import Spatial, SpatialEventData, TimeSpan
-from Phidgets.Phidget import PhidgetLogLevel
+import os
+if 'TESTENVIRONMENT' in os.environ:
+    import mock
+    sys.modules['Phidgets'] = mock.Mock()
+else:
+    #Phidget specific imports
+    from Phidgets.Phidget import Phidget
+    from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
+    from Phidgets.Events.Events import SpatialDataEventArgs, AttachEventArgs, DetachEventArgs, ErrorEventArgs
+    from Phidgets.Devices.Spatial import Spatial, SpatialEventData, TimeSpan
+    from Phidgets.Phidget import PhidgetLogLevel
 
 
 class CbpPhidget:
+    """
+    This is the class that communicates with the phidget.
+    """
     def __init__(self):
         self.status = None
         self.spatial = self.create_spatial()
@@ -140,6 +156,12 @@ class CbpPhidget:
             self.DisplayDeviceInfo()
 
     def do_phidget(self, nave=10000):
+        """
+        This method returns the x,y,z coordinates of the phidget and the angle.
+
+        :param nave:
+        :return:
+        """
         self.set_handlers()
 
         # print("Opening phidget object....")

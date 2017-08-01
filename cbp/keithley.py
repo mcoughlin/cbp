@@ -1,9 +1,22 @@
+"""
+.. module:: keithley
+    :platform: unix
+    :synopsis: This module is for communicating with the keithley instruments.
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+"""
+
 import optparse
 import time
 
 import numpy as np
-import visa
-
+import os
+if 'TESTENVIRONMENT' in os.environ:
+    import mock
+    import sys
+    sys.modules['visa'] = mock.Mock()
+else:
+    import visa
 import cbp.monochromater
 import cbp.shutter
 
@@ -369,7 +382,7 @@ class Keithley:
         else:
             pass
 
-    def get_photodiode_reading(self, rm=visa.ResourceManager('@py'), mode='curr', do_reset=True):
+    def get_photodiode_reading(self):
         """
 
         :param rm:
@@ -440,11 +453,12 @@ def main(runtype="keithley", duration=1, photons=100000, charge=10**-6, waveleng
 
 if __name__ == "__main__":
 
-    # Parse command line
-    opts = parse_commandline()
-
-    if opts.doKeithley:
-        main(runtype="keithley", duration=opts.duration, photons=opts.photons, charge=opts.charge,
-             wavelength=opts.wavelength, mode=opts.mode, analysis_type=opts.analysisType, do_single=opts.doSingle,
-             do_reset=opts.doReset, photon_file=opts.photonFile, do_shutter=opts.doShutter)
+    # # Parse command line
+    # opts = parse_commandline()
+    #
+    # if opts.doKeithley:
+    #     main(runtype="keithley", duration=opts.duration, photons=opts.photons, charge=opts.charge,
+    #          wavelength=opts.wavelength, mode=opts.mode, analysis_type=opts.analysisType, do_single=opts.doSingle,
+    #          do_reset=opts.doReset, photon_file=opts.photonFile, do_shutter=opts.doShutter)
+    pass
 

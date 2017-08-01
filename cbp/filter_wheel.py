@@ -1,9 +1,22 @@
 #!/usr/bin/env python
 
+"""
+.. module:: filter_wheel
+    :platform: unix
+    :synopsis: module for communicating with the filter wheel instrument of cbp
+
+.. codeauthor:: Michael Coughlin, Eric Coughlin
+"""
+
 import serial, sys, time, glob, struct
 import optparse
 import numpy as np
-import FLI
+import os
+if 'TESTENVIRONMENT' in os.environ:
+    import mock
+    sys.modules['FLI'] = mock.Mock()
+else:
+    import FLI
 import logging
 
 
