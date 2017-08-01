@@ -1,0 +1,195 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cbp.lamp &#8212; CBP 0+untagged.105.gd97aae8.dirty documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0+untagged.105.gd97aae8.dirty',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cbp.lamp</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: lamp</span>
+<span class="sd">    :platform: unix</span>
+<span class="sd">    :synopsis: This module is for communicating with the lamp.</span>
+
+<span class="sd">.. codeauthor:: Michael Coughlin, Eric Coughlin</span>
+
+<span class="sd">.. warning:: This module is currently inactive</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">optparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pexpect</span>
+
+
+<div class="viewcode-block" id="Lamp"><a class="viewcode-back" href="../../cbp_package.html#cbp.lamp.Lamp">[docs]</a><span class="k">class</span> <span class="nc">Lamp</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the class for communicating with the lamp.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Lamp.run_lamp"><a class="viewcode-back" href="../../cbp_package.html#cbp.lamp.Lamp.run_lamp">[docs]</a>    <span class="k">def</span> <span class="nf">run_lamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param val: the brightness of the lamp to change to.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="mi">255</span> <span class="ow">or</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Lamp must be between 0-255&quot;</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="s2">&quot;Running the lamp ...&quot;</span>
+        <span class="n">lamp</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="n">shutter_command</span> <span class="o">=</span> <span class="s2">&quot;picocom -b 57600 /dev/ttyACM.LAMP&quot;</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="n">pexpect</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">shutter_command</span><span class="p">)</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">while</span> <span class="n">loop</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">expect</span><span class="p">([</span><span class="n">pexpect</span><span class="o">.</span><span class="n">TIMEOUT</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># print child.before, child.after</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Timeout</span>
+                <span class="n">argstring</span> <span class="o">=</span> <span class="s1">&#39;args </span><span class="si">%d</span><span class="s1"> 1</span><span class="se">\r</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">lamp</span>
+                <span class="nb">print</span> <span class="n">argstring</span>
+                <span class="n">child</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">argstring</span><span class="p">)</span>
+                <span class="n">loop</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+        <span class="n">child</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Lamp.compile_lamp"><a class="viewcode-back" href="../../cbp_package.html#cbp.lamp.Lamp.compile_lamp">[docs]</a>    <span class="k">def</span> <span class="nf">compile_lamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method compiles the lamp from the arduino code.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">steps_command</span> <span class="o">=</span> <span class="s2">&quot;cd /home/pi/Code/arduino/lamp/; ./compile.sh&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">steps_command</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="parse_commandline"><a class="viewcode-back" href="../../cbp_package.html#cbp.lamp.parse_commandline">[docs]</a><span class="k">def</span> <span class="nf">parse_commandline</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse the options given on the command-line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-l&quot;</span><span class="p">,</span><span class="s2">&quot;--lamp&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-c&quot;</span><span class="p">,</span><span class="s2">&quot;--doCompile&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;--doLamp&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">opts</span></div>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;compile&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">lamp</span> <span class="o">=</span> <span class="n">Lamp</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;compile&quot;</span><span class="p">:</span>
+        <span class="n">lamp</span><span class="o">.</span><span class="n">compile_lamp</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;lamp&quot;</span><span class="p">:</span>
+        <span class="n">lamp</span><span class="o">.</span><span class="n">run_lamp</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># Parse command line</span>
+    <span class="n">opts</span> <span class="o">=</span> <span class="n">parse_commandline</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doCompile</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;compile&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doLamp</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;lamp&quot;</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">lamp</span><span class="p">)</span>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">CBP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_cli.html">CBP Command Line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_package.html">CBP</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Michael Coughlin, Eric Coughlin, Nick Mondrik.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,291 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cbp.altaz &#8212; CBP 0+untagged.105.gd97aae8.dirty documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0+untagged.105.gd97aae8.dirty',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cbp.altaz</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: altaz</span>
+<span class="sd">    :platform: unix</span>
+<span class="sd">    :synopsis: This is a module for controlling the vertical and horizontal axis of cbp.</span>
+
+<span class="sd">.. codeauthor:: Michael Coughlin, Eric Coughlin</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">optparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pexpect</span>
+
+<span class="kn">import</span> <span class="nn">cbp.phidget</span>
+<span class="kn">import</span> <span class="nn">cbp.potentiometer</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+
+<div class="viewcode-block" id="Altaz"><a class="viewcode-back" href="../../cbp_package.html#cbp.altaz.Altaz">[docs]</a><span class="k">class</span> <span class="nc">Altaz</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is for controlling the motors of the device which move horizontally and vertically.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">altangle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_altangle</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">azangle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_azangle</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Altaz.send"><a class="viewcode-back" href="../../cbp_package.html#cbp.altaz.Altaz.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        send a packet using the specified device number, command number, and data</span>
+<span class="sd">        The data argument is optional and defaults to zero</span>
+
+<span class="sd">        :param device:</span>
+<span class="sd">        :param command:</span>
+<span class="sd">        :param data:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">packet</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;&lt;BBl&#39;</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Altaz.receive"><a class="viewcode-back" href="../../cbp_package.html#cbp.altaz.Altaz.receive">[docs]</a>    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        return 6 bytes from the receive buffer</span>
+<span class="sd">        there must be 6 bytes to receive (no error checking)</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">ser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="Altaz.takesteps"><a class="viewcode-back" href="../../cbp_package.html#cbp.altaz.Altaz.takesteps">[docs]</a>    <span class="k">def</span> <span class="nf">takesteps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mag</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">motornum</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param mag:</span>
+<span class="sd">        :param direction:</span>
+<span class="sd">        :param motornum:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">steps_command</span> <span class="o">=</span> <span class="s2">&quot;picocom -b 57600 --nolock /dev/ttyACM.MSD&quot;</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="n">pexpect</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">steps_command</span><span class="p">)</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">while</span> <span class="n">loop</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">expect</span><span class="p">([</span><span class="n">pexpect</span><span class="o">.</span><span class="n">TIMEOUT</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># print child.before, child.after</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Timeout</span>
+                <span class="n">argstring</span> <span class="o">=</span> <span class="s1">&#39;args </span><span class="si">%d</span><span class="s1"> </span><span class="si">%d</span><span class="s1"> </span><span class="si">%d</span><span class="se">\r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mag</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">motornum</span><span class="p">)</span>
+                <span class="c1">#print argstring</span>
+                <span class="n">child</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">argstring</span><span class="p">)</span>
+                <span class="n">loop</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+        <span class="n">child</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Altaz.do_compile"><a class="viewcode-back" href="../../cbp_package.html#cbp.altaz.Altaz.do_compile">[docs]</a>    <span class="k">def</span> <span class="nf">do_compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compiles the device</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">steps_command</span> <span class="o">=</span> <span class="s2">&quot;cd /home/mcoughlin/Code/arduino/stepper/; source ./compile.sh&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">steps_command</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Altaz.do_steps"><a class="viewcode-back" href="../../cbp_package.html#cbp.altaz.Altaz.do_steps">[docs]</a>    <span class="k">def</span> <span class="nf">do_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">motornum</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param motornum: the motor number to move the device.</span>
+<span class="sd">        :param val:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#print &quot;Moving in steps...&quot;</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">mag</span> <span class="o">=</span> <span class="n">steps</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">takesteps</span><span class="p">(</span><span class="n">mag</span><span class="o">=</span><span class="n">mag</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">motornum</span><span class="o">=</span><span class="n">motornum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_azangle</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_altangle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Altaz.do_altangle"><a class="viewcode-back" href="../../cbp_package.html#cbp.altaz.Altaz.do_altangle">[docs]</a>    <span class="k">def</span> <span class="nf">do_altangle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param val: The angle to move by.</span>
+<span class="sd">        :param motornum: the motor to move by. 1 is left to right, 2 is up to down.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nave</span> <span class="o">=</span> <span class="mi">10000</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">angle</span> <span class="o">=</span> <span class="n">cbp</span><span class="o">.</span><span class="n">phidget</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">nave</span><span class="p">)</span>
+        <span class="n">current_angle</span> <span class="o">=</span> <span class="n">angle</span>
+        <span class="c1">#print(current_angle)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">altangle</span> <span class="o">=</span> <span class="n">current_angle</span>
+        <span class="k">return</span> <span class="n">current_angle</span></div>
+
+<div class="viewcode-block" id="Altaz.do_azangle"><a class="viewcode-back" href="../../cbp_package.html#cbp.altaz.Altaz.do_azangle">[docs]</a>    <span class="k">def</span> <span class="nf">do_azangle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param val: The angle to move by</span>
+<span class="sd">        :param motornum: The axis to move on by motor.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">angle_1</span><span class="p">,</span> <span class="n">angle_2</span> <span class="o">=</span> <span class="n">cbp</span><span class="o">.</span><span class="n">potentiometer</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+        <span class="n">current_angle</span> <span class="o">=</span> <span class="n">angle_2</span>
+        <span class="c1">#print(current_angle)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">azangle</span> <span class="o">=</span> <span class="n">current_angle</span>
+        <span class="k">return</span> <span class="n">current_angle</span></div></div>
+
+
+<div class="viewcode-block" id="parse_commandline"><a class="viewcode-back" href="../../cbp_package.html#cbp.altaz.parse_commandline">[docs]</a><span class="k">def</span> <span class="nf">parse_commandline</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse the options given on the command-line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--motornum&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--steps&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;--angle&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;--doCompile&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;--doSteps&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;--doAngle&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">opts</span></div>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">motornum</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">altaz</span> <span class="o">=</span> <span class="n">Altaz</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;angle&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">motornum</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">runtype</span> <span class="o">=</span> <span class="s2">&quot;azangle&quot;</span>
+        <span class="k">elif</span> <span class="n">motornum</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">runtype</span> <span class="o">=</span> <span class="s2">&quot;altangle&quot;</span>
+
+    <span class="k">if</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;compile&quot;</span><span class="p">:</span>
+        <span class="n">altaz</span><span class="o">.</span><span class="n">do_compile</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;steps&quot;</span><span class="p">:</span>
+        <span class="n">altaz</span><span class="o">.</span><span class="n">do_steps</span><span class="p">(</span><span class="n">motornum</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;altangle&quot;</span><span class="p">:</span>
+        <span class="n">altaz</span><span class="o">.</span><span class="n">do_altangle</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;azangle&quot;</span><span class="p">:</span>
+        <span class="n">altaz</span><span class="o">.</span><span class="n">do_azangle</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># Parse command line</span>
+    <span class="n">opts</span> <span class="o">=</span> <span class="n">parse_commandline</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doCompile</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;compile&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doSteps</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">steps</span><span class="p">,</span> <span class="n">motornum</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">motornum</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doAngle</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;angle&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">angle</span><span class="p">,</span> <span class="n">motornum</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">motornum</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">CBP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_cli.html">CBP Command Line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_package.html">CBP</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Michael Coughlin, Eric Coughlin, Nick Mondrik.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

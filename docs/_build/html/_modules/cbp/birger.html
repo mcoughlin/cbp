@@ -1,0 +1,364 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cbp.birger &#8212; CBP 0+untagged.105.gd97aae8.dirty documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0+untagged.105.gd97aae8.dirty',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cbp.birger</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: birger</span>
+<span class="sd">    :platform: unix</span>
+<span class="sd">    :synopsis: This is a module for controlling the birger instrument for cbp.</span>
+
+<span class="sd">.. codeauthor:: Michael Coughlin, Eric Coughlin</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="kn">import</span> <span class="nn">serial</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+
+<div class="viewcode-block" id="Birger"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger">[docs]</a><span class="k">class</span> <span class="nc">Birger</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a class for communicating with the Birger instrument.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_serial</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">focus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aperture</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Birger.open_serial"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger.open_serial">[docs]</a>    <span class="k">def</span> <span class="nf">open_serial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :return: returns the open serial port otherwise exits the program with a error code.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dev_usb</span> <span class="o">=</span> <span class="s2">&quot;/dev/ttyUSB.BIRGER&quot;</span>
+
+        <span class="c1"># open serial port</span>
+        <span class="c1"># replace &quot;/dev/ttyUSB0&quot; with &quot;COM1&quot;, &quot;COM2&quot;, etc in Windows</span>
+        <span class="c1"># ser = serial.Serial(dev_usb)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ser</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">dev_usb</span><span class="p">,</span> <span class="mi">115200</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;connected&quot;</span>
+            <span class="k">return</span> <span class="n">ser</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;not connected&quot;</span></div>
+
+<div class="viewcode-block" id="Birger.check_status"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger.check_status">[docs]</a>    <span class="k">def</span> <span class="nf">check_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This methods checks the status of the birger</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="s1">&#39;fp&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">reply</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;connected&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;not connected&quot;</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Birger.send_and_receive"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger.send_and_receive">[docs]</a>    <span class="k">def</span> <span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param command: The command to send.</span>
+<span class="sd">        :param dt: The time to wait for the response.</span>
+<span class="sd">        :return: returns the response of the device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>  <span class="c1"># wait for 1 second</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">receive</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">reply</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Birger.send"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends a command to the birger through the port</span>
+
+<span class="sd">        :param command: This is the command to send to the birger</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Birger.receive"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger.receive">[docs]</a>    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        receives a message from the birger port</span>
+
+<span class="sd">        :return: returns the message from the port</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">inWaiting</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">out</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Birger.setup_lens"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger.setup_lens">[docs]</a>    <span class="k">def</span> <span class="nf">setup_lens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method that sets up the lenses</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="c1"># Setup Lens</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sm12&#39;</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+            <span class="c1"># Lens info</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;lc&#39;</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;la&#39;</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+            <span class="c1"># Get Bootloader version</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;bv&#39;</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+            <span class="c1"># Get aperture range</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;da&#39;</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+            <span class="c1"># Get zoom range</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;dz&#39;</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Birger.do_focus"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger.do_focus">[docs]</a>    <span class="k">def</span> <span class="nf">do_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param val: This is the value that the focus will be set to.</span>
+<span class="sd">        :return: sets the focus of the birger.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_lens</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">val</span> <span class="o">&gt;</span> <span class="mi">16383</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Focus should be integer between 0-16383&quot;</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="n">focus</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="n">focusstr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%04x</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">focus</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="n">checksum</span> <span class="o">=</span> <span class="mh">0x0000</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="mh">0x1000</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                <span class="n">checksum</span> <span class="o">=</span> <span class="n">checksum</span> <span class="o">^</span> <span class="p">(</span><span class="n">focus</span> <span class="o">/</span> <span class="n">mask</span><span class="p">)</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span>
+            <span class="n">checksum</span> <span class="o">=</span> <span class="n">checksum</span> <span class="o">&amp;</span> <span class="mh">0x0F</span>
+            <span class="n">checksumstr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%x</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">checksum</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;eh</span><span class="si">%s</span><span class="s1">,</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">focusstr</span><span class="p">,</span> <span class="n">checksumstr</span><span class="p">)</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">focus</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Birger.do_aperture"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger.do_aperture">[docs]</a>    <span class="k">def</span> <span class="nf">do_aperture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param val: This is the value of the aperture</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_lens</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">val</span> <span class="o">&gt;</span> <span class="mi">24</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Focus should be integer between 0-24&quot;</span><span class="p">)</span>
+
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;in&#39;</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;ma</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aperture</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Birger.do_status"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.Birger.do_status">[docs]</a>    <span class="k">def</span> <span class="nf">do_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :return: This returns the focus and aperture of the birger.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_lens</span><span class="p">()</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;fp&#39;</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+            <span class="n">reply</span> <span class="o">=</span> <span class="n">reply</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;fp</span><span class="se">\r</span><span class="s2">OK</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">reply_split</span> <span class="o">=</span> <span class="n">reply</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="n">reply_split</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">reply_split</span><span class="p">)</span>
+
+            <span class="n">fmin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">reply_split</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;fmin:&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+            <span class="n">fmax</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">reply_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;fmax:&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+            <span class="n">focus</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">reply_split</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;current:&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;pa&#39;</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">reply_split</span> <span class="o">=</span> <span class="n">reply</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                <span class="n">reply_split</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">reply_split</span><span class="p">)</span>
+
+                <span class="n">aperture</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">reply_split</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">fstop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">reply_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">aperture</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">return</span> <span class="n">focus</span><span class="p">,</span> <span class="n">aperture</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="parse_commandline"><a class="viewcode-back" href="../../cbp_package.html#cbp.birger.parse_commandline">[docs]</a><span class="k">def</span> <span class="nf">parse_commandline</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse the options given on the command-line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;--focus&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;--aperture&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;--doFocus&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;--doAperture&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;--doStatus&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">opts</span></div>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;focus&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">birger</span> <span class="o">=</span> <span class="n">Birger</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;focus&quot;</span><span class="p">:</span>
+        <span class="n">birger</span><span class="o">.</span><span class="n">do_focus</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;aperture&quot;</span><span class="p">:</span>
+        <span class="n">birger</span><span class="o">.</span><span class="n">do_aperture</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">birger</span><span class="o">.</span><span class="n">do_status</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># Parse command line</span>
+    <span class="n">opts</span> <span class="o">=</span> <span class="n">parse_commandline</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doFocus</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;focus&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">focus</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doAperture</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;aperture&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">aperture</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doStatus</span><span class="p">:</span>
+        <span class="n">focus</span><span class="p">,</span> <span class="n">aperture</span> <span class="o">=</span> <span class="n">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;status&quot;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">CBP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_cli.html">CBP Command Line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_package.html">CBP</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Michael Coughlin, Eric Coughlin, Nick Mondrik.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

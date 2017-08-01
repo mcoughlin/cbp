@@ -1,0 +1,506 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CBP Command Line &#8212; CBP 0+untagged.105.gd97aae8.dirty documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0+untagged.105.gd97aae8.dirty',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CBP" href="cbp_package.html" />
+    <link rel="prev" title="Welcome to CBP’s 0+untagged.105.gd97aae8.dirty documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cbp-command-line">
+<h1>CBP Command Line<a class="headerlink" href="#cbp-command-line" title="Permalink to this headline">¶</a></h1>
+<p>Run CBP Instruments.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span>
+              <span class="p">{</span><span class="n">phidget</span><span class="p">,</span><span class="n">pententiometer</span><span class="p">,</span><span class="n">altaz</span><span class="p">,</span><span class="n">birger</span><span class="p">,</span><span class="n">lamp</span><span class="p">,</span><span class="n">shutter</span><span class="p">,</span><span class="n">photodiode</span><span class="p">,</span><span class="nb">filter</span>
+              <span class="n">wheel</span><span class="p">,</span><span class="n">monochrometer</span><span class="p">,</span><span class="n">keithley</span><span class="p">,</span><span class="n">spectograph</span><span class="p">,</span><span class="n">laser</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h2>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h2>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>-v, --verbose</kbd></td>
+<td>Default: False</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Sub-commands:">
+<h2>Sub-commands:<a class="headerlink" href="#Sub-commands:" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="phidget">
+<h3>phidget<a class="headerlink" href="#phidget" title="Permalink to this headline">¶</a></h3>
+<p>prints out phidget position</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">phidget</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pententiometer">
+<h3>pententiometer<a class="headerlink" href="#pententiometer" title="Permalink to this headline">¶</a></h3>
+<p>prints out information about the two pententiometers</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">pententiometer</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="altaz">
+<h3>altaz<a class="headerlink" href="#altaz" title="Permalink to this headline">¶</a></h3>
+<p>instrument to move camera</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">altaz</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="nb">compile</span><span class="p">,</span><span class="n">steps</span><span class="p">,</span><span class="n">angle</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="Sub-commands:_repeat1">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat1" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="compile">
+<h5>compile<a class="headerlink" href="#compile" title="Permalink to this headline">¶</a></h5>
+<p>Does the compile action</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">altaz</span> <span class="nb">compile</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="steps">
+<h5>steps<a class="headerlink" href="#steps" title="Permalink to this headline">¶</a></h5>
+<p>Does the steps action</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">altaz</span> <span class="n">steps</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">steps</span> <span class="n">motornum</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>steps</kbd></td>
+<td>Default: 1000</td></tr>
+<tr><td class="option-group">
+<kbd>motornum</kbd></td>
+<td>Default: 1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="angle">
+<h5>angle<a class="headerlink" href="#angle" title="Permalink to this headline">¶</a></h5>
+<p>Does the angle action</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">altaz</span> <span class="n">angle</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">motornum</span> <span class="n">angle</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat1">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat1" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>motornum</kbd></td>
+<td>Default: 1</td></tr>
+<tr><td class="option-group">
+<kbd>angle</kbd></td>
+<td>Default: 2.0</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="birger">
+<h3>birger<a class="headerlink" href="#birger" title="Permalink to this headline">¶</a></h3>
+<p>birger instrument</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">birger</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">focus</span><span class="p">,</span><span class="n">aperture</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="Sub-commands:_repeat2">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="focus">
+<h5>focus<a class="headerlink" href="#focus" title="Permalink to this headline">¶</a></h5>
+<p>sets the focus</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">birger</span> <span class="n">focus</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">focus</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat2">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat2" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>focus</kbd></td>
+<td><p class="first">the value to set the focus to.</p>
+<p class="last">Default: 4096</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="aperture">
+<h5>aperture<a class="headerlink" href="#aperture" title="Permalink to this headline">¶</a></h5>
+<p>sets the aperture</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">birger</span> <span class="n">aperture</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">aperture</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat3">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat3" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>aperture</kbd></td>
+<td><p class="first">the value to set the aperture to.</p>
+<p class="last">Default: 0</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="lamp">
+<h3>lamp<a class="headerlink" href="#lamp" title="Permalink to this headline">¶</a></h3>
+<p>sets the lamp</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">lamp</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">lamp</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat4">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>lamp</kbd></td>
+<td>Default: 100</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="shutter">
+<h3>shutter<a class="headerlink" href="#shutter" title="Permalink to this headline">¶</a></h3>
+<p>sets the shutter</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">shutter</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">shutter</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat5">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>shutter</kbd></td>
+<td>Default: -1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="photodiode">
+<h3>photodiode<a class="headerlink" href="#photodiode" title="Permalink to this headline">¶</a></h3>
+<p>prints photo</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">photodiode</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="filter wheel">
+<h3>filter wheel<a class="headerlink" href="#filter wheel" title="Permalink to this headline">¶</a></h3>
+<p>filter wheel instrument</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="nb">filter</span> <span class="n">wheel</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">position</span><span class="p">,</span><span class="n">get</span> <span class="n">position</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="Sub-commands:_repeat3">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="position">
+<h5>position<a class="headerlink" href="#position" title="Permalink to this headline">¶</a></h5>
+<p>change position of filter wheel.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="nb">filter</span> <span class="n">wheel</span> <span class="n">position</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">mask</span> <span class="nb">filter</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat6">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat6" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>mask</kbd></td>
+<td>Default: 0</td></tr>
+<tr><td class="option-group">
+<kbd>filter</kbd></td>
+<td>Default: 0</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="get position">
+<h5>get position<a class="headerlink" href="#get position" title="Permalink to this headline">¶</a></h5>
+<p>get position of filter wheel.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="nb">filter</span> <span class="n">wheel</span> <span class="n">get</span> <span class="n">position</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="monochrometer">
+<h3>monochrometer<a class="headerlink" href="#monochrometer" title="Permalink to this headline">¶</a></h3>
+<p>monochrometer instrument</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">monochrometer</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">wavelength</span><span class="p">,</span><span class="n">get</span> <span class="n">wavelength</span><span class="p">,</span><span class="nb">filter</span><span class="p">,</span><span class="n">get</span> <span class="nb">filter</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="Sub-commands:_repeat4">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="wavelength">
+<h5>wavelength<a class="headerlink" href="#wavelength" title="Permalink to this headline">¶</a></h5>
+<p>change the wavelength of the monochrometer</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">monochrometer</span> <span class="n">wavelength</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">wavelength</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat7">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat7" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>wavelength</kbd></td>
+<td>Default: 600</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="get wavelength">
+<h5>get wavelength<a class="headerlink" href="#get wavelength" title="Permalink to this headline">¶</a></h5>
+<p>get the wavelength of the monochrometer</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">monochrometer</span> <span class="n">get</span> <span class="n">wavelength</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="filter">
+<h5>filter<a class="headerlink" href="#filter" title="Permalink to this headline">¶</a></h5>
+<p>change the filter of the monochrometer</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">monochrometer</span> <span class="nb">filter</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">monofilter</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat8">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat8" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>monofilter</kbd></td>
+<td>Default: 1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="get filter">
+<h5>get filter<a class="headerlink" href="#get filter" title="Permalink to this headline">¶</a></h5>
+<p>get the filter of the monochrometer</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">monochrometer</span> <span class="n">get</span> <span class="nb">filter</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="keithley">
+<h3>keithley<a class="headerlink" href="#keithley" title="Permalink to this headline">¶</a></h3>
+<p>keithley instrument</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">keithley</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="spectograph">
+<h3>spectograph<a class="headerlink" href="#spectograph" title="Permalink to this headline">¶</a></h3>
+<p>spectograph instrument</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">spectograph</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">duration</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat9">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>duration</kbd></td>
+<td>Default: 1000000</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="laser">
+<h3>laser<a class="headerlink" href="#laser" title="Permalink to this headline">¶</a></h3>
+<p>laser instrument</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">laser</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+             <span class="p">{</span><span class="n">change_wavelength</span><span class="p">,</span><span class="n">change_wavelength_loop</span><span class="p">,</span><span class="n">check</span> <span class="n">wavelength</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="Sub-commands:_repeat5">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat5" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="change_wavelength">
+<h5>change_wavelength<a class="headerlink" href="#change_wavelength" title="Permalink to this headline">¶</a></h5>
+<p>change wavelength</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">laser</span> <span class="n">change_wavelength</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">wavelength</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat10">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat10" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>wavelength</kbd></td>
+<td>Default: 500</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="change_wavelength_loop">
+<h5>change_wavelength_loop<a class="headerlink" href="#change_wavelength_loop" title="Permalink to this headline">¶</a></h5>
+<p>loop through array of wavelengths</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">laser</span> <span class="n">change_wavelength_loop</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">diagnostic</span><span class="p">]</span>
+                                    <span class="n">wavelength_min</span> <span class="n">wavelength_max</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat11">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat11" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>wavelength_min</kbd></td>
+<td>Default: 500</td></tr>
+<tr><td class="option-group">
+<kbd>wavelength_max</kbd></td>
+<td>Default: 520</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat1">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this headline">¶</a></h6>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--diagnostic</kbd></td>
+<td><p class="first">performs diagnostic</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="check wavelength">
+<h5>check wavelength<a class="headerlink" href="#check wavelength" title="Permalink to this headline">¶</a></h5>
+<p>check wavelength</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cbp</span><span class="o">.</span><span class="n">py</span> <span class="n">laser</span> <span class="n">check</span> <span class="n">wavelength</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">CBP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CBP Command Line</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Sub-commands:">Sub-commands:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cbp_package.html">CBP</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to CBP’s 0+untagged.105.gd97aae8.dirty documentation!</a></li>
+      <li>Next: <a href="cbp_package.html" title="next chapter">CBP</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Michael Coughlin, Eric Coughlin, Nick Mondrik.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cbp_cli.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
