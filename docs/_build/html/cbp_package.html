@@ -1,0 +1,1499 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CBP &#8212; CBP 0+untagged.107.g59dfb84.dirty documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0+untagged.107.g59dfb84.dirty',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="CBP Command Line" href="cbp_cli.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cbp">
+<span id="cbp"></span><h1>CBP<a class="headerlink" href="#module-cbp" title="Permalink to this headline">¶</a></h1>
+<p>Collimated Beam Projector</p>
+<p>cbp is for measuring light produced by a laser based source.</p>
+<p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<div class="section" id="module-cbp.altaz">
+<span id="altaz"></span><h2>Altaz<a class="headerlink" href="#module-cbp.altaz" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-altaz"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<dl class="class">
+<dt id="cbp.altaz.Altaz">
+<em class="property">class </em><code class="descclassname">cbp.altaz.</code><code class="descname">Altaz</code><a class="reference internal" href="_modules/cbp/altaz.html#Altaz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.altaz.Altaz" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is for controlling the motors of the device which move horizontally and vertically.</p>
+<dl class="method">
+<dt id="cbp.altaz.Altaz.do_altangle">
+<code class="descname">do_altangle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/altaz.html#Altaz.do_altangle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.altaz.Altaz.do_altangle" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>val</strong> – The angle to move by.</li>
+<li><strong>motornum</strong> – the motor to move by. 1 is left to right, 2 is up to down.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.altaz.Altaz.do_azangle">
+<code class="descname">do_azangle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/altaz.html#Altaz.do_azangle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.altaz.Altaz.do_azangle" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>val</strong> – The angle to move by</li>
+<li><strong>motornum</strong> – The axis to move on by motor.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.altaz.Altaz.do_compile">
+<code class="descname">do_compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/altaz.html#Altaz.do_compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.altaz.Altaz.do_compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compiles the device</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.altaz.Altaz.do_steps">
+<code class="descname">do_steps</code><span class="sig-paren">(</span><em>motornum</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/altaz.html#Altaz.do_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.altaz.Altaz.do_steps" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>motornum</strong> – the motor number to move the device.</li>
+<li><strong>val</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.altaz.Altaz.receive">
+<code class="descname">receive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/altaz.html#Altaz.receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.altaz.Altaz.receive" title="Permalink to this definition">¶</a></dt>
+<dd><p>return 6 bytes from the receive buffer
+there must be 6 bytes to receive (no error checking)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.altaz.Altaz.send">
+<code class="descname">send</code><span class="sig-paren">(</span><em>device</em>, <em>command</em>, <em>data=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/altaz.html#Altaz.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.altaz.Altaz.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>send a packet using the specified device number, command number, and data
+The data argument is optional and defaults to zero</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>device</strong> – </li>
+<li><strong>command</strong> – </li>
+<li><strong>data</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.altaz.Altaz.takesteps">
+<code class="descname">takesteps</code><span class="sig-paren">(</span><em>mag=100</em>, <em>direction=1</em>, <em>motornum=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/altaz.html#Altaz.takesteps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.altaz.Altaz.takesteps" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mag</strong> – </li>
+<li><strong>direction</strong> – </li>
+<li><strong>motornum</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.altaz.parse_commandline">
+<code class="descclassname">cbp.altaz.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/altaz.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.altaz.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.birger">
+<span id="birger"></span><h2>Birger<a class="headerlink" href="#module-cbp.birger" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-birger"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<dl class="class">
+<dt id="cbp.birger.Birger">
+<em class="property">class </em><code class="descclassname">cbp.birger.</code><code class="descname">Birger</code><a class="reference internal" href="_modules/cbp/birger.html#Birger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a class for communicating with the Birger instrument.</p>
+<dl class="method">
+<dt id="cbp.birger.Birger.check_status">
+<code class="descname">check_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#Birger.check_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger.check_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>This methods checks the status of the birger</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.birger.Birger.do_aperture">
+<code class="descname">do_aperture</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#Birger.do_aperture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger.do_aperture" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val</strong> – This is the value of the aperture</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.birger.Birger.do_focus">
+<code class="descname">do_focus</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#Birger.do_focus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger.do_focus" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val</strong> – This is the value that the focus will be set to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">sets the focus of the birger.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.birger.Birger.do_status">
+<code class="descname">do_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#Birger.do_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger.do_status" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">This returns the focus and aperture of the birger.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.birger.Birger.open_serial">
+<code class="descname">open_serial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#Birger.open_serial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger.open_serial" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">returns the open serial port otherwise exits the program with a error code.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.birger.Birger.receive">
+<code class="descname">receive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#Birger.receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger.receive" title="Permalink to this definition">¶</a></dt>
+<dd><p>receives a message from the birger port</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">returns the message from the port</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.birger.Birger.send">
+<code class="descname">send</code><span class="sig-paren">(</span><em>command</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#Birger.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a command to the birger through the port</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>command</strong> – This is the command to send to the birger</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.birger.Birger.send_and_receive">
+<code class="descname">send_and_receive</code><span class="sig-paren">(</span><em>command</em>, <em>dt=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#Birger.send_and_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger.send_and_receive" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>command</strong> – The command to send.</li>
+<li><strong>dt</strong> – The time to wait for the response.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">returns the response of the device.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.birger.Birger.setup_lens">
+<code class="descname">setup_lens</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#Birger.setup_lens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.Birger.setup_lens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that sets up the lenses</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.birger.parse_commandline">
+<code class="descclassname">cbp.birger.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/birger.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.birger.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.cbp_instrument">
+<span id="cbp-instrument"></span><h2>CBP Instrument<a class="headerlink" href="#module-cbp.cbp_instrument" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-cbp_instrument"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<dl class="class">
+<dt id="cbp.cbp_instrument.CBP">
+<em class="property">class </em><code class="descclassname">cbp.cbp_instrument.</code><code class="descname">CBP</code><span class="sig-paren">(</span><em>altaz=False</em>, <em>birger=False</em>, <em>filter_wheel=False</em>, <em>keithley=False</em>, <em>lamp=False</em>, <em>monochromater=False</em>, <em>phidget=False</em>, <em>photodiode=False</em>, <em>potentiometer=False</em>, <em>shutter=False</em>, <em>spectrograph=False</em>, <em>lockin=False</em>, <em>temperature=False</em>, <em>laser=False</em>, <em>everything=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/cbp_instrument.html#CBP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.cbp_instrument.CBP" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the class that contains all of the written cbp instrument modules.</p>
+<dl class="method">
+<dt id="cbp.cbp_instrument.CBP.check_status">
+<code class="descname">check_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/cbp_instrument.html#CBP.check_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.cbp_instrument.CBP.check_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>This methods calls the check status of each instrument.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.cbp_instrument.CBP.get_spectograph_average">
+<code class="descname">get_spectograph_average</code><span class="sig-paren">(</span><em>output_dir='/home/pi/CBP/keithley/'</em>, <em>n_averages=3</em>, <em>duration=1000000</em>, <em>dark=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/cbp_instrument.html#CBP.get_spectograph_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.cbp_instrument.CBP.get_spectograph_average" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calculates the spectrograph average and writes out the results to files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>output_dir</strong> – This is the output directory of where the spectrograph file goes.</li>
+<li><strong>n_averages</strong> – This is the number of averages for the spectrograph</li>
+<li><strong>duration</strong> – This is the amount of time in microseconds that the spectrograph will measure light</li>
+<li><strong>dark</strong> – This is a flag that specifies whether the light source is on or off.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.cbp_instrument.CBP.keithley_change_wavelength_loop">
+<code class="descname">keithley_change_wavelength_loop</code><span class="sig-paren">(</span><em>output_dir='data'</em>, <em>wavelength_min=500</em>, <em>wavelength_max=700</em>, <em>wavelength_steps=10</em>, <em>n_averages=3</em>, <em>duration=1000000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/cbp_instrument.html#CBP.keithley_change_wavelength_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.cbp_instrument.CBP.keithley_change_wavelength_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes an average from reading photodiode and spectograph with both opening and closing the shutter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>output_dir</strong> – This is the root directory where files are written</li>
+<li><strong>wavelength_min</strong> – This is the starting wavelength</li>
+<li><strong>wavelength_max</strong> – This is the ending wavelength</li>
+<li><strong>wavelength_steps</strong> – This is the number of steps that are taken at each wavelength change.</li>
+<li><strong>n_averages</strong> – This is the number of times that the photodiodes are read which is used to calculate an average.</li>
+<li><strong>duration</strong> – This is the length of time that the spectrograph will sleep for per reading.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Ostensibly doesn’t return anything, but writes out data files that show average photodiode and spectograph readings at each wavelength.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.cbp_instrument.CBP.load_status_log_xml">
+<code class="descname">load_status_log_xml</code><span class="sig-paren">(</span><em>status_log_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/cbp_instrument.html#CBP.load_status_log_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.cbp_instrument.CBP.load_status_log_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a method to load the status log xml file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>status_log_file</strong> – This is location of the status log file to load.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.cbp_instrument.CBP.write_status_log">
+<code class="descname">write_status_log</code><span class="sig-paren">(</span><em>output_dir='/home/pi/CBP/status_logs/'</em>, <em>duration=1000000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/cbp_instrument.html#CBP.write_status_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.cbp_instrument.CBP.write_status_log" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>output_dir</strong> – This is where the status log will be written to.</li>
+<li><strong>duration</strong> – This is the length of the measuring of the light by the spectropgraph.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.cbp_instrument.CBP.write_status_log_xml">
+<code class="descname">write_status_log_xml</code><span class="sig-paren">(</span><em>output_dir='/home/pi/CBP/status_log_xml/'</em>, <em>duration=1000000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/cbp_instrument.html#CBP.write_status_log_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.cbp_instrument.CBP.write_status_log_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method writes out the status log file but in xml format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>output_dir</strong> – This is where the status log will be written to.</li>
+<li><strong>duration</strong> – This is the length of the measuring of the light by the spectropgraph.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.filter_wheel">
+<span id="filter-wheel"></span><h2>Filter Wheel<a class="headerlink" href="#module-cbp.filter_wheel" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-filter_wheel"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<dl class="class">
+<dt id="cbp.filter_wheel.FilterWheel">
+<em class="property">class </em><code class="descclassname">cbp.filter_wheel.</code><code class="descname">FilterWheel</code><a class="reference internal" href="_modules/cbp/filter_wheel.html#FilterWheel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.filter_wheel.FilterWheel" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the class for communicating with the Filter Wheel.</p>
+<dl class="method">
+<dt id="cbp.filter_wheel.FilterWheel.check_status">
+<code class="descname">check_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/filter_wheel.html#FilterWheel.check_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.filter_wheel.FilterWheel.check_status" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">changes the status of the Filter Wheel depending on location of device in kernel.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.filter_wheel.FilterWheel.do_position">
+<code class="descname">do_position</code><span class="sig-paren">(</span><em>mask</em>, <em>filter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/filter_wheel.html#FilterWheel.do_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.filter_wheel.FilterWheel.do_position" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mask</strong> – This is the value of the mask</li>
+<li><strong>filter</strong> – This is the value of the filter.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">sets the position of the Filter Wheel.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.filter_wheel.FilterWheel.error_raised">
+<code class="descname">error_raised</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/filter_wheel.html#FilterWheel.error_raised"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.filter_wheel.FilterWheel.error_raised" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">either raises an exception if parameters out of bounds or returns false to continue the program</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.filter_wheel.FilterWheel.get_position">
+<code class="descname">get_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/filter_wheel.html#FilterWheel.get_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.filter_wheel.FilterWheel.get_position" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">returns the current mask and filter values of the Filter Wheel.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.filter_wheel.FilterWheel.initialize_connection">
+<code class="descname">initialize_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/filter_wheel.html#FilterWheel.initialize_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.filter_wheel.FilterWheel.initialize_connection" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">returns the connection to the Filter Wheel.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.filter_wheel.parse_commandline">
+<code class="descclassname">cbp.filter_wheel.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/filter_wheel.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.filter_wheel.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.keithley">
+<span id="keithley"></span><h2>Keithley<a class="headerlink" href="#module-cbp.keithley" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-keithley"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<dl class="class">
+<dt id="cbp.keithley.Keithley">
+<em class="property">class </em><code class="descclassname">cbp.keithley.</code><code class="descname">Keithley</code><span class="sig-paren">(</span><em>rm=None</em>, <em>resnum=None</em>, <em>mode='curr'</em>, <em>nplc=1</em>, <em>do_reset=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#Keithley"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.Keithley" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the class that stores the methods for communicating with the keithley devices.</p>
+<dl class="method">
+<dt id="cbp.keithley.Keithley.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#Keithley.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.Keithley.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>closes the connection to the keithley</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a closed connection to the keithley</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.keithley.Keithley.dispon">
+<code class="descname">dispon</code><span class="sig-paren">(</span><em>on</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#Keithley.dispon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.Keithley.dispon" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>on</strong> – a boolean that tells the display to be on or off.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a keithley that has a display off or on.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.keithley.Keithley.do_reset">
+<code class="descname">do_reset</code><span class="sig-paren">(</span><em>mode='curr'</em>, <em>nplc=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#Keithley.do_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.Keithley.do_reset" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mode</strong> – </li>
+<li><strong>nplc</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.keithley.Keithley.get_charge_timeseries">
+<code class="descname">get_charge_timeseries</code><span class="sig-paren">(</span><em>duration=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#Keithley.get_charge_timeseries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.Keithley.get_charge_timeseries" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>duration</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.keithley.Keithley.get_photodiode_reading">
+<code class="descname">get_photodiode_reading</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#Keithley.get_photodiode_reading"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.Keithley.get_photodiode_reading" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rm</strong> – </li>
+<li><strong>mode</strong> – </li>
+<li><strong>do_reset</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.keithley.Keithley.getquery">
+<code class="descname">getquery</code><span class="sig-paren">(</span><em>query</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#Keithley.getquery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.Keithley.getquery" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>query</strong> – a query to send to the keithley</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">returns the response to the query.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.keithley.Keithley.getread">
+<code class="descname">getread</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#Keithley.getread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.Keithley.getread" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a numpy array of a float from the keithley reading.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.keithley.Keithley.selectmode">
+<code class="descname">selectmode</code><span class="sig-paren">(</span><em>mode</em>, <em>nplc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#Keithley.selectmode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.Keithley.selectmode" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mode</strong> – the mode to switch keithley to.</li>
+<li><strong>nplc</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">switches the keithley to a particular mode</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.keithley.parse_commandline">
+<code class="descclassname">cbp.keithley.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/keithley.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.keithley.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.lamp">
+<span id="lamp"></span><h2>Lamp<a class="headerlink" href="#module-cbp.lamp" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-lamp"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This module is currently inactive</p>
+</div>
+<dl class="class">
+<dt id="cbp.lamp.Lamp">
+<em class="property">class </em><code class="descclassname">cbp.lamp.</code><code class="descname">Lamp</code><a class="reference internal" href="_modules/cbp/lamp.html#Lamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lamp.Lamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the class for communicating with the lamp.</p>
+<dl class="method">
+<dt id="cbp.lamp.Lamp.compile_lamp">
+<code class="descname">compile_lamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lamp.html#Lamp.compile_lamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lamp.Lamp.compile_lamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method compiles the lamp from the arduino code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lamp.Lamp.run_lamp">
+<code class="descname">run_lamp</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lamp.html#Lamp.run_lamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lamp.Lamp.run_lamp" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val</strong> – the brightness of the lamp to change to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.lamp.parse_commandline">
+<code class="descclassname">cbp.lamp.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lamp.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lamp.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.laser">
+<span id="laser"></span><h2>Laser<a class="headerlink" href="#module-cbp.laser" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-laser"></span><p><em>Code author: Eric Coughlin</em></p>
+<p>This is a module that communicates with the ESKPLA laser in the lab via RS232 port.</p>
+<dl class="class">
+<dt id="cbp.laser.LaserSerialInterface">
+<em class="property">class </em><code class="descclassname">cbp.laser.</code><code class="descname">LaserSerialInterface</code><span class="sig-paren">(</span><em>loop=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/laser.html#LaserSerialInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.laser.LaserSerialInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is for communicating with the laser through the RS232 serial interface.</p>
+<dl class="method">
+<dt id="cbp.laser.LaserSerialInterface.change_wavelength">
+<code class="descname">change_wavelength</code><span class="sig-paren">(</span><em>wavelength</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/laser.html#LaserSerialInterface.change_wavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.laser.LaserSerialInterface.change_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method changes the wavelength of the laser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wavelength</strong> – This is the value of the wavelength to be set. Units are in nanometers and limits are 355nm to 2300 nm.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.laser.LaserSerialInterface.check_state">
+<code class="descname">check_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/laser.html#LaserSerialInterface.check_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.laser.LaserSerialInterface.check_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks the status of the laser and then sets the state of the laser inside of the class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.laser.LaserSerialInterface.check_wavelength">
+<code class="descname">check_wavelength</code><span class="sig-paren">(</span><em>comparison=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/laser.html#LaserSerialInterface.check_wavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.laser.LaserSerialInterface.check_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>comparison</strong> – This is a flag as to whether wavelength values will be compared or not.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.laser.LaserSerialInterface.get_ready_state">
+<code class="descname">get_ready_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/laser.html#LaserSerialInterface.get_ready_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.laser.LaserSerialInterface.get_ready_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calls the <code class="xref py py-meth docutils literal"><span class="pre">check_state()</span></code> until a ready state is set by the class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.laser.LaserSerialInterface.loop_change_wavelength">
+<code class="descname">loop_change_wavelength</code><span class="sig-paren">(</span><em>min</em>, <em>max</em>, <em>diagnostic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/laser.html#LaserSerialInterface.loop_change_wavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.laser.LaserSerialInterface.loop_change_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>min</strong> – The starting wavelength</li>
+<li><strong>max</strong> – the ending wavelength</li>
+<li><strong>diagnostic</strong> – whether this loop is going to wait for user input to continue</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.laser.LaserSerialInterface.parse_wavelength">
+<code class="descname">parse_wavelength</code><span class="sig-paren">(</span><em>msg='[MS:W0/S520\\NL]'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/laser.html#LaserSerialInterface.parse_wavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.laser.LaserSerialInterface.parse_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> – This is the message to parse.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.laser.LaserSerialInterface.test_state">
+<code class="descname">test_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/laser.html#LaserSerialInterface.test_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.laser.LaserSerialInterface.test_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a method for testing the state of the laser in a loop-back environment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.laser.main">
+<code class="descclassname">cbp.laser.</code><code class="descname">main</code><span class="sig-paren">(</span><em>wavelength</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/laser.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.laser.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>This creates a command line and arguments for the script.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.lockin">
+<span id="lockin"></span><h2>Lockin<a class="headerlink" href="#module-cbp.lockin" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-lockin"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This module is currently inactive</p>
+</div>
+<dl class="class">
+<dt id="cbp.lockin.LockIn">
+<em class="property">class </em><code class="descclassname">cbp.lockin.</code><code class="descname">LockIn</code><span class="sig-paren">(</span><em>rm=None</em>, <em>resnum=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a class for communicating with the lockin instrument</p>
+<dl class="method">
+<dt id="cbp.lockin.LockIn.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method initializes the lockin
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.query_R_theta">
+<code class="descname">query_R_theta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.query_R_theta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.query_R_theta" title="Permalink to this definition">¶</a></dt>
+<dd><p>query the radius and phase of signal at the exact same instant</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.query_XY">
+<code class="descname">query_XY</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.query_XY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.query_XY" title="Permalink to this definition">¶</a></dt>
+<dd><p>query the X and Y of signal at the exact same instant</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.query_ch1_ch2">
+<code class="descname">query_ch1_ch2</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.query_ch1_ch2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.query_ch1_ch2" title="Permalink to this definition">¶</a></dt>
+<dd><p>query the ch1 and ch2 of signal at the same instant</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.query_f_R_theta">
+<code class="descname">query_f_R_theta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.query_f_R_theta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.query_f_R_theta" title="Permalink to this definition">¶</a></dt>
+<dd><p>query the frequency, radius and phase of signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.query_frequency">
+<code class="descname">query_frequency</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.query_frequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.query_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>query the reference frequency</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.query_ref_mode">
+<code class="descname">query_ref_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.query_ref_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.query_ref_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns 1 (internal) or 0 (external)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.query_unit_Id">
+<code class="descname">query_unit_Id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.query_unit_Id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.query_unit_Id" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the unit id
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.set_frequency">
+<code class="descname">set_frequency</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.set_frequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.set_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the reference frequency</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.set_harmonic">
+<code class="descname">set_harmonic</code><span class="sig-paren">(</span><em>i=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.set_harmonic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.set_harmonic" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the i-th harmonic to measure</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.lockin.LockIn.set_ref_mode">
+<code class="descname">set_ref_mode</code><span class="sig-paren">(</span><em>i</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#LockIn.set_ref_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.LockIn.set_ref_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the reference source. The parameter i selects internal (i=1) or external (i=0)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.lockin.parse_commandline">
+<code class="descclassname">cbp.lockin.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/lockin.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.lockin.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.phidget">
+<span id="phidget"></span><h2>Phidget<a class="headerlink" href="#module-cbp.phidget" title="Permalink to this headline">¶</a></h2>
+<p>This module is for communicating with the phidget instruments.</p>
+<span class="target" id="module-phidget"></span><p><em>Code author: Adam Stelmack, Michael Coughlin, Eric Coughlin</em></p>
+<p>Copyright 2010 Phidgets Inc.
+This work is licensed under the Creative Commons Attribution 2.5 Canada License. 
+To view a copy of this license, visit <a class="reference external" href="http://creativecommons.org/licenses/by/2.5/ca/">http://creativecommons.org/licenses/by/2.5/ca/</a></p>
+<dl class="class">
+<dt id="cbp.phidget.CbpPhidget">
+<em class="property">class </em><code class="descclassname">cbp.phidget.</code><code class="descname">CbpPhidget</code><a class="reference internal" href="_modules/cbp/phidget.html#CbpPhidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.phidget.CbpPhidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the class that communicates with the phidget.</p>
+<dl class="method">
+<dt id="cbp.phidget.CbpPhidget.do_phidget">
+<code class="descname">do_phidget</code><span class="sig-paren">(</span><em>nave=10000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/phidget.html#CbpPhidget.do_phidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.phidget.CbpPhidget.do_phidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the x,y,z coordinates of the phidget and the angle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nave</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.potentiometer">
+<span id="potentiometer"></span><h2>Potentiometer<a class="headerlink" href="#module-cbp.potentiometer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-potentiometer"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<dl class="class">
+<dt id="cbp.potentiometer.Potentiometer">
+<em class="property">class </em><code class="descclassname">cbp.potentiometer.</code><code class="descname">Potentiometer</code><a class="reference internal" href="_modules/cbp/potentiometer.html#Potentiometer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.potentiometer.Potentiometer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a class for communicating with the potentiometer</p>
+<dl class="method">
+<dt id="cbp.potentiometer.Potentiometer.check_status">
+<code class="descname">check_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/potentiometer.html#Potentiometer.check_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.potentiometer.Potentiometer.check_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks the status of the potentiometer</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.potentiometer.Potentiometer.create_serial">
+<code class="descname">create_serial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/potentiometer.html#Potentiometer.create_serial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.potentiometer.Potentiometer.create_serial" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the serial connection to the potentiometer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.potentiometer.Potentiometer.do_compile">
+<code class="descname">do_compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/potentiometer.html#Potentiometer.do_compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.potentiometer.Potentiometer.do_compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method compiles the arduino code of the potentiometer</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.potentiometer.Potentiometer.get_potentiometer">
+<code class="descname">get_potentiometer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/potentiometer.html#Potentiometer.get_potentiometer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.potentiometer.Potentiometer.get_potentiometer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the data from the potentiometer</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.potentiometer.Potentiometer.receiving">
+<code class="descname">receiving</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/potentiometer.html#Potentiometer.receiving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.potentiometer.Potentiometer.receiving" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the last received message from the potentiometer</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.potentiometer.parse_commandline">
+<code class="descclassname">cbp.potentiometer.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/potentiometer.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.potentiometer.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.shutter">
+<span id="shutter"></span><h2>Shutter<a class="headerlink" href="#module-cbp.shutter" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-shutter"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<dl class="class">
+<dt id="cbp.shutter.Shutter">
+<em class="property">class </em><code class="descclassname">cbp.shutter.</code><code class="descname">Shutter</code><a class="reference internal" href="_modules/cbp/shutter.html#Shutter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.shutter.Shutter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the class for communicating with the shutter</p>
+<dl class="method">
+<dt id="cbp.shutter.Shutter.check_status">
+<code class="descname">check_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/shutter.html#Shutter.check_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.shutter.Shutter.check_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks the status of the shutter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.shutter.Shutter.close_connection">
+<code class="descname">close_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/shutter.html#Shutter.close_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.shutter.Shutter.close_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method closes the shutter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.shutter.Shutter.create_connection">
+<code class="descname">create_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/shutter.html#Shutter.create_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.shutter.Shutter.create_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates a connection by using a child process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.shutter.Shutter.do_compile">
+<code class="descname">do_compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/shutter.html#Shutter.do_compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.shutter.Shutter.do_compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method compiles the shutter arduino code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.shutter.Shutter.run_shutter">
+<code class="descname">run_shutter</code><span class="sig-paren">(</span><em>shutter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/shutter.html#Shutter.run_shutter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.shutter.Shutter.run_shutter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is a duration run of the shutter, -1 can be used to keep shutter open indefinitely or 0 to close it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shutter</strong> – This is the length that the shutter will stay open in milliseconds.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.shutter.parse_commandline">
+<code class="descclassname">cbp.shutter.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/shutter.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.shutter.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.spectrograph">
+<span id="spectrograph"></span><h2>Spectrograph<a class="headerlink" href="#module-cbp.spectrograph" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-spectrograph"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<dl class="class">
+<dt id="cbp.spectrograph.Spectrograph">
+<em class="property">class </em><code class="descclassname">cbp.spectrograph.</code><code class="descname">Spectrograph</code><a class="reference internal" href="_modules/cbp/spectrograph.html#Spectrograph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.spectrograph.Spectrograph" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the class for communicating with the spectrograph</p>
+<dl class="method">
+<dt id="cbp.spectrograph.Spectrograph.create_connection">
+<code class="descname">create_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/spectrograph.html#Spectrograph.create_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.spectrograph.Spectrograph.create_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates a connection to the spectrograph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.spectrograph.Spectrograph.disable_temperature_control">
+<code class="descname">disable_temperature_control</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/spectrograph.html#Spectrograph.disable_temperature_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.spectrograph.Spectrograph.disable_temperature_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method turns off the powered temperature control of the spectrograph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.spectrograph.Spectrograph.do_spectograph">
+<code class="descname">do_spectograph</code><span class="sig-paren">(</span><em>duration=10000000</em>, <em>spectrumFile='test.dat'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/spectrograph.html#Spectrograph.do_spectograph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.spectrograph.Spectrograph.do_spectograph" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method does the spectrograph reading.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>duration</strong> – </li>
+<li><strong>spectrumFile</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.spectrograph.Spectrograph.enable_temperature_control">
+<code class="descname">enable_temperature_control</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/spectrograph.html#Spectrograph.enable_temperature_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.spectrograph.Spectrograph.enable_temperature_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method enables the powered temperature control of the spectrograph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.spectrograph.Spectrograph.get_spectograph">
+<code class="descname">get_spectograph</code><span class="sig-paren">(</span><em>duration=1000000</em>, <em>spectrumFile='test.dat'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/spectrograph.html#Spectrograph.get_spectograph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.spectrograph.Spectrograph.get_spectograph" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the wavelength and intensities measured during the duration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>duration</strong> – </li>
+<li><strong>spectrumFile</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.spectrograph.Spectrograph.get_temperature">
+<code class="descname">get_temperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/spectrograph.html#Spectrograph.get_temperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.spectrograph.Spectrograph.get_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the temperature of the spectrograph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.spectrograph.Spectrograph.set_temperature">
+<code class="descname">set_temperature</code><span class="sig-paren">(</span><em>temperature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/spectrograph.html#Spectrograph.set_temperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.spectrograph.Spectrograph.set_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method sets a temperature in c for the spectrograph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>temperature</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.spectrograph.parse_commandline">
+<code class="descclassname">cbp.spectrograph.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/spectrograph.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.spectrograph.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cbp.temperature">
+<span id="temperature"></span><h2>Temperature<a class="headerlink" href="#module-cbp.temperature" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-temperature"></span><p><em>Code author: Michael Coughlin, Eric Coughlin</em></p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This module is currently inactive</p>
+</div>
+<dl class="class">
+<dt id="cbp.temperature.Temperature">
+<em class="property">class </em><code class="descclassname">cbp.temperature.</code><code class="descname">Temperature</code><a class="reference internal" href="_modules/cbp/temperature.html#Temperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.temperature.Temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the class for communicating with the temperature sensor.</p>
+<dl class="method">
+<dt id="cbp.temperature.Temperature.check_status">
+<code class="descname">check_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/temperature.html#Temperature.check_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.temperature.Temperature.check_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks the status of the sensor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.temperature.Temperature.create_serial">
+<code class="descname">create_serial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/temperature.html#Temperature.create_serial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.temperature.Temperature.create_serial" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the serial connection to the sensor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a serial connection that is ostensibly from the sensor</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.temperature.Temperature.do_compile">
+<code class="descname">do_compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/temperature.html#Temperature.do_compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.temperature.Temperature.do_compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method compiles the arduino code for the sensor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.temperature.Temperature.do_photodiode">
+<code class="descname">do_photodiode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/temperature.html#Temperature.do_photodiode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.temperature.Temperature.do_photodiode" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the temperature reading from the sensor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.temperature.Temperature.get_temperature">
+<code class="descname">get_temperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/temperature.html#Temperature.get_temperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.temperature.Temperature.get_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the temperature reading from the sensor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cbp.temperature.Temperature.receiving">
+<code class="descname">receiving</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/temperature.html#Temperature.receiving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.temperature.Temperature.receiving" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the last message received from the port.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cbp.temperature.parse_commandline">
+<code class="descclassname">cbp.temperature.</code><code class="descname">parse_commandline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cbp/temperature.html#parse_commandline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cbp.temperature.parse_commandline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the options given on the command-line.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">CBP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cbp_cli.html">CBP Command Line</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CBP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.altaz">Altaz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.birger">Birger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.cbp_instrument">CBP Instrument</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.filter_wheel">Filter Wheel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.keithley">Keithley</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.lamp">Lamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.laser">Laser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.lockin">Lockin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.phidget">Phidget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.potentiometer">Potentiometer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.shutter">Shutter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.spectrograph">Spectrograph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cbp.temperature">Temperature</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="cbp_cli.html" title="previous chapter">CBP Command Line</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Michael Coughlin, Eric Coughlin, Nick Mondrik.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cbp_package.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

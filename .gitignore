@@ -1,7 +1,8 @@
 /build
 /cbp.egg-info
 /dist
-/docs/_build
+/docs/_build/doctrees
+/docs/_build/latex
 /docs/_generated
 /cbp/version.py
 *.pyx
@@ -9,6 +10,5 @@
 *.swp
 /.idea
 .DS_store
-*.html
 *.pyc
 *.log

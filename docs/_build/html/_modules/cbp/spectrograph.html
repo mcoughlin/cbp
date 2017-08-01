@@ -1,0 +1,265 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cbp.spectrograph &#8212; CBP 0+untagged.107.g59dfb84.dirty documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0+untagged.107.g59dfb84.dirty',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cbp.spectrograph</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: spectrograph</span>
+<span class="sd">    :platform: unix</span>
+<span class="sd">    :synopsis: This module is for communicating with the spectrograph instrument.</span>
+
+<span class="sd">.. codeauthor:: Michael Coughlin, Eric Coughlin</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">serial</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">struct</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="k">if</span> <span class="s1">&#39;TESTENVIRONMENT&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">mock</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;seabreeze&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">Mock</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">seabreeze</span>
+    <span class="n">seabreeze</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;pyseabreeze&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">seabreeze.spectrometers</span> <span class="k">as</span> <span class="nn">sb</span>
+
+
+<div class="viewcode-block" id="Spectrograph"><a class="viewcode-back" href="../../cbp_package.html#cbp.spectrograph.Spectrograph">[docs]</a><span class="k">class</span> <span class="nc">Spectrograph</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the class for communicating with the spectrograph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectrometer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_connection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Spectrograph.create_connection"><a class="viewcode-back" href="../../cbp_package.html#cbp.spectrograph.Spectrograph.create_connection">[docs]</a>    <span class="k">def</span> <span class="nf">create_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method creates a connection to the spectrograph</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">devices</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="n">list_devices</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">devices</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">spec</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="n">Spectrometer</span><span class="p">(</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;connected&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spectrograph connected&quot;</span><span class="p">)</span>
+            <span class="n">spec</span><span class="o">.</span><span class="n">tec_set_enable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">spec</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;not connected&quot;</span></div>
+
+<div class="viewcode-block" id="Spectrograph.get_spectograph"><a class="viewcode-back" href="../../cbp_package.html#cbp.spectrograph.Spectrograph.get_spectograph">[docs]</a>    <span class="k">def</span> <span class="nf">get_spectograph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">,</span> <span class="n">spectrumFile</span><span class="o">=</span><span class="s1">&#39;test.dat&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method returns the wavelength and intensities measured during the duration.</span>
+
+<span class="sd">        :param duration:</span>
+<span class="sd">        :param spectrumFile:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectrometer</span>
+            <span class="n">spec</span><span class="o">.</span><span class="n">integration_time_micros</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">)</span>
+            <span class="n">wavelengths</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">wavelengths</span><span class="p">()</span>
+            <span class="n">intensities</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">intensities</span><span class="p">()</span>
+
+            <span class="n">idx1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">wavelengths</span> <span class="o">&gt;=</span> <span class="mf">350.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">idx2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">wavelengths</span> <span class="o">&lt;=</span> <span class="mf">1100.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">)</span>
+            <span class="n">wavelengths</span> <span class="o">=</span> <span class="n">wavelengths</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">intensities</span> <span class="o">=</span> <span class="n">intensities</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get_spectrograph done&quot;</span><span class="p">)</span>
+
+            <span class="c1"># fid = open(spectrumFile, &quot;w&quot;)</span>
+            <span class="c1"># for wavelength, intensity in zip(wavelengths, intensities):</span>
+                <span class="c1"># fid.write(&quot;%.5e %.5e\n&quot; % (wavelength, intensity))</span>
+            <span class="c1"># fid.close()</span>
+
+            <span class="k">return</span> <span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Spectrograph.get_temperature"><a class="viewcode-back" href="../../cbp_package.html#cbp.spectrograph.Spectrograph.get_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">get_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method returns the temperature of the spectrograph</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectrometer</span><span class="o">.</span><span class="n">tec_get_temperature_C</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Spectrograph.set_temperature"><a class="viewcode-back" href="../../cbp_package.html#cbp.spectrograph.Spectrograph.set_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">set_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temperature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method sets a temperature in c for the spectrograph</span>
+
+<span class="sd">        :param temperature:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectrometer</span><span class="o">.</span><span class="n">tec_set_temperature_C</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Spectrograph.enable_temperature_control"><a class="viewcode-back" href="../../cbp_package.html#cbp.spectrograph.Spectrograph.enable_temperature_control">[docs]</a>    <span class="k">def</span> <span class="nf">enable_temperature_control</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method enables the powered temperature control of the spectrograph</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectrometer</span><span class="o">.</span><span class="n">tec_set_enable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Spectrograph.disable_temperature_control"><a class="viewcode-back" href="../../cbp_package.html#cbp.spectrograph.Spectrograph.disable_temperature_control">[docs]</a>    <span class="k">def</span> <span class="nf">disable_temperature_control</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method turns off the powered temperature control of the spectrograph</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectrometer</span><span class="o">.</span><span class="n">tec_set_enable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Spectrograph.do_spectograph"><a class="viewcode-back" href="../../cbp_package.html#cbp.spectrograph.Spectrograph.do_spectograph">[docs]</a>    <span class="k">def</span> <span class="nf">do_spectograph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">10000000</span><span class="p">,</span> <span class="n">spectrumFile</span><span class="o">=</span><span class="s1">&#39;test.dat&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method does the spectrograph reading.</span>
+
+<span class="sd">        :param duration:</span>
+<span class="sd">        :param spectrumFile:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spectograph</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">spectrumFile</span><span class="o">=</span><span class="n">spectrumFile</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div></div>
+
+<div class="viewcode-block" id="parse_commandline"><a class="viewcode-back" href="../../cbp_package.html#cbp.spectrograph.parse_commandline">[docs]</a><span class="k">def</span> <span class="nf">parse_commandline</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse the options given on the command-line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;--doSpectrograph&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--duration&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;exposure length&quot;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span><span class="s2">&quot;--spectrumFile&quot;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;/home/pi/CBP/spectra/test.dat&#39;</span><span class="p">)</span>
+
+    <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">opts</span></div>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">runtype</span> <span class="o">=</span> <span class="s2">&quot;spectrograph&quot;</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">,</span> <span class="n">spectrumFile</span><span class="o">=</span><span class="s1">&#39;test.dat&#39;</span><span class="p">):</span>
+    <span class="n">spectrograph</span> <span class="o">=</span> <span class="n">Spectrograph</span><span class="p">()</span>
+
+    <span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span> <span class="o">=</span> <span class="n">spectrograph</span><span class="o">.</span><span class="n">get_spectograph</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">spectrumFile</span><span class="o">=</span><span class="n">spectrumFile</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># Parse command line</span>
+    <span class="n">opts</span> <span class="o">=</span> <span class="n">parse_commandline</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doSpectrograph</span><span class="p">:</span>
+        <span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span> <span class="o">=</span> <span class="n">main</span><span class="p">(</span><span class="n">runtype</span> <span class="o">=</span> <span class="s2">&quot;spectrograph&quot;</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+                                       <span class="n">spectrumFile</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">spectrumFile</span><span class="p">)</span>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">CBP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_cli.html">CBP Command Line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_package.html">CBP</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Michael Coughlin, Eric Coughlin, Nick Mondrik.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
