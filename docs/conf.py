@@ -30,7 +30,7 @@ sys.path.insert(0, os.path.abspath('../cbp'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-from cbp import version
+from cbp import _version
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
@@ -39,7 +39,7 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.imgmath',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.githubpages', 'sphinxarg.ext']
 
 autodoc_mock_imports = ['FLI', 'visa', 'seabreeze','thorlabs']
 
@@ -65,7 +65,7 @@ author = u'Michael Coughlin, Eric Coughlin, Nick Mondrik'
 # built documents.
 #
 # The short X.Y version.
-version = version.git_id
+version = _version.get_versions()['version']
 # The full version, including alpha/beta/rc tags.
 release = version
 

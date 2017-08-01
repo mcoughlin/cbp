@@ -1,8 +1,8 @@
 import argparse
-import cbp.cbp_class
+import cbp.cbp_instrument
 
 class CbpParser:
-    def __init__(self,cbp=cbp.cbp_class.CBP()):
+    def __init__(self,cbp=None):
         self.cbp = cbp
 
     def create_parser(self):

@@ -6,11 +6,19 @@ import optparse
 import pexpect
 
 class Photodiode:
+    """
+    This is the class for the photodiode
+    """
     def __init__(self):
         self.status = None
         self.serial = self.create_serial()
 
     def create_serial(self):
+        """
+        This method initializes the serial connection to the photodiode
+
+        :return:
+        """
         try:
             PORT = '/dev/ttyACM.PD'
             BAUD_RATE = 9600
@@ -22,12 +30,22 @@ class Photodiode:
             self.status = "not connected"
 
     def check_status(self):
+        """
+        This method checks the status of the photodiode
+
+        :return:
+        """
         try:
             self.receiving()
         except Exception as e:
             self.status = "not connected"
 
     def get_photodiode(self):
+        """
+        This method returns the reading of the photodiode
+
+        :return:
+        """
         if self.status != "not connected":
             conversion = 1.0
 
@@ -56,6 +74,11 @@ class Photodiode:
             pass
 
     def receiving(self):
+        """
+        This returns the last received message from the serial connection
+
+        :return:
+        """
         if self.status != "not connected":
             ser = self.serial
 
@@ -73,6 +96,11 @@ class Photodiode:
             pass
 
     def compile(self):
+        """
+        This method compiles the photodiode arduino code
+
+        :return:
+        """
         if self.status != "not connected":
             steps_command = "cd /home/pi/Code/arduino/PD/; ./compile.sh"
             os.system(steps_command)
@@ -83,6 +111,11 @@ class Photodiode:
         # last filled line, so you could make the above statement conditional
         # like so: if lines[-2]: last_received = lines[-2]
     def photodiode(self):
+        """
+        This method returns a photodiode reading converted.
+
+        :return:
+        """
         if self.status != "not connected":
             photo = self.get_photodiode()
             conv = (1.0 / 2.0) * (1.0 / 10.0)

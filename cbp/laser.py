@@ -118,6 +118,11 @@ class LaserSerialInterface:
             pass
 
     def check_wavelength(self, comparison=False):
+        """
+
+        :param comparison: This is a flag as to whether wavelength values will be compared or not.
+        :return:
+        """
         if self.status != "not connected" and self.status != "off":
             if self.state != "not connected":
                 wavelength_check_msg = '[W0/?]'
@@ -140,6 +145,11 @@ class LaserSerialInterface:
             self.wavelength = None
 
     def parse_wavelength(self,msg='[MS:W0/S520\NL]'):
+        """
+
+        :param msg: This is the message to parse.
+        :return:
+        """
         if self.status != "not connected" and self.status != "off":
             msg_parse = msg
             remove_chars = []
@@ -154,6 +164,13 @@ class LaserSerialInterface:
             pass
 
     def loop_change_wavelength(self, min, max,diagnostic):
+        """
+
+        :param min: The starting wavelength
+        :param max: the ending wavelength
+        :param diagnostic: whether this loop is going to wait for user input to continue
+        :return:
+        """
         if self.status != "not connected" and self.status != "not connected":
             np_array = np.arange(min,max+1)
             for item in np_array:

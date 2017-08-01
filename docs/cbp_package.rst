@@ -16,10 +16,10 @@ Birger
 .. automodule:: cbp.birger
    :members:
 
-CBP class
----------
+CBP Instrument
+--------------
 
-.. automodule:: cbp.cbp_class
+.. automodule:: cbp.cbp_instrument
    :members:
 
 Filter Wheel

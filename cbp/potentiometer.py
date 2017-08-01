@@ -7,11 +7,20 @@ import pexpect
 
 
 class Potentiometer:
+    """
+    This is a class for communicating with the potentiometer
+
+    """
     def __init__(self):
         self.status = None
         self.serial = self.create_serial()
 
     def create_serial(self):
+        """
+        This method creates the serial connection to the potentiometer.
+
+        :return:
+        """
         try:
             PORT = '/dev/ttyACM.ADS'
             BAUD_RATE = 57600
@@ -22,12 +31,22 @@ class Potentiometer:
             self.status = "not connected"
 
     def check_status(self):
+        """
+        This method checks the status of the potentiometer
+
+        :return:
+        """
         try:
             self.receiving()
         except Exception as e:
             self.status = "not connected"
 
     def receiving(self):
+        """
+        This method returns the last received message from the potentiometer
+
+        :return:
+        """
         if self.status != "not connected":
             ser = self.serial
             buffer_string = ''
@@ -47,6 +66,11 @@ class Potentiometer:
             pass
 
     def get_potentiometer(self):
+        """
+        This method returns the data from the potentiometer
+
+        :return:
+        """
         if self.status != "not connected":
             conversion = 360.0 / 32767.0
 
@@ -79,6 +103,11 @@ class Potentiometer:
             pass
 
     def do_compile(self):
+        """
+        This method compiles the arduino code of the potentiometer
+
+        :return:
+        """
         if self.status != "not connected":
             steps_command = "cd /home/pi/Code/arduino/potentiometer/; ./compile.sh"
             os.system(steps_command)

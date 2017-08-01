@@ -8,12 +8,20 @@ import seabreeze.spectrometers as sb
 
 
 class Spectrograph:
+    """
+    This is the class for communicating with the spectrograph
+    """
     def __init__(self):
         self.status = None
         self.spectrometer = self.create_connection()
         self.temperature = self.get_temperature()
 
     def create_connection(self):
+        """
+        This method creates a connection to the spectrograph
+
+        :return:
+        """
         devices = sb.list_devices()
         print(devices)
         try:
@@ -27,6 +35,13 @@ class Spectrograph:
             self.status = "not connected"
 
     def get_spectograph(self, duration = 1000000, spectrumFile='test.dat'):
+        """
+        This method returns the wavelength and intensities measured during the duration.
+
+        :param duration:
+        :param spectrumFile:
+        :return:
+        """
         if self.status != "not connected":
             spec = self.spectrometer
             spec.integration_time_micros(duration)
@@ -51,22 +66,50 @@ class Spectrograph:
             pass
 
     def get_temperature(self):
+        """
+        This method returns the temperature of the spectrograph
+
+        :return:
+        """
         if self.status != "not connected":
             return self.spectrometer.tec_get_temperature_C()
 
     def set_temperature(self,temperature):
+        """
+        This method sets a temperature in c for the spectrograph
+
+        :param temperature:
+        :return:
+        """
         if self.status != "not connected":
             self.spectrometer.tec_set_temperature_C(temperature)
 
     def enable_temperature_control(self):
+        """
+        This method enables the powered temperature control of the spectrograph
+
+        :return:
+        """
         if self.status != "not connected":
             self.spectrometer.tec_set_enable(True)
 
     def disable_temperature_control(self):
+        """
+        This method turns off the powered temperature control of the spectrograph
+
+        :return:
+        """
         if self.status != "not connected":
             self.spectrometer.tec_set_enable(False)
 
     def do_spectograph(self, duration=10000000, spectrumFile='test.dat'):
+        """
+        This method does the spectrograph reading.
+
+        :param duration:
+        :param spectrumFile:
+        :return:
+        """
         if self.status != "not connected":
             wavelengths, intensities = self.get_spectograph(duration=duration, spectrumFile=spectrumFile)
 

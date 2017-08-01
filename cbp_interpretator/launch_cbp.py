@@ -1,7 +1,7 @@
 import cmd
 import shlex
 
-import cbp.cbp_class as CBP
+import cbp.cbp_instrument as CBP
 import initialize_cbp
 
 
@@ -115,6 +115,6 @@ def main():
     LaunchCbp(cbp=cbp).cmdloop()
 
 if __name__ == '__main__':
-    main()
+    pass
 
 

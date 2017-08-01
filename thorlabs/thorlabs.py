@@ -30,7 +30,7 @@ def run_flipper(position):
 
 
 def get_flipper():
-    # FIXME pos always returns zero regardless of flipper position
+    # FIXME pos always returns zero regardless of flipper position <>
     sn = "37873245"
     mff = MFF("MFF101","flipper",sn=sn)
     pos, status = mff.GetStatus()

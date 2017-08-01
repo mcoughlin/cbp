@@ -17,10 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SeisMon.  If not, see <http://www.gnu.org/licenses/>
 
-"""Seismic activity Monitor
+"""Collimated Beam Projector
 
-SeisMon is used to monitor and predict the impact of earthquakes on the
-LIGO gravitational-wave detectors.
+cbp is for measuring light produced by a laser based source.
 """
 from cbp import version
 

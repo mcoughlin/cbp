@@ -14,6 +14,11 @@ class Lamp:
         self.status = None
 
     def run_lamp(self,val):
+        """
+
+        :param val: the brightness of the lamp to change to.
+        :return:
+        """
         if val > 255 or val < 0:
             raise Exception("Lamp must be between 0-255")
         print "Running the lamp ..."
@@ -34,6 +39,11 @@ class Lamp:
         child.close()
 
     def compile_lamp(self):
+        """
+        This method compiles the lamp from the arduino code.
+
+        :return:
+        """
         steps_command = "cd /home/pi/Code/arduino/lamp/; ./compile.sh"
         os.system(steps_command)
 

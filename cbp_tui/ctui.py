@@ -209,7 +209,7 @@ class BirgerView(Frame):
 
 class FilterWheelView(Frame):
     def __init__(self,screen):
-        super(FilterWheelView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Filter Wheel View")
+        super(FilterWheelView, self).__init__(screen,screen.height * 2 // 3, screen.width * 3 // 3, hover_focus=True,title="Filter Wheel View")
         self._screen = screen
         self.filters_dictionary = {None:"None",0:"568 nm inteference",1:"700 nm (10 nm)",2:"671 nm (10 nm)",3:"DECam (2.2 deg)",4:"680 nm (10 nm)"}
         self.masks_dictionary = {None:"None",0:"200 micron slit",1:"20 micron pinhole",2:"ronchi grating",3:"20 micron pinhole decam",4:"USAF target"}
@@ -307,7 +307,7 @@ class FilterWheelView(Frame):
 
 class KeithleyView(Frame):
     def __init__(self,screen):
-        super(KeithleyView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Keithley View")
+        super(KeithleyView, self).__init__(screen,screen.height * 2 // 3, screen.width * 3 // 3, hover_focus=True,title="Keithley View")
         self._screen = screen
         self.layout = Layout([1])
         self.add_layout(self.layout)
@@ -387,7 +387,7 @@ class LaserView(Frame):
 
 class LockinView(Frame):
     def __init__(self,screen):
-        # REVIEW is this view necessary
+        # REVIEW is this view necessary <>
         super(LockinView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Lockin View")
         self._screen = screen
         self.layout = Layout([1])
@@ -420,7 +420,7 @@ class ShutterView(Frame):
         self.layout2.add_widget(self.shutter_status_text)
         self.layout2.add_widget(self.flipper_status_text)
         self.layout2.add_widget(self.shutter_duration_text)
-        self.layout2.add_widget(Button("Shutter OPEN DURATION",self._open_shutter_duration))
+        self.layout2.add_widget(Button("Shutter OPEN DURATION in milliseconds:",self._open_shutter_duration))
         self.layout2.add_widget(Button("SHUTTER OPEN",self._open_shutter),1)
         self.layout2.add_widget(Button("SHUTTER CLOSE",self._close_shutter),1)
         self.layout2.add_widget(Button("FLIPPER OPEN",self._open_flipper),1)
@@ -431,7 +431,7 @@ class ShutterView(Frame):
         pass
 
     def _display_flipper_status(self):
-        # FIXME flipper status is not changing
+        # FIXME flipper status is not changing <>
         pos, flipper_status = thorlabs.thorlabs.get_flipper()
         logging.info(pos)
         if pos == 1:
@@ -470,7 +470,7 @@ class ShutterView(Frame):
         raise StopApplication("User stopped application")
 
 class SpectrographView(Frame):
-    # REVIEW is this view necessary
+    # REVIEW is this view necessary <>
     def __init__(self,screen):
         super(SpectrographView, self).__init__(screen,screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,title="Spectrograph View")
         self._screen = screen
@@ -480,13 +480,13 @@ class SpectrographView(Frame):
         self.layout.add_widget(Button("GO BACK", self._go_back))
         self.layout2 = Layout([1,1])
         self.add_layout(self.layout2)
-        # TODO add in duration display
-        # TODO add in get spectrograph button
+        # TODO add in duration display <>
+        # TODO add in get spectrograph button <>
         self.fix()
 
-    # TODO add in duration display function
+    # TODO add in duration display function <>
 
-    # TODO add in get spectrograph button function
+    # TODO add in get spectrograph button function <>
 
     def _go_back(self):
         raise NextScene("Main")
@@ -508,9 +508,9 @@ if not test:
     cbp = CBP.CBP(everything=True)
     config = ConfigParser.RawConfigParser()
     config.read('/home/pi/Code/cbp_2/cbp_tui/ctui.cfg')
+    cbp.birger.do_aperture(int(config.get('birger', 'aperture')))
+    cbp.birger.do_focus(int(config.get('birger', 'focus')))
+    cbp.filter_wheel.do_position(int(config.get('filter wheel', 'mask')), int(config.get('filter wheel', 'filter')))
 cbp_instrument_options = [("altaz", 0), ("birger", 1), ("filter wheel", 2), ("keithley", 3), ("laser", 4), ("shutter", 9)]
 cbp_instrument_list = ["altaz","birger","filter wheel","keithley","laser","lockin","phidget","photodiode","potentiometer","shutter","spectrograph","temperature","lamp"]
-cbp.birger.do_aperture(int(config.get('birger','aperture')))
-cbp.birger.do_focus(int(config.get('birger','focus')))
-cbp.filter_wheel.do_position(int(config.get('filter wheel','mask')),int(config.get('filter wheel','filter')))
 main()

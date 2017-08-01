@@ -134,6 +134,11 @@ class CBP:
                     self.instrument_dictionary[instrument] = self.lamp
 
     def check_status(self):
+        """
+        This methods calls the check status of each instrument.
+
+        :return:
+        """
         self.birger.check_status()
         self.filter_wheel.check_status()
         self.keithley.check_status()
@@ -239,6 +244,15 @@ class CBP:
                 spectograph_shutter_opened_file.write(line)
 
     def get_spectograph_average(self, output_dir='/home/pi/CBP/keithley/', n_averages=3, duration=1000000, dark=False):
+        """
+        This method calculates the spectrograph average and writes out the results to files.
+
+        :param output_dir: This is the output directory of where the spectrograph file goes.
+        :param n_averages: This is the number of averages for the spectrograph
+        :param duration: This is the amount of time in microseconds that the spectrograph will measure light
+        :param dark: This is a flag that specifies whether the light source is on or off.
+        :return:
+        """
         if not os.path.exists(output_dir):
            os.makedirs(output_dir)
         if dark:
@@ -290,6 +304,12 @@ class CBP:
             return wavelength, intensity
 
     def write_status_log(self,output_dir='/home/pi/CBP/status_logs/',duration=1000000):
+        """
+
+        :param output_dir: This is where the status log will be written to.
+        :param duration: This is the length of the measuring of the light by the spectropgraph.
+        :return:
+        """
         date_at_run = time.strftime("%m_%d_%Y")
         time_at_run = time.strftime("%m_%d_%Y_%H_%M")
         if not os.path.exists(output_dir + '{0}/{1}/keithley/'.format(date_at_run,time_at_run)):
@@ -327,6 +347,13 @@ class CBP:
         status_spectrograph_log_file.close()
 
     def write_status_log_xml(self,output_dir='/home/pi/CBP/status_log_xml/',duration=1000000):
+        """
+        This method writes out the status log file but in xml format.
+
+        :param output_dir: This is where the status log will be written to.
+        :param duration: This is the length of the measuring of the light by the spectropgraph.
+        :return:
+        """
         date_at_run = time.strftime("%m_%d_%Y")
         time_at_run = time.strftime("%m_%d_%Y_%H_%M")
         if not os.path.exists(output_dir + '{0}/{1}/'.format(date_at_run, time_at_run)):
@@ -352,6 +379,12 @@ class CBP:
         et.write(status_log_file,pretty_print=True, xml_declaration=True, encoding='utf-8')
 
     def load_status_log_xml(self,status_log_file):
+        """
+        This is a method to load the status log xml file
+
+        :param status_log_file: This is location of the status log file to load.
+        :return:
+        """
         status_log_file = status_log_file
         et = etree.parse(status_log_file)
         root = et.getroot()

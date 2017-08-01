@@ -7,12 +7,21 @@ import pexpect
 
 
 class Shutter:
+    """
+    This is the class for communicating with the shutter
+
+    """
     def __init__(self):
         self.status = None
         self.shutter = self.create_connection()
         self.state = None
 
     def create_connection(self):
+        """
+        This method creates a connection by using a child process.
+
+        :return:
+        """
         try:
             shutter_command = "picocom -b 57600 /dev/ttyACM.SHUTTER2"
             child = pexpect.spawn(shutter_command)
@@ -23,6 +32,11 @@ class Shutter:
             self.status = "not connected"
 
     def check_status(self):
+        """
+        This method checks the status of the shutter
+
+        :return:
+        """
         try:
             shutter_command = "picocom -b 57600 /dev/ttyACM.SHUTTER2"
             child = pexpect.spawn(shutter_command)
@@ -31,10 +45,21 @@ class Shutter:
             self.status = "not connected"
 
     def close_connection(self):
+        """
+        This method closes the shutter
+
+        :return:
+        """
         if self.status != "not connected":
             self.shutter.close()
 
     def run_shutter(self, shutter):
+        """
+        This method is a duration run of the shutter, -1 can be used to keep shutter open indefinitely or 0 to close it.
+
+        :param shutter: This is the length that the shutter will stay open in milliseconds.
+        :return:
+        """
         if self.status != "not connected":
             done = False
             while not done:
@@ -51,6 +76,11 @@ class Shutter:
             pass
 
     def do_compile(self):
+        """
+        This method compiles the shutter arduino code.
+
+        :return:
+        """
         if self.status != "not connected":
             steps_command = "cd /home/pi/Code/arduino/shutter/; ./compile.sh"
             os.system(steps_command)
