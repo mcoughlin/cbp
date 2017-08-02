@@ -1,0 +1,462 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cbp.lockin &#8212; CBP 0+untagged.107.g59dfb84.dirty documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0+untagged.107.g59dfb84.dirty',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cbp.lockin</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: lockin</span>
+<span class="sd">    :platform: unix</span>
+<span class="sd">    :synopsis: This module is for communicating with the lockin instrument.</span>
+
+<span class="sd">.. codeauthor:: Michael Coughlin, Eric Coughlin</span>
+
+<span class="sd">.. warning:: This module is currently inactive</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="k">if</span> <span class="s1">&#39;TESTENVIRONMENT&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">mock</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;visa&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">Mock</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">visa</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">serial</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">struct</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">optparse</span>
+<span class="kn">import</span> <span class="nn">pexpect</span>
+
+
+<div class="viewcode-block" id="parse_commandline"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.parse_commandline">[docs]</a><span class="k">def</span> <span class="nf">parse_commandline</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse the options given on the command-line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;--doSR830&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">opts</span></div>
+
+
+<div class="viewcode-block" id="LockIn"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn">[docs]</a><span class="k">class</span> <span class="nc">LockIn</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a class for communicating with the lockin instrument</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">resnum</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">rm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">resnum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">=</span> <span class="n">rm</span>
+            <span class="k">if</span> <span class="n">resnum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">devtty</span> <span class="o">=</span> <span class="s1">&#39;ASRL/dev/ttyUSB.SR830::INSTR&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">devtty</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()[</span><span class="n">resnum</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">(</span><span class="s1">&#39;@py&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+               <span class="n">devtty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+               <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+               <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;not connected&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">devtty</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;connected&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_termination</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_termination</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mi">5000</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">query_delay</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="c1">#The OUTX command sets the output interface to RS232 (i=0) or GPIB (i=1)</span>
+            <span class="k">if</span> <span class="n">devtty</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;GPIB&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;OUTX 1&quot;</span><span class="p">)</span>
+            <span class="nb">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;2 nV/fA&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;50 uV/pA&#39;</span><span class="p">:</span><span class="mi">13</span><span class="p">,</span>
+                         <span class="s1">&#39;5 nV/fA&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;100 uV/pA&#39;</span><span class="p">:</span><span class="mi">14</span><span class="p">,</span>
+                         <span class="s1">&#39;10 nV/fA&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;200 uV/pA&#39;</span><span class="p">:</span><span class="mi">15</span><span class="p">,</span>
+                         <span class="s1">&#39;20 nV/fA&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;500 uV/pA&#39;</span><span class="p">:</span><span class="mi">16</span><span class="p">,</span>
+                         <span class="s1">&#39;50 nV/fA&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span><span class="s1">&#39;1 mV/nA&#39;</span><span class="p">:</span><span class="mi">17</span><span class="p">,</span>
+                         <span class="s1">&#39;100 nV/fA&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span><span class="s1">&#39;2 mV/nA&#39;</span><span class="p">:</span><span class="mi">18</span><span class="p">,</span>
+                         <span class="s1">&#39;200 nV/fA&#39;</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span><span class="s1">&#39;5 mV/nA&#39;</span><span class="p">:</span><span class="mi">19</span><span class="p">,</span>
+                         <span class="s1">&#39;500 nV/fA&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span><span class="s1">&#39;10 mV/nA&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span>
+                         <span class="s1">&#39;1 uV/pA&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span><span class="s1">&#39;20 mV/nA&#39;</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span>
+                         <span class="s1">&#39;2 uV/pA&#39;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span><span class="s1">&#39;50 mV/nA&#39;</span><span class="p">:</span><span class="mi">22</span><span class="p">,</span>
+                         <span class="s1">&#39;5 uV/pA&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="s1">&#39;100 mV/nA&#39;</span><span class="p">:</span><span class="mi">23</span><span class="p">,</span>
+                         <span class="s1">&#39;10 uV/pA&#39;</span><span class="p">:</span><span class="mi">11</span><span class="p">,</span><span class="s1">&#39;200 mV/nA&#39;</span><span class="p">:</span><span class="mi">24</span><span class="p">,</span>
+                         <span class="s1">&#39;20 uV/pA&#39;</span><span class="p">:</span><span class="mi">12</span><span class="p">,</span><span class="s1">&#39;500 mV/nA&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span>
+                         <span class="s1">&#39;1 V/uA&#39;</span><span class="p">:</span><span class="mi">26</span><span class="p">}</span>
+
+            <span class="n">sens_list_utf8</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2 nV/fA&#39;</span><span class="p">,</span><span class="s1">&#39;5 nV/fA&#39;</span><span class="p">,</span><span class="s1">&#39;10 nV/fA&#39;</span><span class="p">,</span><span class="s1">&#39;20 nV/fA&#39;</span><span class="p">,</span><span class="s1">&#39;50 nV/fA&#39;</span><span class="p">,</span><span class="s1">&#39;100 nV/fA&#39;</span><span class="p">,</span><span class="s1">&#39;200 nV/fA&#39;</span><span class="p">,</span><span class="s1">&#39;500 nV/fA&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;1 uV/pA&#39;</span><span class="p">,</span><span class="s1">&#39;2 uV/pA&#39;</span><span class="p">,</span><span class="s1">&#39;5 uV/pA&#39;</span><span class="p">,</span><span class="s1">&#39;10 uV/pA&#39;</span><span class="p">,</span><span class="s1">&#39;20 uV/pA&#39;</span><span class="p">,</span><span class="s1">&#39;50 uV/pA&#39;</span><span class="p">,</span><span class="s1">&#39;100 uV/pA&#39;</span><span class="p">,</span><span class="s1">&#39;200 uV/pA&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;500 uV/pA&#39;</span><span class="p">,</span><span class="s1">&#39;1 mV/nA&#39;</span><span class="p">,</span><span class="s1">&#39;2 mV/nA&#39;</span><span class="p">,</span><span class="s1">&#39;5 mV/nA&#39;</span><span class="p">,</span><span class="s1">&#39;10 mV/nA&#39;</span><span class="p">,</span><span class="s1">&#39;20 mV/nA&#39;</span><span class="p">,</span><span class="s1">&#39;50 mV/nA&#39;</span><span class="p">,</span><span class="s1">&#39;100 mV/nA&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;200 mV/nA&#39;</span><span class="p">,</span><span class="s1">&#39;500 mV/nA&#39;</span><span class="p">,</span><span class="s1">&#39;1 V/uA&#39;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">sens_list_num</span><span class="o">=</span><span class="p">[</span><span class="mf">2e-9</span><span class="p">,</span><span class="mf">5e-9</span><span class="p">,</span><span class="mf">10e-9</span><span class="p">,</span><span class="mf">20e-9</span><span class="p">,</span><span class="mf">50e-9</span><span class="p">,</span><span class="mf">100e-9</span><span class="p">,</span><span class="mf">200e-9</span><span class="p">,</span><span class="mf">500e-9</span><span class="p">,</span>
+                            <span class="mf">1e-6</span><span class="p">,</span><span class="mf">2e-6</span><span class="p">,</span><span class="mf">5e-6</span><span class="p">,</span><span class="mf">10e-6</span><span class="p">,</span><span class="mf">20e-6</span><span class="p">,</span><span class="mf">50e-6</span><span class="p">,</span><span class="mf">100e-6</span><span class="p">,</span><span class="mf">200e-6</span><span class="p">,</span>
+                            <span class="mf">500e-6</span><span class="p">,</span><span class="mf">1e-3</span><span class="p">,</span><span class="mf">2e-3</span><span class="p">,</span><span class="mf">5e-3</span><span class="p">,</span><span class="mf">10e-3</span><span class="p">,</span><span class="mf">20e-3</span><span class="p">,</span><span class="mf">50e-3</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span>
+                            <span class="mf">0.2</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1">#the encoding of the python script file is utf8 but the Qt interface is unicode, so conversion is needed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">sens_list_utf8</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unicode</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="c1">#time constant</span>
+            <span class="n">time_cste_list_utf8</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;10 us&#39;</span><span class="p">,</span><span class="s1">&#39;30 us&#39;</span><span class="p">,</span><span class="s1">&#39;100 us&#39;</span><span class="p">,</span><span class="s1">&#39;300 us&#39;</span><span class="p">,</span><span class="s1">&#39;1 ms&#39;</span><span class="p">,</span><span class="s1">&#39;3 ms&#39;</span><span class="p">,</span><span class="s1">&#39;10 ms&#39;</span><span class="p">,</span><span class="s1">&#39;30 ms&#39;</span><span class="p">,</span><span class="s1">&#39;100 ms&#39;</span><span class="p">,</span><span class="s1">&#39;300 ms&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;1 s&#39;</span><span class="p">,</span><span class="s1">&#39;3 s&#39;</span><span class="p">,</span><span class="s1">&#39;10 s&#39;</span><span class="p">,</span><span class="s1">&#39;30 s&#39;</span><span class="p">,</span><span class="s1">&#39;100 s&#39;</span><span class="p">,</span><span class="s1">&#39;300 s&#39;</span><span class="p">,</span><span class="s1">&#39;1 ks&#39;</span><span class="p">,</span><span class="s1">&#39;3 ks&#39;</span><span class="p">,</span><span class="s1">&#39;10 ks&#39;</span><span class="p">,</span><span class="s1">&#39;30 ks&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_cste</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">time_cste_list_utf8</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">time_cste</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unicode</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="c1">#filter slop</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filter_slop</span><span class="o">=</span><span class="nb">map</span><span class="p">(</span><span class="n">unicode</span><span class="p">,[</span><span class="s1">&#39;6 dB/oct&#39;</span><span class="p">,</span><span class="s1">&#39;12 dB/oct&#39;</span><span class="p">,</span><span class="s1">&#39;18 dB/oct&#39;</span><span class="p">,</span><span class="s1">&#39;24 dB/oct&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;not connected&quot;</span>
+
+<div class="viewcode-block" id="LockIn.initialize"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method initializes the lockin</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+        
+<div class="viewcode-block" id="LockIn.query_unit_Id"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.query_unit_Id">[docs]</a>    <span class="k">def</span> <span class="nf">query_unit_Id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method returns the unit id</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+    <span class="c1">#def set_harmonic(self,i=1):</span>
+        <span class="c1">#&quot;&quot;&quot;set the i-th harmonic to measure&quot;&quot;&quot;</span>
+        <span class="c1">#self.io.write(&quot;HARM&quot;+str(i-1))</span>
+        <span class="c1">##NB: HARM0 is the fundamental, HARM1 is the 2f harmonic</span>
+
+    <span class="c1">#def set_REF_IN_resistance(self,i=1):</span>
+        <span class="c1">#&quot;&quot;&quot;set the input impedance of the reference input: i=1 -&gt; 10kOhm&quot;&quot;&quot;</span>
+        <span class="c1">#self.io.write(&quot;REFZ&quot;+str(i))</span>
+
+    <span class="c1">#def set_SIGNAL_IN_resistance(self,i=1):</span>
+        <span class="c1">#&quot;&quot;&quot;set the input impedance of the signal input: i=1 -&gt; 1MOhm&quot;&quot;&quot;</span>
+        <span class="c1">#self.io.write(&quot;INPZ&quot;+str(i))</span>
+
+    <span class="c1">#def query_f_R_theta(self):</span>
+        <span class="c1">#&quot;&quot;&quot;query the frequency, radius and phase of signal&quot;&quot;&quot;</span>
+        <span class="c1">#return self.io.ask_for_values(&quot;SNAP?8,3,5&quot;)</span>
+
+<span class="c1">#commands below works for SR830, todo: check if they are the same for SR844</span>
+
+<div class="viewcode-block" id="LockIn.set_ref_mode"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.set_ref_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_ref_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;set the reference source. The parameter i selects internal (i=1) or external (i=0)&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="n">conv</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Internal&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;External&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;FMOD&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">conv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+        
+<div class="viewcode-block" id="LockIn.query_ref_mode"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.query_ref_mode">[docs]</a>    <span class="k">def</span> <span class="nf">query_ref_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns 1 (internal) or 0 (external)&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;FMOD?&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+        
+    <span class="k">def</span> <span class="nf">set_AUX1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">==</span><span class="nb">float</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;AUXV1,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">query_AUX1_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s1">&#39;AUXV?1&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="LockIn.set_frequency"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.set_frequency">[docs]</a>    <span class="k">def</span> <span class="nf">set_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;set the reference frequency&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;FREQ&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="LockIn.query_frequency"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.query_frequency">[docs]</a>    <span class="k">def</span> <span class="nf">query_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;query the reference frequency&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;FREQ?&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">set_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">==</span><span class="nb">float</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SLVL&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">query_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s1">&#39;SLVL?&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+    <span class="k">def</span> <span class="nf">query_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s1">&#39;PHAS?&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">set_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">&gt;=-</span><span class="mf">360.0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span><span class="mf">729.99</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;PHAS&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+<div class="viewcode-block" id="LockIn.query_f_R_theta"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.query_f_R_theta">[docs]</a>    <span class="k">def</span> <span class="nf">query_f_R_theta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;query the frequency, radius and phase of signal&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask_for_values</span><span class="p">(</span><span class="s2">&quot;SNAP?9,3,4&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+        
+<div class="viewcode-block" id="LockIn.query_R_theta"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.query_R_theta">[docs]</a>    <span class="k">def</span> <span class="nf">query_R_theta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;query the radius and phase of signal at the exact same instant&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask_for_values</span><span class="p">(</span><span class="s2">&quot;SNAP?3,4&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="LockIn.query_XY"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.query_XY">[docs]</a>    <span class="k">def</span> <span class="nf">query_XY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;query the X and Y of signal at the exact same instant&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask_for_values</span><span class="p">(</span><span class="s2">&quot;SNAP?1,2&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+        
+<div class="viewcode-block" id="LockIn.set_harmonic"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.set_harmonic">[docs]</a>    <span class="k">def</span> <span class="nf">set_harmonic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;set the i-th harmonic to measure&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;HARM&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+        <span class="c1">#NB: HARM1 is the fundamental, HARM2 is the 2f harmonic</span>
+
+    <span class="k">def</span> <span class="nf">query_sensitivity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;SENS?&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">set_sensitivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SENS&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    
+    <span class="k">def</span> <span class="nf">query_time_cste</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;OFLT?&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">set_time_cste</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;OFLT&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+    <span class="k">def</span> <span class="nf">query_filter_slop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;OFSL?&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">set_filter_slop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;OFSL&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+    <span class="k">def</span> <span class="nf">set_ch1_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="n">ch1</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;X Noise&#39;</span><span class="p">:</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;Aux In 1&#39;</span><span class="p">:</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;Aux In 2&#39;</span><span class="p">:</span><span class="s1">&#39;4&#39;</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ch1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;DDEF1,&#39;</span><span class="o">+</span><span class="n">ch1</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;,0&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+            
+    <span class="k">def</span> <span class="nf">set_ch2_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="n">ch2</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Y&#39;</span><span class="p">:</span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="s1">&#39;theta&#39;</span><span class="p">:</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;Y Noise&#39;</span><span class="p">:</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;Aux In 3&#39;</span><span class="p">:</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;Aux In 4&#39;</span><span class="p">:</span><span class="s1">&#39;4&#39;</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">ch2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;DDEF2,&#39;</span><span class="o">+</span><span class="n">ch2</span><span class="p">[</span><span class="n">y</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;,0&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+            
+    <span class="k">def</span> <span class="nf">query_ch1_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask_for_values</span><span class="p">(</span><span class="s2">&quot;DDEF?1&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">query_ch2_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">ask_for_values</span><span class="p">(</span><span class="s2">&quot;DDEF?2&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+<div class="viewcode-block" id="LockIn.query_ch1_ch2"><a class="viewcode-back" href="../../cbp_package.html#cbp.lockin.LockIn.query_ch1_ch2">[docs]</a>    <span class="k">def</span> <span class="nf">query_ch1_ch2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;query the ch1 and ch2 of signal at the same instant&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+            <span class="n">conv</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">:</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;theta&#39;</span><span class="p">:</span><span class="s1">&#39;4&#39;</span><span class="p">,</span><span class="s1">&#39;Aux In 1&#39;</span><span class="p">:</span><span class="s1">&#39;5&#39;</span><span class="p">,</span><span class="s1">&#39;Aux In 2&#39;</span><span class="p">:</span><span class="s1">&#39;6&#39;</span><span class="p">,</span><span class="s1">&#39;Aux In 3&#39;</span><span class="p">:</span><span class="s1">&#39;7&#39;</span><span class="p">,</span><span class="s1">&#39;Aux In 4&#39;</span><span class="p">:</span><span class="s1">&#39;8&#39;</span><span class="p">,</span><span class="s1">&#39;Reference Frequency&#39;</span><span class="p">:</span><span class="s1">&#39;9&#39;</span><span class="p">,</span><span class="s1">&#39;CH1 display&#39;</span><span class="p">:</span><span class="s1">&#39;10&#39;</span><span class="p">,</span><span class="s1">&#39;CH2 display&#39;</span><span class="p">:</span><span class="s1">&#39;11&#39;</span><span class="p">}</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;OUTP?&quot;</span><span class="o">+</span><span class="n">conv</span><span class="p">[</span><span class="n">x</span><span class="p">])),</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;OUTP?&quot;</span><span class="o">+</span><span class="n">conv</span><span class="p">[</span><span class="n">y</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+        <span class="c1">#return self.io.ask_for_values(&quot;SNAP?&quot;+conv[x]+&#39;,&#39;+conv[y])</span>
+
+    <span class="k">def</span> <span class="nf">get_lockin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;not connected&quot;</span><span class="p">:</span>
+
+            <span class="n">ins</span> <span class="o">=</span> <span class="bp">self</span>
+
+            <span class="n">photo</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">photo</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">photo</span> <span class="o">=</span> <span class="n">ins</span><span class="o">.</span><span class="n">query_ch1_ch2</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">,</span><span class="s1">&#39;theta&#39;</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            <span class="k">return</span> <span class="n">photo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">check_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">devtty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;not connected&quot;</span></div>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;sr830&quot;</span><span class="p">):</span>
+    <span class="n">lockin</span> <span class="o">=</span> <span class="n">LockIn</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">runtype</span> <span class="o">==</span> <span class="s2">&quot;sr830&quot;</span><span class="p">:</span>
+        <span class="n">rm</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">(</span><span class="s1">&#39;@py&#39;</span><span class="p">)</span>
+        <span class="n">photo</span> <span class="o">=</span> <span class="n">lockin</span><span class="o">.</span><span class="n">get_lockin</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">photo</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># Parse command line</span>
+    <span class="n">opts</span> <span class="o">=</span> <span class="n">parse_commandline</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">doSR830</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">runtype</span><span class="o">=</span><span class="s2">&quot;sr830&quot;</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">CBP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_cli.html">CBP Command Line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cbp_package.html">CBP</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Michael Coughlin, Eric Coughlin, Nick Mondrik.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
