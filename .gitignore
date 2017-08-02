@@ -1,7 +1,7 @@
 /build
 /cbp.egg-info
 /dist
-/docs/_build
+/docs/_build/
 /docs/_generated
 /cbp/version.py
 *.pyx
