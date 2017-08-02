@@ -39,7 +39,7 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.imgmath',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages', 'sphinxarg.ext']
+    'sphinx.ext.githubpages', 'sphinxarg.ext','sphinx_git']
 
 autodoc_mock_imports = ['FLI', 'visa', 'seabreeze','thorlabs']
 

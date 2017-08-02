@@ -50,7 +50,7 @@ if doDark:
     fid = open("%s/dark.txt"%(dataDir),'w')
     for ii in xrange(nvals):
 
-        photo1,photo2 = cbp.keithley.main(runtype = "keithley", duration = opts.duration)
+        photo1,photo2 = cbp.keithley.main(runtype ="keithley", duration = opts.duration)
         print "Keithley 1: %.10e"%photo1
         print "Keithley 2: %.10e"%photo2
 
@@ -83,29 +83,29 @@ if doThroughput:
 
     for wavelength in wavelengths:
     
-        cbp.monochromater.main(runtype = "monowavelength", val = wavelength)
+        cbp.monochromater.main(runtype ="monowavelength", val = wavelength)
         time.sleep(5)
 
-        cbp.shutter.main(runtype = "shutter", val = 1)
+        cbp.shutter.main(runtype ="shutter", val = 1)
         time.sleep(5)       
  
         fid = open("%s/%d_dark.txt"%(dataDir,wavelength),'w')
         for ii in xrange(nvals):
 
-            photo1,photo2 = cbp.keithley.main(runtype = "keithley", duration = opts.duration)
+            photo1,photo2 = cbp.keithley.main(runtype ="keithley", duration = opts.duration)
             print "Keithley 1: %.10e"%photo1
             print "Keithley 2: %.10e"%photo2
 
             fid.write('%.5e %.5e\n'%(photo1, photo2))
         fid.close()        
 
-        cbp.shutter.main(runtype = "shutter", val = -1)
+        cbp.shutter.main(runtype ="shutter", val = -1)
         time.sleep(5)
 
         fid = open("%s/%d.txt"%(dataDir,wavelength),'w')
         for ii in xrange(nvals):
     
-            photo1,photo2 = cbp.keithley.main(runtype = "keithley", duration = opts.duration)
+            photo1,photo2 = cbp.keithley.main(runtype ="keithley", duration = opts.duration)
             print "Keithley 1: %.10e"%photo1
             print "Keithley 2: %.10e"%photo2
     

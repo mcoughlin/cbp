@@ -1,3 +1,11 @@
+"""
+.. module:: cbp_email
+    :platform: unix
+    :synopsis: This module contains classes which will send email notifications.
+
+This is the cbp_email module
+"""
+
 import smtplib
 from email.mime.text import MIMEText
 import ConfigParser
@@ -11,6 +19,10 @@ elif sys.platform == "linux2":
 recipients = ["eric.coughlin2014@gmail.com"]
 
 class CbpEmail:
+    """
+    This is the CbpEmail class which is a class for sending generic emails, meaning you have to specify both message
+    and subject.
+    """
     def __init__(self,msg="",sender="",recipients=None, subject=""):
         self.msg = msg
         self.sender= sender
@@ -37,6 +49,9 @@ class CbpEmail:
             print('Something went wrong...')
 
 class CbpEmailComplete:
+    """
+    This is a template email which tells the recipient that a program is done
+    """
     def __init__(self,program=""):
         self.msg = "{0} is complete.".format(program)
         self.sender = "eric.coughlin2014@gmail.com"
@@ -63,6 +78,9 @@ class CbpEmailComplete:
             print('Something went wrong...')
 
 class CbpEmailError:
+    """
+    This is an email template that tells the recipient that the program had an error that it could not get past.
+    """
     def __init__(self,program="",error=""):
         self.msg = "{0} had an error {1}".format(program,error)
         self.sender = "eric.coughlin2014@gmail.com"

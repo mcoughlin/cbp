@@ -87,7 +87,7 @@ def get_status(opts):
             az = -1
         elif instrument == "filter_wheel":
             try:
-                mask, filter = cbp.filter_wheel.main(runtype = "getposition")
+                mask, filter = cbp.filter_wheel.main(runtype ="getposition")
             except:
                 mask = -1
                 filter = -1
@@ -95,7 +95,7 @@ def get_status(opts):
         #    photo = cbp.photodiode.main(runtype = "photodiode")
         elif instrument == "monochromator":
             try:
-                monowavelength, monofilter = cbp.monochromater.main(runtype = "getmono")
+                monowavelength, monofilter = cbp.monochromater.main(runtype ="getmono")
             except:
                 monowavelength = -1
                 monofilter = -1
@@ -155,7 +155,7 @@ if opts.shutter == 1:
 elif opts.shutter == 0:
     doShutter = False
 
-times, photos, totphotons = cbp.keithley.main(runtype = "keithley", photons = opts.photons, charge = opts.charge, duration = opts.duration, wavelength = opts.wavelength, mode = 'char', analysis_type= opts.analysisType, do_single= True, do_reset= True, do_shutter= doShutter)
+times, photos, totphotons = cbp.keithley.main(runtype ="keithley", photons = opts.photons, charge = opts.charge, duration = opts.duration, wavelength = opts.wavelength, mode ='char', analysis_type= opts.analysisType, do_single= True, do_reset= True, do_shutter= doShutter)
 
 
 

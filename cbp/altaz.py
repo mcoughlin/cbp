@@ -30,33 +30,6 @@ class Altaz:
         self.altangle = self.do_altangle()
         self.azangle = self.do_azangle()
 
-    def send(self, device, command, data=0):
-        """
-        send a packet using the specified device number, command number, and data
-        The data argument is optional and defaults to zero
-
-        :param device:
-        :param command:
-        :param data:
-        :return:
-        """
-
-        packet = struct.pack('<BBl', device, command, data)
-        ser.write(packet)
-
-    def receive(self):
-        """
-        return 6 bytes from the receive buffer
-        there must be 6 bytes to receive (no error checking)
-
-        :return:
-        """
-
-        r = [0, 0, 0, 0, 0, 0]
-        for i in range(6):
-            r[i] = ord(ser.read(1))
-        return r
-
     def takesteps(self, mag=100, direction=1, motornum=1):
         """
 
@@ -111,8 +84,6 @@ class Altaz:
     def do_altangle(self):
         """
 
-        :param val: The angle to move by.
-        :param motornum: the motor to move by. 1 is left to right, 2 is up to down.
         :return:
         """
         nave = 10000
@@ -125,8 +96,6 @@ class Altaz:
     def do_azangle(self):
         """
 
-        :param val: The angle to move by
-        :param motornum: The axis to move on by motor.
         :return:
         """
         angle_1, angle_2 = cbp.potentiometer.main()

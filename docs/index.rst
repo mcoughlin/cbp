@@ -10,9 +10,15 @@ Welcome to CBP's |version| documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   changelog
+   introduction
    install
+   build_documents
    cbp_cli
+   tui
    cbp_package
+   cbp_interpretator_package
+   cbp_notifications_package
 
 
 Indices and tables

@@ -67,16 +67,16 @@ def get_status(opts):
             alt = potentiometer_1
             az = potentiometer_2
         elif instrument == "filter_wheel":
-            mask, filter = cbp.filter_wheel.main(runtype = "getposition")
+            mask, filter = cbp.filter_wheel.main(runtype ="getposition")
         #elif instrument == "photodiode":
         #    photo = cbp.photodiode.main(runtype = "photodiode")
         elif instrument == "monochromator":
-            monowavelength, monofilter = cbp.monochromater.main(runtype = "getmono")
+            monowavelength, monofilter = cbp.monochromater.main(runtype ="getmono")
             print monowavelength, monofilter 
         elif instrument == "birger":
-            focus, aperture = cbp.birger.main(runtype = "status")
+            focus, aperture = cbp.birger.main(runtype ="status")
         elif instrument == "keithley":
-            photo1,photo2 = cbp.keithley.main(runtype = "keithley", do_single= True, do_reset= True)
+            photo1,photo2 = cbp.keithley.main(runtype ="keithley", do_single= True, do_reset= True)
 
     if (alt == -1) or (az == -1):
         print "Potentiometers not responding..."

@@ -1,8 +1,21 @@
+"""
+.. module:: initialize_cbp
+    :platform: unix
+    :synopsis: This is a module that contains the elements necessary to create a command line parser and use it.
+
+.. codeauthor:: Eric Coughlin
+
+This is the initialize_cbp module
+"""
+
 import argparse
 import cbp.cbp_instrument
 
 class CbpParser:
-    def __init__(self,cbp=cbp.cbp_instrument.CBP()):
+    """
+    This is the CbpParser class which creates a command line parser for use with cbp
+    """
+    def __init__(self,cbp=None):
         self.cbp = cbp
 
     def create_parser(self):
@@ -189,7 +202,7 @@ class CbpParser:
     def laser_check_wavelength(self, opts):
         self.cbp.laser.check_wavelength()
 
-def create_parser():
+def create_parse():
     """
     Parse the options given on the command-line.
     """

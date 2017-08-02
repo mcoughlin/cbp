@@ -29,8 +29,10 @@ if 'TESTENVIRONMENT' in os.environ:
     import sys
     import mock
     sys.modules['thorlabs'] = mock.Mock()
+    sys.modules['visa'] = mock.Mock()
 else:
     import thorlabs
+    import visa
 
 
 class CBP:
@@ -54,7 +56,7 @@ class CBP:
             self.instrument_dictionary["filter wheel"] = self.filter_wheel
         rm = visa.ResourceManager('@py')
         if keithley:
-            self.keithley = cbp.keithley.Keithley(rm=rm,resnum=0,do_reset=True)
+            self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0, do_reset=True)
             self.instrument_connected_list.append("keithley")
             self.instrument_dictionary["keithley"] = self.keithley
         if lamp:
@@ -102,7 +104,7 @@ class CBP:
             self.birger = cbp.birger.Birger()
             self.filter_wheel = cbp.filter_wheel.FilterWheel()
             rm = visa.ResourceManager('@py')
-            self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0,do_reset=True)
+            self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0, do_reset=True)
             self.phidget = cbp.phidget.CbpPhidget()
             if self.phidget.status == "connected":
                 self.altaz.status = "connected"

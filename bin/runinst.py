@@ -141,54 +141,54 @@ def pententiometer(opts):
     print potentiometer_1, potentiometer_2
 
 def altaz_compile(opts):
-    cbp.altaz.main(runtype = "compile")
+    cbp.altaz.main(runtype ="compile")
     
 def altaz_steps(opts):
-    cbp.altaz.main(runtype = "steps", val = opts.steps, motornum = opts.motornum)
+    cbp.altaz.main(runtype ="steps", val = opts.steps, motornum = opts.motornum)
     
 def altaz_angle(opts):
-    cbp.altaz.main(runtype = "angle", val = opts.angle, motornum = opts.motornum)
+    cbp.altaz.main(runtype ="angle", val = opts.angle, motornum = opts.motornum)
 
 def birger_focus(opts):
-    cbp.birger.main(runtype = "focus", val = opts.focus)
+    cbp.birger.main(runtype ="focus", val = opts.focus)
     
 def birger_aperture(opts):
-    cbp.birger.main(runtype = "aperture", val = opts.aperture)
+    cbp.birger.main(runtype ="aperture", val = opts.aperture)
 
 def lamp_lamp(opts):
-    cbp.lamp.main(runtype = "lamp", val = opts.lamp)
+    cbp.lamp.main(runtype ="lamp", val = opts.lamp)
 
 def shutter_shutter(opts):
-    cbp.shutter.main(runtype = "shutter", val = opts.shutter)
+    cbp.shutter.main(runtype ="shutter", val = opts.shutter)
 
 def photodiode(opts):
-    photo = cbp.photodiode.main(runtype = "photodiode")
+    photo = cbp.photodiode.main(runtype ="photodiode")
     print photo
 
 def filter_wheel_position(opts):
-    cbp.filter_wheel.main(runtype = "position", mask = opts.mask, filter = opts.filter)
+    cbp.filter_wheel.main(runtype ="position", mask = opts.mask, filter = opts.filter)
 
 def filter_wheel_get_position(opts):
-    cbp.filter_wheel.main(runtype = "getposition")
+    cbp.filter_wheel.main(runtype ="getposition")
 
 def monochrometer_wavelength(opts):
-    cbp.monochromater.main(runtype = "monowavelength", val = opts.wavelength)
+    cbp.monochromater.main(runtype ="monowavelength", val = opts.wavelength)
 
 def monochrometer_get_wavelength(opts):
-    cbp.monochromater.main(runtype = "getmonowavelength")
+    cbp.monochromater.main(runtype ="getmonowavelength")
 
 def monochrometer_filter(opts):
-    cbp.monochromater.main(runtype = "monofilter", val = opts.monofilter)
+    cbp.monochromater.main(runtype ="monofilter", val = opts.monofilter)
 
 def monochrometer_get_filter(opts):
-    cbp.monochromater.main(runtype = "getmonofilter")
+    cbp.monochromater.main(runtype ="getmonofilter")
 
 def keithley(opts):
-    photo1, photo2 = cbp.keithley.main(runtype = "keithley", do_reset= 1, do_single= 1)
+    photo1, photo2 = cbp.keithley.main(runtype ="keithley", do_reset= 1, do_single= 1)
     print(photo1, photo2)
 
 def spectograph(opts):
-    wavelengths, intensities = cbp.spectrograph.main(runtype = "spectrograph", duration = opts.duration)
+    wavelengths, intensities = cbp.spectrograph.main(runtype ="spectrograph", duration = opts.duration)
     print(wavelengths, intensities)
 
 def laser_change_wavelength(opts):

@@ -384,10 +384,8 @@ class Keithley:
 
     def get_photodiode_reading(self):
         """
+        This method returns the photodiode reading of the keithley instruments.
 
-        :param rm:
-        :param mode:
-        :param do_reset:
         :return:
         """
         if self.status != "not connected":

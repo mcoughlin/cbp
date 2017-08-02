@@ -1,3 +1,13 @@
+"""
+.. module:: launch_cbp
+    :platform: unix
+    :synopsis: This is a module that contains the elements necessary to create a command line interpretator and use it.
+
+.. codeauthor:: Eric Coughlin
+
+This is a module that contains the elements necessary to create a command line interpretator and use it.
+"""
+
 import cmd
 import shlex
 
@@ -6,6 +16,9 @@ import initialize_cbp
 
 
 class LaunchCbp(cmd.Cmd):
+    """
+    This is the class LaunchCbp which creates a command line launcher for cbp
+    """
     def __init__(self, cbp, **kwargs):
         """
 
