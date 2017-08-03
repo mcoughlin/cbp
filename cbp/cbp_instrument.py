@@ -39,7 +39,7 @@ class CBP:
     """
     This is the class that contains all of the written cbp instrument modules.
     """
-    def __init__(self,altaz=False,birger=False,filter_wheel=False,keithley=False,lamp=False,monochromater=False,phidget=False,photodiode=False,potentiometer=False,shutter=False,spectrograph=False,lockin=False,temperature=False,laser=False,everything=False):
+    def __init__(self,altaz=False,birger=False,filter_wheel=False,keithley=False,keithley_2=False,lamp=False,monochromater=False,phidget=False,photodiode=False,potentiometer=False,shutter=False,spectrograph=False,lockin=False,temperature=False,laser=False,everything=False):
         self.instrument_connected_list = []
         self.instrument_dictionary = {}
         if altaz:
@@ -59,6 +59,10 @@ class CBP:
             self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0, do_reset=True)
             self.instrument_connected_list.append("keithley")
             self.instrument_dictionary["keithley"] = self.keithley
+        if keithley_2:
+            self.keithley_2 = cbp.keithley.Keithley(rm=rm, resnum=1, do_reset=True)
+            self.instrument_connected_list.append("keithley_2")
+            self.instrument_dictionary["keithley_2"] = self.keithley_2
         if lamp:
             self.lamp = cbp.lamp.Lamp()
             self.instrument_connected_list.append("lamp")
