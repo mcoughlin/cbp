@@ -5,7 +5,7 @@
 
 .. codeauthor:: Eric Coughlin
 
-This is a module that communicates with the ESKPLA laser in the lab via RS232 port.
+This is a module that communicates with the ESKPLA laser in the lab via RS232 serial port.
 """
 
 import serial
@@ -125,6 +125,8 @@ class LaserSerialInterface:
 
     def check_wavelength(self, comparison=False):
         """
+        This method checks the wavelength of the laser and either prints the result or checks that the wavelength is set
+        correctly.
 
         :param comparison: This is a flag as to whether wavelength values will be compared or not.
         :return:
@@ -152,9 +154,12 @@ class LaserSerialInterface:
 
     def parse_wavelength(self,msg='[MS:W0/S520\NL]'):
         """
+        This method parses through the message to get back the value of the wavelength
+
+        .. note:: A potential limitation is parsing through float messages.
 
         :param msg: This is the message to parse.
-        :return:
+        :return: returns the value of the wavelength as parsed.
         """
         if self.status != "not connected" and self.status != "off":
             msg_parse = msg
@@ -171,6 +176,7 @@ class LaserSerialInterface:
 
     def loop_change_wavelength(self, min, max,diagnostic):
         """
+        This method loops through the meth:`change wavelength` method starting from min and ending at max.
 
         :param min: The starting wavelength
         :param max: the ending wavelength

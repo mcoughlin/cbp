@@ -64,6 +64,7 @@ class Altaz:
 
     def do_steps(self, motornum, val):
         """
+        This moves cbp by horizontal or vertical axis by the steps.
 
         :param motornum: the motor number to move the device.
         :param val:
@@ -83,6 +84,7 @@ class Altaz:
 
     def do_altangle(self):
         """
+        This method returns the altitude angle of the phidget
 
         :return:
         """
@@ -95,6 +97,7 @@ class Altaz:
 
     def do_azangle(self):
         """
+        This method returns the azimuth angle of the phidget
 
         :return:
         """

@@ -52,10 +52,11 @@ class Keithley:
     """
     def __init__(self, rm=None, resnum=None, mode='curr', nplc=1, do_reset=False):
         try:
-            self.status = None
+            self.status = {0:None,1:None}
             if rm is not None and resnum is not None:
+                self.resnum = resnum
                 self.rm = rm
-                print("finding resource")
+                logging.info("Finding resource")
                 if resnum == 0:
                     devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
                     logging.info("keithley 1 found")
@@ -68,7 +69,7 @@ class Keithley:
                     self.ins = self.rm.open_resource(devtty)
                 except Exception as e:
                     logging.exception(e)
-                    self.status = "not connected"
+                    self.status[resnum] = "not connected"
             else:
                 self.rm = visa.ResourceManager('@py')
                 self.ins = self.rm.open_resource(self.rm.list_resources()[0])
@@ -94,19 +95,18 @@ class Keithley:
             self.ins.write('SYST:ZCOR ON')
             self.ins.write('SYST:ZCH OFF')
             self.ins.write('SYST:ZCOR OFF')
-            self.status = "connected"
-            self.photodiode_reading_1 = None
-            self.photodiode_reading_2 = None
+            self.status[resnum] = "connected"
+            self.photodiode_reading = {0:None,1:None}
         except Exception as e:
             logging.exception(e)
-            self.status = "not connected"
+            self.status[resnum] = "not connected"
 
     def check_status(self):
         try:
             self.getread()
         except Exception as e:
             logging.exception(e)
-            self.status = "not connected"
+            self.status[self.resnum] = "not connected"
 
     def selectmode(self, mode, nplc):
         """
@@ -115,7 +115,7 @@ class Keithley:
         :param nplc:
         :return: switches the keithley to a particular mode
         """
-        if self.status != "not connected":
+        if self.status[self.resnum] != "not connected":
             assert mode.lower() in ['volt', 'char', 'curr', 'res'], "No mode %s" % mode.lower()
             assert type(nplc) == type(1)  # assert that nplc is an int
             # self.ins.write('CONF:%s' % mode.upper())
@@ -134,7 +134,7 @@ class Keithley:
         :param on: a boolean that tells the display to be on or off.
         :return: a keithley that has a display off or on.
         """
-        if self.status != "not connected":
+        if self.status[self.resnum] != "not connected":
             if on:
                 self.ins.write('DISP:ENAB 1')
             else:
@@ -154,7 +154,7 @@ class Keithley:
             [READING, TIME, STATUS]
             Where status is defined in the manual via bitmasks
         '''
-        if self.status != "not connected":
+        if self.status[self.resnum] != "not connected":
             return np.array(self.ins.query('READ?').split(',')).astype(np.float)
         else:
             pass
@@ -165,7 +165,7 @@ class Keithley:
         :param query: a query to send to the keithley
         :return: returns the response to the query.
         """
-        if self.status != "not connected":
+        if self.status[self.resnum] != "not connected":
             return self.ins.query(query)
         else:
             pass
@@ -176,7 +176,7 @@ class Keithley:
 
         :return: a closed connection to the keithley
         """
-        if self.status != "not connected":
+        if self.status[self.resnum] != "not connected":
             self.ins.close()
             self.rm.close()
         else:
@@ -189,7 +189,7 @@ class Keithley:
         :param nplc:
         :return:
         """
-        if self.status != "not connected":
+        if self.status[self.resnum] != "not connected":
             self.ins.write('*RST')
             self.ins.write('INIT')
 
@@ -205,7 +205,7 @@ class Keithley:
     def get_keithley(self,rm, duration=1, photons=100000, charge=10 ** -6, wavelength=550, mode='curr',
                      analysis_type='duration', do_single=False, do_reset=True, photon_file='test.dat',
                      do_shutter=True):
-        if self.status != "not connected":
+        if self.status[self.resnum] != "not connected":
             print("starting get_keithley")
             if do_single:
                 # QE for NIST and Thorlabs
@@ -388,14 +388,12 @@ class Keithley:
 
         :return:
         """
-        if self.status != "not connected":
+        if self.status[self.resnum] != "not connected":
             time.sleep(1)
             photo1 = self.getread()
-            logging.info("Diode read")
-            photo2 = [-1, -1, -1]
-            self.photodiode_reading_1 = photo1[0]
-            self.photodiode_reading_2 = photo2[0]
-            return photo1[0], photo2[0]
+            logging.info("Diode {0} read".format(self.resnum))
+            self.photodiode_reading[self.resnum] = photo1[0]
+            return photo1[0]
         else:
             pass
 
@@ -405,7 +403,7 @@ class Keithley:
         :param duration:
         :return:
         """
-        if self.status != "not connected":
+        if self.status[self.resnum] != "not connected":
             times = []
             photol = []
             totphotons = []

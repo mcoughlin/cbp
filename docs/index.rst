@@ -11,6 +11,7 @@ Welcome to CBP's |version| documentation!
    :caption: Contents:
 
    changelog
+   readme
    introduction
    install
    build_documents

@@ -39,7 +39,7 @@ Accelerometer:
 
 .. code:: bash
 
-    python runinst.py --doRun -i phidget
+    python cbp_instruments.py phidget
 
 AltAz:
     m = 1, n > 0: Right
@@ -49,7 +49,7 @@ AltAz:
 
 .. code:: bash
 
-    python runinst.py --doRun --doSteps -i altaz -m 1 -n 100
+    python cbp_instruments.py altaz 1  100
 
 
 Potentiometer:
@@ -58,7 +58,7 @@ Potentiometer:
 
 .. code:: bash
 
-    python runinst.py --doRun -i potentiometer
+    python cbp_instruments.py potentiometer
 
 
 Photodiode:
@@ -66,7 +66,7 @@ Photodiode:
 
 .. code:: bash
 
-    python runinst.py --doRun -i photodiode
+    python cbp_instruments.py photodiode
 
 
 Birger:
@@ -74,49 +74,50 @@ Birger:
 
 .. code::  bash
 
-    python runinst.py --doRun -i birger --doAperture -p 24
-    python runinst.py --doRun -i birger --doFocus -f 1024
+    python cbp_instruments birger aperture 24
+    python cbp_instruments birger focus 1024
 
 Shutter:
    Shutter in milliseconds, -1 for open
 
 .. code:: bash
 
-    python runinst.py --doRun --doShutter -i shutter -s 1000
+    python cbp_instruments.py shutter 1000
 
 Filter Wheel:
 
 .. code:: bash
 
-    python runinst.py --doRun --doFWPosition -i filter_wheel --mask 0 --filter 0
+    python cbp_instruments.py 'filter wheel' position 0 0
+    python cbp_instruments.py 'filter wheel' 'get position'
 
 Lamp:
     Lamp: 0 - 255
 
 .. code:: bash
 
-    python runinst.py --doRun --doLamp -i lamp -l 255
+    python cbp_instruments.py lamp 255
 
 Monochrometer:
 
 .. code:: bash
 
-    python runinst.py --doRun --doMonoWavelength -i monochrometer --wavelength 600
+    python cbp_instruments.py monochrometer wavelength 600
 
 Keithley:
 
 .. code:: bash
 
-    python runinst.py -i keithley --doKeithley --doRun
+    python cbp_instruments.py keithley
 
 Spectrograph:
 
 .. code:: bash
 
-    python runinst.py -i spectrograph --doSpectrograph --doRun
+    python cbp_instruments.py spectrograph
 
 Laser:
 
 .. code:: bash
 
-    python  runinst.py --doRun --doLaser -i laser --wavelength 521
+    python  cbp_instruments.py laser change_wavelength 521
