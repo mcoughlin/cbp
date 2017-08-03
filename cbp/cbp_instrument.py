@@ -204,6 +204,65 @@ class CBP:
         shutter_closed_file.close()
         shutter_opened_file.close()
 
+    def both_keithley_change_wavelength(self,output_dir='data', wavelength_min=500, wavelength_max=700, wavelength_steps=10, n_averages=3):
+        shutter_closed_directory = '{0}/closed/'.format(output_dir)
+        shutter_opened_directory = '{0}/opened/'.format(output_dir)
+        if not os.path.exists(shutter_closed_directory):
+            os.makedirs(shutter_closed_directory)
+        if not os.path.exists(shutter_opened_directory):
+            os.makedirs(shutter_opened_directory)
+
+        shutter_closed_file = open(shutter_closed_directory + 'photo.dat', 'w')
+        shutter_opened_file = open(shutter_opened_directory + 'photo.dat', 'w')
+        wavelength_array = np.arange(wavelength_min, wavelength_max + wavelength_steps, wavelength_steps)
+        print("created array")
+        for wave in wavelength_array:
+            print(wave)
+            print("starting change_wavelength")
+            self.laser.change_wavelength(wave)
+            self._get_photodiode_averages(2,wave=wave,n_averages=n_averages,shutter_closed_file=shutter_closed_file,shutter_open_file=shutter_opened_file)
+            self._get_photodiode_averages(1, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file,shutter_open_file=shutter_opened_file)
+        shutter_opened_file.close()
+        shutter_closed_file.close()
+
+    def _get_photodiode_averages(self, shutter_position, wave, n_averages, shutter_closed_file, shutter_open_file):
+        thorlabs.thorlabs.main(val=shutter_position)
+        if shutter_position == 2:
+            print("shutter closed")
+        elif shutter_position == 1:
+            print("shutter open")
+        photodiode_list = []
+        photodiode_2_list = []
+        for i in range(n_averages + 1):
+            self.keithley.do_reset()
+            self.keithley_2.do_reset()
+            retry = 0
+            while retry <= 10:
+                try:
+                    photo1 = self.keithley.get_photodiode_reading()
+                    photo2 = self.keithley_2.get_photodiode_reading()
+                    break
+                except Exception as e:
+                    print(e)
+                    retry += 1
+            if retry > 10:
+                raise Exception('Keithley failed to read in the alloted number of retries')
+
+            photodiode_list.append(photo1)
+            photodiode_2_list.append(photo2)
+        photodiode_avg = np.mean(photodiode_list)
+        photodiode_std = np.std(photodiode_list)
+        photodiode_2_avg = np.mean(photodiode_2_list)
+        photodiode_2_std = np.std(photodiode_2_list)
+        line = "{0} {1} {2}\n".format(wave, photodiode_avg, photodiode_std)
+        line_2 = "{0} {1} {2}\n".format(wave, photodiode_2_avg, photodiode_2_std)
+        if shutter_position == 2:
+            shutter_closed_file.write(line)
+            shutter_closed_file.write(line_2)
+        elif shutter_position == 1:
+            shutter_open_file.write(line)
+            shutter_open_file.write(line_2)
+
     def _get_photodiode_spectograph_averages(self, shutter_position, wave, n_averages, shutter_closed_file, spectograph_shutter_closed_file, shutter_open_file, spectograph_shutter_opened_file, duration):
         thorlabs.thorlabs.main(val=shutter_position)
         if shutter_position == 2:

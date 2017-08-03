@@ -395,7 +395,7 @@ class Keithley:
             self.photodiode_reading[self.resnum] = photo1[0]
             return photo1[0]
         else:
-            pass
+            return [-1,-1,-1]
 
     def get_charge_timeseries(self,duration=10):
         """
