@@ -59,9 +59,11 @@ class Keithley:
                 logging.info("Finding resource")
                 if resnum == 0:
                     devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
+                    print("keithley 1 found")
                     logging.info("keithley 1 found")
                 elif resnum == 1:
                     devtty = 'ASRL/dev/ttyUSB.KEITHLEY2::INSTR'
+                    print("keithley 2 found")
                     logging.info("keithley 2 found")
                 else:
                     devtty = rm.list_resources()[resnum]
@@ -389,8 +391,9 @@ class Keithley:
         :return:
         """
         if self.status[self.resnum] != "not connected":
-            time.sleep(1)
+            time.sleep(.8)
             photo1 = self.getread()
+            print("Diode {0} read".format(self.resnum))
             logging.info("Diode {0} read".format(self.resnum))
             self.photodiode_reading[self.resnum] = photo1[0]
             return photo1[0]

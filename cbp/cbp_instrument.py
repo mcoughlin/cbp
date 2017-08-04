@@ -217,36 +217,37 @@ class CBP:
         wavelength_array = np.arange(wavelength_min, wavelength_max + wavelength_steps, wavelength_steps)
         print("created array")
         for wave in wavelength_array:
-            print(wave)
             print("starting change_wavelength")
             self.laser.change_wavelength(wave)
+            print(self.laser.wavelength)
             self._get_photodiode_averages(2,wave=wave,n_averages=n_averages,shutter_closed_file=shutter_closed_file,shutter_open_file=shutter_opened_file)
-            self._get_photodiode_averages(1, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file,shutter_open_file=shutter_opened_file)
         shutter_opened_file.close()
         shutter_closed_file.close()
 
     def _get_photodiode_averages(self, shutter_position, wave, n_averages, shutter_closed_file, shutter_open_file):
-        thorlabs.thorlabs.main(val=shutter_position)
-        if shutter_position == 2:
-            print("shutter closed")
-        elif shutter_position == 1:
-            print("shutter open")
         photodiode_list = []
         photodiode_2_list = []
         for i in range(n_averages + 1):
-            self.keithley.do_reset()
-            self.keithley_2.do_reset()
             retry = 0
+            retry_2 = 0
             while retry <= 10:
                 try:
                     photo1 = self.keithley.get_photodiode_reading()
-                    photo2 = self.keithley_2.get_photodiode_reading()
                     break
                 except Exception as e:
                     print(e)
                     retry += 1
             if retry > 10:
                 raise Exception('Keithley failed to read in the alloted number of retries')
+            while retry_2 <= 10:
+                try:
+                    photo2 = self.keithley_2.get_photodiode_reading()
+                    break
+                except Exception as e:
+                    print(e)
+                    retry_2 += 1
+            if retry_2 > 10:
+                raise Exception('Keithley 2 failed to read in the alloted numberof retries')
 
             photodiode_list.append(photo1)
             photodiode_2_list.append(photo2)
@@ -256,12 +257,8 @@ class CBP:
         photodiode_2_std = np.std(photodiode_2_list)
         line = "{0} {1} {2}\n".format(wave, photodiode_avg, photodiode_std)
         line_2 = "{0} {1} {2}\n".format(wave, photodiode_2_avg, photodiode_2_std)
-        if shutter_position == 2:
-            shutter_closed_file.write(line)
-            shutter_closed_file.write(line_2)
-        elif shutter_position == 1:
-            shutter_open_file.write(line)
-            shutter_open_file.write(line_2)
+        shutter_closed_file.write(line)
+        shutter_open_file.write(line_2)
 
     def _get_photodiode_spectograph_averages(self, shutter_position, wave, n_averages, shutter_closed_file, spectograph_shutter_closed_file, shutter_open_file, spectograph_shutter_opened_file, duration):
         thorlabs.thorlabs.main(val=shutter_position)

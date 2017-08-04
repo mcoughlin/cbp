@@ -1,4 +1,5 @@
 import cbp.cbp_instrument as cbp_instrument
+import cbp_notifications.cbp_email as cbp_notify
 import visa
 import time
 import numpy as np
@@ -16,9 +17,14 @@ def main():
     try:
         collimated_beam_projector.both_keithley_change_wavelength(output_dir=outputDir,wavelength_min=wavelength_min,wavelength_max=wavelength_max,wavelength_steps=wavelength_steps,n_averages=Naverages)
     except Exception() as e:
-        print(e)
+       cbp_email_error = cbp_notify.CbpEmailError(program="get_both_keithley_current.py",error=e)
+       cbp_email_error.send()
     end = time.time()
     total_time = end - start
     print(total_time)
+    cbp_email_complete = cbp_notify.CbpEmailComplete(program="get_both_keithley_current.py")
+    cbp_email_complete.send()
+    cmd = 'tar -zcvf keithley_both_{0}.tar.gz  /home/pi/CBP/keithley_both/{0}/'.format(today)
+    os.system(cmd)
 if __name__ == '__main__':
     main()

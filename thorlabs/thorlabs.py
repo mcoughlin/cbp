@@ -26,7 +26,7 @@ def run_flipper(position):
     sn = "37873245"
     mff = MFF("MFF101", "flipper", sn=sn)
     mff.MoveJog(position)
-    time.sleep(1)
+    time.sleep(.6)
 
 
 def get_flipper():
