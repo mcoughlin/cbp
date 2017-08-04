@@ -10,7 +10,6 @@ import time
 from cbp._version import get_versions
 import thorlabs
 import ConfigParser
-import subprocess
 import cbp.shutter as shutter
 
 
@@ -317,15 +316,21 @@ class KeithleyView(Frame):
         self.add_layout(self.layout2)
         self.keithley_text = Text("Keithley 1: ",on_change=self._display_keithley_1)
         self.keithley_text.disabled = True
+        # TODO add in keithley 2 text <>
+        # TODO disable keithley 2 text <>
         self.duration_text = Text("Duration")
         self.timeseries_text = Text("Timeseries Last Value:")
         self.timeseries_text.disabled = True
         self.layout2.add_widget(self.keithley_text)
+        # TODO attach keithley 2 text to layout <>
         self.layout2.add_widget(Button("GET READING",self._get_photodiode_reading))
+        # TODO attach keithley 2 get photodiode reading to layout <>
         self.layout2.add_widget(self.duration_text,1)
         self.layout2.add_widget(self.timeseries_text,1)
         self.layout2.add_widget(Button("Get Timeseries",self._get_timeseries),1)
         self.fix()
+
+    # TODO add in keithley 2 display function <>
 
     def _get_timeseries(self):
         duration = int(self.duration_text.value)
@@ -337,6 +342,8 @@ class KeithleyView(Frame):
         cbp.keithley.selectmode('curr',1)
         cbp.keithley.get_photodiode_reading()
         self.keithley_text.value = None
+
+    # TODO add in keithley 2 photodiode reading function <>
 
     def _display_keithley_1(self):
         if test:

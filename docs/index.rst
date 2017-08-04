@@ -15,6 +15,7 @@ Welcome to CBP's |version| documentation!
    introduction
    install
    build_documents
+   configuration
    cbp_cli
    tui
    cbp_package

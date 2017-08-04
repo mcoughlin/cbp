@@ -6,6 +6,7 @@
 This is the cbp_email module
 """
 
+
 import smtplib
 from email.mime.text import MIMEText
 import ConfigParser
@@ -22,6 +23,7 @@ class CbpEmail:
     """
     This is the CbpEmail class which is a class for sending generic emails, meaning you have to specify both message
     and subject.
+
     """
     def __init__(self,msg="",sender="",recipients=None, subject=""):
         self.msg = msg
@@ -30,6 +32,11 @@ class CbpEmail:
         self.subject = subject
 
     def send(self):
+        """
+        This method sends the email through the gmail smtp server.
+
+        :return:
+        """
         config = ConfigParser.RawConfigParser()
         config.read(cf)
 
@@ -52,13 +59,18 @@ class CbpEmailComplete:
     """
     This is a template email which tells the recipient that a program is done
     """
-    def __init__(self,program=""):
-        self.msg = "{0} is complete.".format(program)
+    def __init__(self,program="",t=None):
+        self.msg = "{0} is complete.\n time: {1}".format(program,t)
         self.sender = "eric.coughlin2014@gmail.com"
         self.recipients = recipients
         self.subject = "[CBP Notifications] {0} Complete".format(program)
 
     def send(self):
+        """
+        This method sends the email through gmail smtp server
+
+        :return:
+        """
         config = ConfigParser.RawConfigParser()
         config.read(cf)
 
@@ -77,6 +89,10 @@ class CbpEmailComplete:
             print(e)
             print('Something went wrong...')
 
+# TODO-feature create CbpEmailCompleteResult class <>
+    # TODO create __init__ method <>
+    # TODO create send method <>
+
 class CbpEmailError:
     """
     This is an email template that tells the recipient that the program had an error that it could not get past.
@@ -88,6 +104,11 @@ class CbpEmailError:
         self.subject = "[CBP Notifications] {0} Error".format(program)
 
     def send(self):
+        """
+        This method sends the email through the gmail smtp server.
+
+        :return:
+        """
         config = ConfigParser.RawConfigParser()
         config.read(cf)
 
