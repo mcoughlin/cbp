@@ -19,6 +19,7 @@ else:
     import visa
 import cbp.monochromater
 import cbp.shutter
+import thorlabs
 
 import logging
 
@@ -59,6 +60,7 @@ class Keithley:
                 logging.info("Finding resource")
                 if resnum == 0:
                     devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
+                    #devtty = 'ASRL/dev/ttyUSB1::INSTR'
                     print("keithley 1 found")
                     logging.info("keithley 1 found")
                 elif resnum == 1:
@@ -400,7 +402,7 @@ class Keithley:
         else:
             return [-1,-1,-1]
 
-    def get_charge_timeseries(self,duration=10):
+    def get_charge_timeseries(self,duration=10,doShutter=True,cbp_inst=None):
         """
 
         :param duration:
@@ -413,6 +415,11 @@ class Keithley:
             start_time = time.time()
             totphoton = 0
             intsphere_charge = 0
+
+            self.do_reset(mode="char",nplc=1)
+            print "Getting first 10 Keithley at %s..."%time.time()
+            #print "closed shutter"
+            #cbp.shutter.main(runtype="shutter", val=1)
             for ii in xrange(10):
                 photo = self.getread()[0]
                 elapsed_time = time.time() - start_time
@@ -420,12 +427,44 @@ class Keithley:
                 photol.append(photo)
                 times.append(elapsed_time)
 
-                while elapsed_time < duration:
-                    photo = self.getread()[0]
-                    elapsed_time = time.time() - start_time
+            print "Opening/closing shutters at %s..."%time.time()
+            if doShutter:
+                cbp_inst.flipper.run_flipper(1)
+                #cbp_inst.shutter.run_shutter(-1)
 
-                    photol.append(photo)
-                    times.append(elapsed_time)
+                #thorlabs.thorlabs.main(val=1)
+                #cbp.shutter.main(runtype="shutter", val=-1)
+                #print "opened shutter"
+            else:
+                cbp_inst.flipper.run_flipper(2)
+                #cbp_inst.shutter.run_shutter(1)
+                #cbp.shutter.main(runtype="shutter", val=1)
+                #print "closed shutter"
+  
+            print "Getting image Keithley at %s..."%time.time()
+            elapsed_time_closed = time.time() - start_time 
+            while elapsed_time < duration+elapsed_time_closed:
+                photo = self.getread()[0]
+                elapsed_time = time.time() - start_time
+
+                photol.append(photo)
+                times.append(elapsed_time)
+
+            #cbp_inst.shutter.run_shutter(1)
+            #cbp.shutter.main(runtype="shutter", val=1)
+            cbp_inst.flipper.run_flipper(2)
+            #thorlabs.thorlabs.main(val=2)
+            print "Shutter closed at %s..."%time.time()
+
+            print "Getting final 10 Keithley at %s..."%time.time()
+            for ii in xrange(10):
+                photo = self.getread()[0]
+                elapsed_time = time.time() - start_time
+
+                photol.append(photo)
+                times.append(elapsed_time)  
+            print "Returning Keithley at %s..."%time.time()
+
             return times, photol
         else:
             pass
@@ -453,9 +492,9 @@ def main(runtype="keithley", duration=1, photons=100000, charge=10**-6, waveleng
 if __name__ == "__main__":
 
     # # Parse command line
-    # opts = parse_commandline()
-    #
-    # if opts.doKeithley:
+    opts = parse_commandline()
+    
+    #if opts.doKeithley:
     #     main(runtype="keithley", duration=opts.duration, photons=opts.photons, charge=opts.charge,
     #          wavelength=opts.wavelength, mode=opts.mode, analysis_type=opts.analysisType, do_single=opts.doSingle,
     #          do_reset=opts.doReset, photon_file=opts.photonFile, do_shutter=opts.doShutter)

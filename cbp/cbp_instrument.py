@@ -16,6 +16,7 @@ import cbp.monochromater
 import cbp.phidget
 import cbp.photodiode
 import cbp.potentiometer
+import cbp.flipper
 import cbp.shutter
 import cbp.spectrograph
 import cbp.lockin
@@ -39,7 +40,7 @@ class CBP:
     """
     This is the class that contains all of the written cbp instrument modules.
     """
-    def __init__(self,altaz=False,birger=False,filter_wheel=False,keithley=False,keithley_2=False,lamp=False,monochromater=False,phidget=False,photodiode=False,potentiometer=False,shutter=False,spectrograph=False,lockin=False,temperature=False,laser=False,everything=False):
+    def __init__(self,altaz=False,birger=False,filter_wheel=False,keithley=False,keithley_2=False,lamp=False,monochromater=False,phidget=False,photodiode=False,potentiometer=False,shutter=False,flipper=False,spectrograph=False,lockin=False,temperature=False,laser=False,everything=False):
         self.instrument_connected_list = []
         self.instrument_dictionary = {}
         if altaz:
@@ -56,11 +57,11 @@ class CBP:
             self.instrument_dictionary["filter wheel"] = self.filter_wheel
         rm = visa.ResourceManager('@py')
         if keithley:
-            self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0, do_reset=True)
+            self.keithley = cbp.keithley.Keithley(rm=rm, resnum=0, do_reset=True,mode='char')
             self.instrument_connected_list.append("keithley")
             self.instrument_dictionary["keithley"] = self.keithley
         if keithley_2:
-            self.keithley_2 = cbp.keithley.Keithley(rm=rm, resnum=1, do_reset=True)
+            self.keithley_2 = cbp.keithley.Keithley(rm=rm, resnum=1, do_reset=True,mode='char')
             self.instrument_connected_list.append("keithley_2")
             self.instrument_dictionary["keithley_2"] = self.keithley_2
         if lamp:
@@ -87,6 +88,10 @@ class CBP:
             self.shutter = cbp.shutter.Shutter()
             self.instrument_connected_list.append("shutter")
             self.instrument_dictionary["shutter"] = self.shutter
+        if flipper:
+            self.flipper = cbp.flipper.Flipper()
+            self.instrument_connected_list.append("flipper")
+            self.instrument_dictionary["flipper"] = self.flipper
         if spectrograph:
             self.spectrograph = cbp.spectrograph.Spectrograph()
             self.instrument_connected_list.append("spectrograph")
@@ -161,6 +166,31 @@ class CBP:
         self.temperature.check_status()
         self.laser.check_state()
 
+    def keithley_change_wavelength(self, output_dir='data', wavelength = 600, n_averages=1, duration=1000000):
+        """
+        Takes an average from reading photodiode and spectograph with both opening and closing the shutter.
+
+        :param output_dir: This is the root directory where files are written
+        :param wavelength: This is the wavelength
+        :param n_averages: This is the number of times that the photodiodes are read which is used to calculate an average.
+        :param duration: This is the length of time that the spectrograph will sleep for per reading.
+        :return: Ostensibly doesn't return anything, but writes out data files that show average photodiode and spectograph readings at each wavelength.
+
+        """
+
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        shutter_file = open(output_dir + '/photo.dat', 'w')
+        spectograph_file = open(output_dir + '/specto.dat', 'w')
+
+        print("starting change_wavelength")
+        self.laser.change_wavelength(wavelength)
+
+        self._get_photodiode_spectograph_averages(2, wave=wave, n_averages=n_averages, shutter_closed_file=shutter_closed_file, spectograph_shutter_closed_file=spectograph_shutter_closed_file, shutter_open_file=shutter_opened_file, spectograph_shutter_opened_file=spectograph_shutter_opened_file, duration=duration)
+
+        spectograph_file.close()
+        shutter_file.close()
 
     def keithley_change_wavelength_loop(self, output_dir='data', wavelength_min=500, wavelength_max=700, wavelength_steps=10, n_averages=3, duration=1000000):
         """
@@ -273,6 +303,7 @@ class CBP:
             while retry <= 10:
                 try:
                     photo1, photo2 = self.keithley.get_photodiode_reading()
+                    print photo1, photo2
                     break
                 except Exception as e:
                     print(e)
@@ -369,7 +400,7 @@ class CBP:
             wavelength, intensity = self.spectrograph.get_spectograph(duration=duration)
             return wavelength, intensity
 
-    def write_status_log(self,output_dir='/home/pi/CBP/status_logs/',duration=1000000):
+    def write_status_log(self,output_dir='/home/pi/CBP/status_logs/',duration=1):
         """
 
         :param output_dir: This is where the status log will be written to.
@@ -389,8 +420,8 @@ class CBP:
         potentiometer1, potentiometer2 = self.potentiometer.get_potentiometer()
         mask, filter = self.filter_wheel.get_position()
         birger_status = self.birger.do_status()
-        keithley_status = self.keithley.get_charge_timeseries()
-        spectrograph_status = self.spectrograph.do_spectograph(duration=duration)
+        keithley_status = self.keithley.get_charge_timeseries(cbp_inst=self)
+        spectrograph_status = self.spectrograph.do_spectograph(duration=duration*1e6)
         status_log_file = open(status_directory + '{0}_status.dat'.format(time_at_run), 'w')
         headings_line = "{0:5} {1:5} {2:5} {3:5} {4:5} {5:5} {6:5} {7:5} {8:5} {9:5}\n".format("X", "Y", "Z", "ANGLE","POTENTIOMETER 1", "POTENTIOMETER 2", "MASK", "FILTER", "WAVELENGTH", "INTENSITIES")
         status_log_file.write(headings_line)
@@ -412,7 +443,7 @@ class CBP:
             status_spectrograph_log_file.write(spectrograph_data_line)
         status_spectrograph_log_file.close()
 
-    def write_status_log_xml(self,output_dir='/home/pi/CBP/status_log_xml/',duration=1000000):
+    def write_status_log_xml(self,outfile='/tmp/test.xml',duration=1,doShutter=True):
         """
         This method writes out the status log file but in xml format.
 
@@ -420,19 +451,43 @@ class CBP:
         :param duration: This is the length of the measuring of the light by the spectropgraph.
         :return:
         """
-        date_at_run = time.strftime("%m_%d_%Y")
-        time_at_run = time.strftime("%m_%d_%Y_%H_%M")
-        if not os.path.exists(output_dir + '{0}/{1}/'.format(date_at_run, time_at_run)):
-            os.makedirs(output_dir + '{0}/{1}'.format(date_at_run, time_at_run))
-        status_directory = output_dir + '{0}/{1}/'.format(date_at_run, time_at_run)
-        x, y, z, angle = self.phidget.do_phidget()
-        potentiometer1, potentiometer2 = self.potentiometer.get_potentiometer()
-        mask, filter = self.filter_wheel.get_position()
-        birger_status = self.birger.do_status()
-        wavelength = self.laser.check_wavelength()
-        keithley_status = self.keithley.get_charge_timeseries()
-        spectrograph_status = self.spectrograph.do_spectograph(duration=duration)
-        status_log_file = open(status_directory + '{0}_status.xml'.format(time_at_run), 'w')
+
+        try:
+            x, y, z, angle = self.phidget.do_phidget()
+        except:
+            x, y, z, angle = 0.0, 0.0, 0.0, 0.0
+ 
+        try:
+            potentiometer1, potentiometer2 = self.potentiometer.get_potentiometer()
+        except:
+            potentiometer1, potentiometer2 = 0.0, 0.0
+        
+        try:
+            mask, filter = self.filter_wheel.get_position()
+        except:
+            mask, filter = 0.0, 0.0
+
+        try:
+            birger_status = self.birger.do_status()
+        except:
+            birger_status = [0.0,0.0]
+
+        try:
+            wavelength = self.laser.check_wavelength()
+        except:
+            wavelength = 0.0
+
+        keithley_status = self.keithley.get_charge_timeseries(duration=duration,doShutter=doShutter, cbp_inst=self)
+        #spectrograph_status = self.spectrograph.do_spectrograph(duration=duration*1e3,doShutter=doShutter)
+        time.sleep(10.0)
+
+        #spectrograph_status = self.spectrograph.do_spectrograph(duration=1e7,doShutter=doShutter, cbp_inst=self)
+
+        #spectrograph_status = self.spectrograph.do_spectrograph(duration=8000,doShutter=doShutter, cbp_inst=self)
+        spectrograph_status = []
+        spectrograph_status.append([0])
+        spectrograph_status.append([0])
+        status_log_file = open(outfile, 'w')
         root = etree.Element('log')
         instrument_status = etree.SubElement(root,'instrument_status',x=str(x),y=str(y),z=str(z),angle=str(angle),potentiometer_1=str(potentiometer1),potentiometer_2=str(potentiometer2),mask=str(mask),filter=str(filter),focus=str(birger_status[0]),aperture=str(birger_status[1]),wavelength=str(wavelength))
         keithley = etree.SubElement(root,'keithley')
