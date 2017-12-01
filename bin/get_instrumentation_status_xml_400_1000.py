@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import optparse, time
+import numpy as np
+
 import cbp.cbp_instrument as CBP
 import cbp
 import cbp.shutter
@@ -26,22 +28,26 @@ def parse_commandline():
 # Parse command line
 opts = parse_commandline()
 laser_interface = cbp.laser.LaserSerialInterface(loop=False)
-laser_interface.change_wavelength(opts.wavelength)
-
-#print "closed shutter"
-#thorlabs.thorlabs.main(val=2)
-#cbp.shutter.main(runtype="shutter", val=1)
-
-start_time = time.time()
-#cbp = CBP.CBP(phidget=True,birger=True,potentiometer=True,laser=True,filter_wheel=True,keithley=True,spectrograph=True)
 cbp_inst = CBP.CBP(phidget=False,birger=False,potentiometer=False,laser=False,filter_wheel=False,keithley=True,spectrograph=True,flipper=True)
+cbp_inst.flipper.run_flipper(1)
 
-cbp_inst.flipper.run_flipper(2)
+wavelengths = np.arange(400,1001,1)
+filename = '/tmp/test.xml'
+duration = 1
+doShutter = True
 
-if opts.shutter == 1:
-    doShutter = True
-elif opts.shutter == 0:
-    doShutter = False
+outfile = 'duration_test3.dat'
+fid = open(outfile,'w')
+for wavelength in wavelengths:
+    laser_interface.change_wavelength(wavelength)     
 
-cbp_inst.write_status_log_xml(outfile=opts.filename,duration=opts.duration,doShutter=doShutter)
+    cbp_inst.keithley.do_reset(mode="char",nplc=1)
+    currents = []
+    for ii in xrange(10):
+        current = cbp_inst.keithley.getread()[0]
+        currents.append(current)
+
+    print wavelength,np.max(currents)
+    fid.write('%.0f %.5e\n'%(wavelength,np.max(currents)))
+fid.close()
 

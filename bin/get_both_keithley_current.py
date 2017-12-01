@@ -22,9 +22,9 @@ def main():
     end = time.time()
     total_time = end - start
     print(total_time)
-    cbp_email_complete = cbp_notify.CbpEmailComplete(program="get_both_keithley_current.py")
+    cbp_email_complete = cbp_notify.CbpEmailComplete(program="get_both_keithley_current.py",t=total_time)
     cbp_email_complete.send()
-    cmd = 'tar -zcvf keithley_both_{0}.tar.gz  /home/pi/CBP/keithley_both/{0}/'.format(today)
+    cmd = 'tar -zcvf /home/pi/CBP/keithley_both/keithley_both_{0}.tar.gz  /home/pi/CBP/keithley_both/{0}/'.format(today)
     os.system(cmd)
 if __name__ == '__main__':
     main()
