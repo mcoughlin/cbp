@@ -23,7 +23,7 @@ def parse_commandline():
 
 def initialize_connection():
     fws = FLI.filter_wheel.USBFilterWheel.find_devices()
-    if not len(fws) == 2:
+    if not len(fws) == 1:
         raise Exception("Focuser or Filter wheel not connected...")
 
     for fw in fws:

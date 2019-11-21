@@ -40,7 +40,7 @@ def get_flipper():
 def main(runtype="flipper", val=1):
 
     if runtype == "flipper":
-        print "Running the flipper ..."
+        #print "Running the flipper ..."
         run_flipper(val)
     elif runtype == "getflipper":
         print "Getting the flipper ..."

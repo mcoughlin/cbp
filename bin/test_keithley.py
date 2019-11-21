@@ -23,29 +23,16 @@ def parse_commandline():
 
 # Parse command line
 opts = parse_commandline()
-dataDir = '/home/pi/CBP/throughput/data'
-dataDir = '/home/pi/CBP/throughput/data3'
-dataDir = '/home/pi/CBP/throughput/data4'
-dataDir = '/home/pi/CBP/throughput/data5'
-dataDir = '/home/pi/CBP/throughput/data6'
-dataDir = '/home/pi/CBP/throughput/data7'
-dataDir = '/home/pi/CBP/throughput/data8'
-dataDir = '/home/pi/CBP/throughput/data'
-dataDir = '/home/pi/CBP/throughput/data4'
-dataDir = '/home/pi/CBP/throughput/data6'
-dataDir = '/home/pi/CBP/throughput/data7'
-dataDir = '/home/pi/CBP/throughput/data8'
-dataDir = '/home/pi/CBP/throughput/data9'
-dataDir = '/home/pi/CBP/throughput/data18'
+dataDir = '/home/pi/CBP/keithley_test/data'
 
 if not os.path.isdir(dataDir):
-    os.mkdir(dataDir)
+    os.makedirs(dataDir)
 
 # set defaults
 nvals = opts.imnum
 
 doDark = True
-doDark = False
+#doDark = False
 if doDark:
     fid = open("%s/dark.txt"%(dataDir),'w')
     for ii in xrange(nvals):
@@ -56,6 +43,8 @@ if doDark:
 
         fid.write('%.5e %.5e\n'%(photo1, photo2))
     fid.close()
+
+print(stop)
 
 #continueLoop = True
 

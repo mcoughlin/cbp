@@ -28,7 +28,7 @@ def parse_commandline():
     return opts
 
 def run_stepper(steps,motorNum):
-    shutter_command = "picocom -b 57600 /dev/ttyACM.MLS"
+    shutter_command = "picocom -b 57600 /dev/ttyACM2"
     child = pexpect.spawn (shutter_command)
     loop = True
     while loop:

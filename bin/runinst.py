@@ -13,6 +13,7 @@ import cbp.photodiode, cbp.filter_wheel
 import cbp.monochromater, cbp.keithley
 import cbp.spectrograph
 import cbp.laser
+import cbp.uniblitz, cbp.polarizer
 
 def create_parser():
     """
@@ -65,6 +66,14 @@ def create_parser():
     parser_shutter = subparsers.add_parser('shutter', help='sets the shutter')
     parser_shutter.add_argument('shutter',default=-1,type=int)
     parser_shutter.set_defaults(func=shutter_shutter)
+
+    parser_uniblitz = subparsers.add_parser('uniblitz', help='sets the shutter')
+    parser_uniblitz.add_argument('shutter',default=-1,type=int)
+    parser_uniblitz.set_defaults(func=uniblitz_shutter)
+
+    parser_polarizer = subparsers.add_parser('polarizer', help='sets the polarizer')
+    parser_polarizer.add_argument('polarizer',default='0')
+    parser_polarizer.set_defaults(func=polarizer)
 
     parser_photodiode = subparsers.add_parser('photodiode', help='prints photo')
     parser_photodiode.set_defaults(func=photodiode)
@@ -160,6 +169,17 @@ def lamp_lamp(opts):
 
 def shutter_shutter(opts):
     cbp.shutter.main(runtype ="shutter", val = opts.shutter)
+
+def uniblitz_shutter(opts):
+    cbp.uniblitz.main(runtype ="shutter", val = opts.shutter)
+
+def polarizer(opts):
+    if opts.polarizer == 'home':
+        cbp.polarizer.main(runtype ="homepolarizer")
+    elif opts.polarizer == 'getposition':
+        cbp.polarizer.main(runtype ="getpolarizer")
+    else:
+        cbp.polarizer.main(runtype ="polarizer", val = int(opts.polarizer))
 
 def photodiode(opts):
     photo = cbp.photodiode.main(runtype ="photodiode")

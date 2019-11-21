@@ -21,7 +21,7 @@ class LaserSerialInterface:
 
     """
 
-    def __init__(self, loop=True):
+    def __init__(self, loop=True, port='/dev/ttyUSB.LASER'):
         self.state = None
         self.error = None
         self.states = {'[PC:READY=0\NL]': ['ready', 'The device is ready'],'[PC:BUSY=0\NL]': ['busy', 'The device is busy'], '[PC:OFF=0\NL]': ['off', 'The device is off'], '[PC:READY=2048\NL]': ['ready', 'The device is ready but with cooling error.'], '': ['off', 'The device is off']}
@@ -31,7 +31,7 @@ class LaserSerialInterface:
             self.serial = serial.serial_for_url('loop://')
         else:
             try:
-                self.serial = serial.Serial(port='/dev/ttyUSB.LASER', baudrate=19200, timeout=2)
+                self.serial = serial.Serial(port=port, baudrate=19200, timeout=2)
                 self.status = "connected"
                 self.check_state()
                 self.check_wavelength()
@@ -68,6 +68,7 @@ class LaserSerialInterface:
             say_state_msg = self.commands['say_state_msg']
             self.serial.write(say_state_msg)
             response = self.serial.read(size=25)
+            print('check_state response: {}'.format(response))
             if response == "":
                 self.state = "off"
                 self.status = "off"
@@ -77,6 +78,7 @@ class LaserSerialInterface:
                 self.state = self.states[response][0]
                 print(self.states[response][1])
             else:
+                print(response)
                 logging.info("Not found.")
         else:
             pass
@@ -107,7 +109,7 @@ class LaserSerialInterface:
             self.get_ready_state()
             if self.state != "off" and self.state != "not connected":
                 wavelength_change_msg = '[W0/S{0}]'.format(str(wavelength))
-                if wavelength < 355 or wavelength > 1100:
+                if wavelength < 350 or wavelength > 1400:
                     raise Exception("Wavelength limits exceeded bounds")
                 else:
                     self.serial.write(wavelength_change_msg)
@@ -200,19 +202,22 @@ class LaserSerialInterface:
 
 def create_parser():
     parser = argparse.ArgumentParser(description='Program to change the wavelength of the laser using rs232 interface.')
-    parser.add_argument('wavelength', nargs=1, help='This is for setting the value of the wavelength of the laser.')
+    parser.add_argument('wavelength', nargs=1, help='This is for setting the value of the wavelength of the laser.', type=float)
     return parser
 
-def main(wavelength):
+def main(wavelength,port):
     """
     This creates a command line and arguments for the script.
 
     :return: None
     """
 
-    laser_interface = LaserSerialInterface(loop=False)
-    laser_interface.loop_change_wavelength(500, 520, False)
-    #laser_interface.change_wavelength(wavelength)
+    laser_interface = LaserSerialInterface(loop=False,port=port)
+    #laser_interface.loop_change_wavelength(500, 520, False)
+    laser_interface.change_wavelength(wavelength)
 
 if __name__ == '__main__':
-    main(500)
+    parser = create_parser()
+    args = parser.parse_args()
+    wavelength = np.float(args.wavelength[0])
+    main(wavelength,port='/dev/ttyUSB2')

@@ -6,7 +6,7 @@ def main():
     cbp = CBP.CBP(spectrograph=True)
     temperature = cbp.spectrograph.get_temperature()
     print("{0} degrees C".format(temperature))
-    set_to_temperature = 5
+    set_to_temperature = 10.0
     cbp.spectrograph.set_temperature(set_to_temperature)
     time.sleep(0.5)
     temperature = cbp.spectrograph.get_temperature()

@@ -19,6 +19,8 @@ else:
     import visa
 import cbp.monochromater
 import cbp.shutter
+from flipper import Flipper
+#import thorlabs
 
 import logging
 
@@ -51,14 +53,15 @@ class Keithley:
     This is the class that stores the methods for communicating with the keithley devices.
     """
     def __init__(self, rm=None, resnum=None, mode='curr', nplc=1, do_reset=False):
-        try:
+        #try:
             self.status = {0:None,1:None}
             if rm is not None and resnum is not None:
                 self.resnum = resnum
                 self.rm = rm
                 logging.info("Finding resource")
                 if resnum == 0:
-                    devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
+                    #devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
+                    devtty = 'ASRL/dev/ttyUSB0::INSTR'
                     print("keithley 1 found")
                     logging.info("keithley 1 found")
                 elif resnum == 1:
@@ -74,7 +77,10 @@ class Keithley:
                     self.status[resnum] = "not connected"
             else:
                 self.rm = visa.ResourceManager('@py')
-                self.ins = self.rm.open_resource(self.rm.list_resources()[0])
+                #resource = self.rm.list_resources(query='?*KEITHLEY?*::INSTR')[0]
+                resource = self.rm.list_resources(query='?*USB0?*::INSTR')[0]
+                self.ins = self.rm.open_resource(resource)
+                self.resnum = 0
             self.ins.write_termination = '\n'
             self.ins.read_termination = '\n'
             self.ins.timeout = 5000
@@ -99,9 +105,9 @@ class Keithley:
             self.ins.write('SYST:ZCOR OFF')
             self.status[resnum] = "connected"
             self.photodiode_reading = {0:None,1:None}
-        except Exception as e:
-            logging.exception(e)
-            self.status[resnum] = "not connected"
+        #except Exception as e:
+        #    logging.exception(e)
+        #    self.status[resnum] = "not connected"
 
     def check_status(self):
         try:
@@ -400,7 +406,7 @@ class Keithley:
         else:
             return [-1,-1,-1]
 
-    def get_charge_timeseries(self,duration=10):
+    def get_charge_timeseries(self,duration=10,doShutter=True,cbp_inst=None):
         """
 
         :param duration:
@@ -413,6 +419,12 @@ class Keithley:
             start_time = time.time()
             totphoton = 0
             intsphere_charge = 0
+            flipper = Flipper()
+
+            self.do_reset(mode="char",nplc=1)
+            print "Getting first 10 Keithley at %s..."%time.time()
+            #print "closed shutter"
+            #cbp.shutter.main(runtype="shutter", val=1)
             for ii in xrange(10):
                 photo = self.getread()[0]
                 elapsed_time = time.time() - start_time
@@ -420,12 +432,48 @@ class Keithley:
                 photol.append(photo)
                 times.append(elapsed_time)
 
-                while elapsed_time < duration:
-                    photo = self.getread()[0]
-                    elapsed_time = time.time() - start_time
+            print "Opening/closing shutters at %s..."%time.time()
+            #if doShutter:
+            #     
+            #    #cbp_inst.flipper.run_flipper(1)
+            #    #cbp_inst.shutter.run_shutter(-1)
+            #
+            #    #thorlabs.thorlabs.main(val=1)
+            #    #cbp.shutter.main(runtype="shutter", val=-1)
+                #print "opened shutter"
+            #else:
+            #    cbp_inst.flipper.run_flipper(2)
+            #    #cbp_inst.shutter.run_shutter(1)
+            #    #cbp.shutter.main(runtype="shutter", val=1)
+            #	print "closed shutter"
+ 
+            print "Getting image Keithley at %s..."%time.time()
+            elapsed_time_closed = time.time() - start_time 
+            if doShutter:
+                flipper.run_flipper(2)
+            while elapsed_time < duration+elapsed_time_closed:
+                photo = self.getread()[0]
+                elapsed_time = time.time() - start_time
 
-                    photol.append(photo)
-                    times.append(elapsed_time)
+                photol.append(photo)
+                times.append(elapsed_time)
+            flipper.run_flipper(1)
+
+            #cbp_inst.shutter.run_shutter(1)
+            #cbp.shutter.main(runtype="shutter", val=1)
+            #cbp_inst.flipper.run_flipper(2)
+            #thorlabs.thorlabs.main(val=2)
+            print "Shutter closed at %s..."%time.time()
+
+            print "Getting final 10 Keithley at %s..."%time.time()
+            for ii in xrange(10):
+                photo = self.getread()[0]
+                elapsed_time = time.time() - start_time
+
+                photol.append(photo)
+                times.append(elapsed_time)  
+            print "Returning Keithley at %s..."%time.time()
+
             return times, photol
         else:
             pass
@@ -453,11 +501,17 @@ def main(runtype="keithley", duration=1, photons=100000, charge=10**-6, waveleng
 if __name__ == "__main__":
 
     # # Parse command line
-    # opts = parse_commandline()
-    #
-    # if opts.doKeithley:
-    #     main(runtype="keithley", duration=opts.duration, photons=opts.photons, charge=opts.charge,
-    #          wavelength=opts.wavelength, mode=opts.mode, analysis_type=opts.analysisType, do_single=opts.doSingle,
-    #          do_reset=opts.doReset, photon_file=opts.photonFile, do_shutter=opts.doShutter)
-    pass
+    opts = parse_commandline()
+    rm = Keithley(resnum=0)
+    times, photol = rm.get_charge_timeseries(duration=opts.duration)
+    fid = open(opts.photonFile,'w')
+    for tt,phot in zip(times,photol):
+        fid.write('%.5f %.5e\n' % (tt,phot))
+    fid.close()
+    
+    if opts.doKeithley:
+         main(runtype="keithley", duration=opts.duration, photons=opts.photons, charge=opts.charge,
+              wavelength=opts.wavelength, mode=opts.mode, analysis_type=opts.analysisType, do_single=opts.doSingle,
+              do_reset=opts.doReset, photon_file=opts.photonFile, do_shutter=opts.doShutter)
+   # pass
 

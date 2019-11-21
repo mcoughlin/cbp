@@ -9,6 +9,8 @@
 import serial, sys, time, glob, struct, os
 import numpy as np
 import optparse
+import cbp.shutter
+import thorlabs
 
 if 'TESTENVIRONMENT' in os.environ:
     import mock
@@ -46,7 +48,7 @@ class Spectrograph:
             print(e)
             self.status = "not connected"
 
-    def get_spectograph(self, duration = 1000000, spectrumFile='test.dat'):
+    def get_spectrograph(self, duration = 1000000, spectrumFile='test.dat'):
         """
         This method returns the wavelength and intensities measured during the duration.
 
@@ -66,7 +68,7 @@ class Spectrograph:
             idx = np.intersect1d(idx1, idx2)
             wavelengths = wavelengths[idx]
             intensities = intensities[idx]
-            print("get_spectrograph done")
+            #print("get_spectrograph done")
 
             # fid = open(spectrumFile, "w")
             # for wavelength, intensity in zip(wavelengths, intensities):
@@ -114,7 +116,7 @@ class Spectrograph:
         if self.status != "not connected":
             self.spectrometer.tec_set_enable(False)
 
-    def do_spectograph(self, duration=10000000, spectrumFile='test.dat'):
+    def do_spectrograph(self, duration=10000000, spectrumFile='test.dat',doShutter=True, n_averages = 10, cbp_inst = None):
         """
         This method does the spectrograph reading.
 
@@ -123,7 +125,43 @@ class Spectrograph:
         :return:
         """
         if self.status != "not connected":
-            wavelengths, intensities = self.get_spectograph(duration=duration, spectrumFile=spectrumFile)
+
+            if doShutter:
+                cbp_inst.flipper.run_flipper(1)
+                #cbp_inst.shutter.run_shutter(-1)
+
+                #thorlabs.thorlabs.main(val=1)
+                #cbp.shutter.main(runtype="shutter", val=-1)
+                #print "opened shutter"
+            else:
+                cbp_inst.flipper.run_flipper(2)
+                #cbp_inst.shutter.run_shutter(1)
+                #cbp.shutter.main(runtype="shutter", val=1)
+                #print "closed shutter"
+
+            cnt = 0
+            for i in range(n_averages + 1):
+                try:
+                    wavelength, intensity = self.get_spectrograph(duration=duration,spectrumFile=spectrumFile)
+                    if cnt == 0:
+                        pass
+                    elif cnt == 1:
+                        intensity_list = intensity
+                    else:
+                        intensity_list = np.vstack((intensity_list,intensity))
+                    cnt = cnt + 1 
+                except:
+                    continue
+
+            intensities = np.mean(intensity_list,axis=0)
+            wavelengths = wavelength
+
+            #wavelengths, intensities = self.get_spectrograph(duration=duration, spectrumFile=spectrumFile)
+
+            #cbp.shutter.main(runtype="shutter", val=1)
+            cbp_inst.flipper.run_flipper(2)
+            #cbp_inst.shutter.run_shutter(1)
+            #thorlabs.thorlabs.main(val=2)
 
             return wavelengths, intensities
         else:
@@ -147,7 +185,8 @@ def parse_commandline():
 def main(runtype = "spectrograph", duration = 1000000, spectrumFile='test.dat'):
     spectrograph = Spectrograph()
 
-    wavelengths, intensities = spectrograph.get_spectograph(duration=duration, spectrumFile=spectrumFile)
+    spec = Spectrograph()
+    wavelengths, intensities = spec.get_spectrograph(duration=duration, spectrumFile=spectrumFile)
 
     return wavelengths, intensities
 
@@ -160,4 +199,7 @@ if __name__ == "__main__":
         wavelengths, intensities = main(runtype = "spectrograph", duration = opts.duration,
                                        spectrumFile = opts.spectrumFile)
 
-
+        fid = open(opts.spectrumFile,'w')
+        for wave,intensity in zip(wavelengths, intensities):
+            fid.write('%.5f %.5e\n' % (wave,intensity))
+        fid.close()
