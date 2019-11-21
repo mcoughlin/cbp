@@ -41,32 +41,16 @@ class Keithley:
     def __init__(self, rm=None, resnum=None, mode='curr', nplc=1, do_reset=False):
         self.status = {0:None,1:None}
         self.nreads = 1  # used to keep track of whether we need to update TRIG:COUN
-        if rm is not None and resnum is not None:
-            self.resnum = resnum
-            self.rm = rm
-            logging.info("Finding resource")
-            if resnum == 0:
-                #devtty = 'ASRL/dev/ttyUSB.KEITHLEY1::INSTR'
-                devtty = 'ASRL/dev/ttyUSB0::INSTR'
-                print("keithley 1 found")
-                logging.info("keithley 1 found")
-            elif resnum == 1:
-                devtty = 'ASRL/dev/ttyUSB.KEITHLEY2::INSTR'
-                print("keithley 2 found")
-                logging.info("keithley 2 found")
-            else:
-                devtty = rm.list_resources()[resnum]
-            try:
-                self.ins = self.rm.open_resource(devtty)
-            except Exception as e:
-                logging.exception(e)
-                self.status[resnum] = "not connected"
-        else:
+        try:
             self.rm = visa.ResourceManager('@py')
-            #resource = self.rm.list_resources(query='?*KEITHLEY?*::INSTR')[0]
-            resource = self.rm.list_resources(query='?*USB0?*::INSTR')[0]
-            self.ins = self.rm.open_resource(resource)
-            self.resnum = 0
+            print(self.rm.list_resources())
+            devtty = self.rm.list_resources()[resnum]
+            self.ins = self.rm.open_resource(devtty)
+            self.resnum = resnum
+        except Exception as e:
+            logging.exception(e)
+            print(e)
+
         self.ins.write_termination = '\n'
         self.ins.read_termination = '\n'
         self.ins.timeout = 5000
