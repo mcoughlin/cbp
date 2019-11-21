@@ -16,6 +16,21 @@ import logging
 import time
 
 
+#  Error hex mask reported by manual.  See pg. 2-1-3 of NT-242 manual
+class LaserError:
+    def __init__(self, hex_val, status_msg):
+        self.hex_val = hex_val
+        self.status_msg = status_msg
+
+SafetyI = LaserError(0x0001, 'Protective housing interlock circuit is open')
+LDDerr = LaserError(0x0100, 'LD driver error')
+CoolingErr = LaserError(0x0800, 'Cooling system failure')
+Interlock = LaserError(0x1000, 'Remote interlock circuit is open')
+BreakSwitch = LaserError(0x2000, 'Kill switch pressed')
+KeySwitch = LaserError(0x4000, 'Key switch in off position')
+
+error_list = [SafetyI, LDDerr, CoolingErr, Interlock, BreakSwitch, KeySwitch]
+
 class LaserSerialInterface:
     """
     This class is for communicating with the laser through the RS232 serial interface.
@@ -24,20 +39,13 @@ class LaserSerialInterface:
 
     def __init__(self, port='/dev/ttyUSB.LASER', interlock_okay=False):
         self.state = None
-        self.error = None
-        self.interlock_okay = interlock_okay
-        self.states = {'[PC:READY=0\NL]': ['ready', 'The device is ready'],
-                       '[PC:BUSY=0\NL]': ['busy', 'The device is busy'],
-                       '[PC:OFF=0\NL]': ['off', 'The device is off'],
-                       '[PC:READY=2048\NL]': ['ready', 'The device is ready but with cooling error'],
-                       '[PC:READY=4096\NL]': ['interlock', 'Interlock active'],
-                       '': ['off', 'No response']}
+        self.active_errors = []
         self.commands = {'say_state_msg': '[NL:SAY\PC]'}
         self.responses = {'[NL:What\PC]': 'Unrecognized string', '[NL:Ignored\PC]': 'Unrecognized command'}
         self.serial = serial.Serial(port=port, baudrate=19200, timeout=2)
         self.status = 'connected'
         self.check_state()
-        self.get_wavelength()
+        #self.get_wavelength()
 
     def check_state(self):
         """
@@ -54,12 +62,26 @@ class LaserSerialInterface:
             self.status = 'off'
             logging.info('check_state: Empty response')
             return
-        if response in self.states:
-            self.state = self.states[response][0]
-            print(self.states[response][1])
-        else:
-            print(response)
-            logging.info('check_state: response: "{}" not found.'.format(response))
+        
+        try:
+            #  Code returned by the laser is a hex bit mask
+            mask = int(response.split('=')[-1].split('\\')[0])
+            resp_str = response.split(':')[-1].split('=')[0]
+            active_errors = []
+            for error in error_list:  
+                if mask & error.hex_val:
+                    active_errors.append(error)
+                    print('check_state: error present: {}'.format(error.status_msg))
+                    logging.info('check_state: error present: {}'.format(error.status_msg))
+            self.active_errors = active_errors
+            if resp_str == 'READY':
+                self.state = 'ready'
+            else:
+                self.state = resp_str.lower()
+        except:
+            self.state = 'error'
+            print('Problem parsing response {}'.format(response))
+            logging.info('Problem parsing reponse {}'.format(response))
 
     def wait_ready_state(self, timeout=10.):
         """
@@ -68,16 +90,11 @@ class LaserSerialInterface:
         :return:
         """
         start = time.time()
-        okay_states = ['ready']
-        if self.interlock_okay:
-            okay_states += ['interlock']
         if self.status in ['not connected', 'off']:
             logging.info('wait_ready_state: Laser not connected or off. Aborting.')
             raise RuntimeError('wait_ready_state: Laser not connected or off.  Aborting.')
         else:
-            while self.state not in okay_states:
-                print(okay_states)
-                print(self.state)
+            while self.state != 'ready':
                 self.check_state()
                 logging.info('wait_ready_state: Current state: {}'.format(self.state))
                 if time.time() - start > timeout:
@@ -125,8 +142,6 @@ class LaserSerialInterface:
 
     def get_wavelength(self):
         """
-        Sets self.wavelength to the reported laser wavelength
-
         :return wavelength: wavelength of laser
         """
         self.wait_ready_state()
@@ -178,4 +193,4 @@ if __name__ == '__main__':
     parser = create_parser()
     args = parser.parse_args()
     wavelength = np.float(args.wavelength[0])
-    main(wavelength, port='/dev/ttyUSB2')
+    main(wavelength, port='/dev/ttyUSB0')
