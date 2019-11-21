@@ -37,7 +37,7 @@ class Spectrograph:
         :return:
         """
         devices = sb.list_devices()
-        print(devices)
+        #print(devices)
         try:
             spec = sb.Spectrometer(devices[0])
             self.status = "connected"
@@ -186,7 +186,7 @@ def main(runtype = "spectrograph", duration = 1000000, spectrumFile='test.dat'):
     spectrograph = Spectrograph()
 
     spec = Spectrograph()
-    wavelengths, intensities = spec.get_spectrograph(duration=duration, spectrumFile=spectrumFile)
+    wavelengths, intensities = spectrograph.get_spectrograph(duration=duration, spectrumFile=spectrumFile)
 
     return wavelengths, intensities
 

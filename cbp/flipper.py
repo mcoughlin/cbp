@@ -3,7 +3,6 @@
 """
 .. module:: flipper
     :platform: unix
-    :synopsis: This module is for communicating with the flip mirror
 
 .. codeauthor:: Michael Coughlin, Eric Coughlin
 """
@@ -58,6 +57,7 @@ class Flipper:
     def run_flipper(self, flipper):
         """
         :param flipper: State to set the flipper to.  valid options are 1 and 2.
+
         :return:
         """
         if self.status != "not connected":
