@@ -421,10 +421,7 @@ class Keithley:
             start_time = time.time()
             totphoton = 0
             intsphere_charge = 0
-<<<<<<< HEAD
             flipper = Flipper()
-=======
->>>>>>> 18d1184a58179892db792fe66863036106a686c9
 
             self.do_reset(mode="char",nplc=1)
             print "Getting first 10 Keithley at %s..."%time.time()
