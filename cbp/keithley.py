@@ -435,7 +435,6 @@ class Keithley:
                 times.append(elapsed_time)
 
             print "Opening/closing shutters at %s..."%time.time()
-<<<<<<< HEAD
             #if doShutter:
             #     
             #    #cbp_inst.flipper.run_flipper(1)
@@ -454,41 +453,36 @@ class Keithley:
             elapsed_time_closed = time.time() - start_time 
             if doShutter:
                 flipper.run_flipper(2)
-=======
-            if doShutter:
-                cbp_inst.flipper.run_flipper(1)
-                #cbp_inst.shutter.run_shutter(-1)
-
-                #thorlabs.thorlabs.main(val=1)
-                #cbp.shutter.main(runtype="shutter", val=-1)
-                #print "opened shutter"
-            else:
-                cbp_inst.flipper.run_flipper(2)
-                #cbp_inst.shutter.run_shutter(1)
-                #cbp.shutter.main(runtype="shutter", val=1)
-                #print "closed shutter"
+            #if doShutter:
+            #    cbp_inst.flipper.run_flipper(1)
+            #    #cbp_inst.shutter.run_shutter(-1)
+            #
+            #    #thorlabs.thorlabs.main(val=1)
+            #    #cbp.shutter.main(runtype="shutter", val=-1)
+            #    #print "opened shutter"
+            #else:
+            #    cbp_inst.flipper.run_flipper(2)
+            #    #cbp_inst.shutter.run_shutter(1)
+            #    #cbp.shutter.main(runtype="shutter", val=1)
+            #    #print "closed shutter"
   
             print "Getting image Keithley at %s..."%time.time()
             elapsed_time_closed = time.time() - start_time 
->>>>>>> 18d1184a58179892db792fe66863036106a686c9
             while elapsed_time < duration+elapsed_time_closed:
                 photo = self.getread()[0]
                 elapsed_time = time.time() - start_time
 
                 photol.append(photo)
                 times.append(elapsed_time)
-<<<<<<< HEAD
             flipper.run_flipper(1)
 
             #cbp_inst.shutter.run_shutter(1)
             #cbp.shutter.main(runtype="shutter", val=1)
             #cbp_inst.flipper.run_flipper(2)
-=======
 
             #cbp_inst.shutter.run_shutter(1)
             #cbp.shutter.main(runtype="shutter", val=1)
-            cbp_inst.flipper.run_flipper(2)
->>>>>>> 18d1184a58179892db792fe66863036106a686c9
+            #cbp_inst.flipper.run_flipper(2)
             #thorlabs.thorlabs.main(val=2)
             print "Shutter closed at %s..."%time.time()
 
@@ -529,7 +523,6 @@ if __name__ == "__main__":
 
     # # Parse command line
     opts = parse_commandline()
-<<<<<<< HEAD
     rm = Keithley(resnum=0)
     times, photol = rm.get_charge_timeseries(duration=opts.duration)
     fid = open(opts.photonFile,'w')
@@ -541,13 +534,9 @@ if __name__ == "__main__":
          main(runtype="keithley", duration=opts.duration, photons=opts.photons, charge=opts.charge,
               wavelength=opts.wavelength, mode=opts.mode, analysis_type=opts.analysisType, do_single=opts.doSingle,
               do_reset=opts.doReset, photon_file=opts.photonFile, do_shutter=opts.doShutter)
-   # pass
-=======
-    
+    # pass
     #if opts.doKeithley:
     #     main(runtype="keithley", duration=opts.duration, photons=opts.photons, charge=opts.charge,
     #          wavelength=opts.wavelength, mode=opts.mode, analysis_type=opts.analysisType, do_single=opts.doSingle,
     #          do_reset=opts.doReset, photon_file=opts.photonFile, do_shutter=opts.doShutter)
     pass
->>>>>>> 18d1184a58179892db792fe66863036106a686c9
-
