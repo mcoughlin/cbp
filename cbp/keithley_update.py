@@ -43,8 +43,8 @@ class Keithley:
         self.nreads = 1  # used to keep track of whether we need to update TRIG:COUN
         try:
             self.rm = visa.ResourceManager('@py')
-            print(self.rm.list_resources())
-            devtty = self.rm.list_resources()[resnum]
+            devtty = self.rm.list_resources(query='?*/dev/ttyUSB{:d}'.format(resnum))[0]
+            
             self.ins = self.rm.open_resource(devtty)
             self.resnum = resnum
         except Exception as e:

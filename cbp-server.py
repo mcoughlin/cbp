@@ -59,11 +59,11 @@ if __name__ == "__main__":
     daemon_servers.setup_logging(name, logfile=options.log_file)
          
     #cbp_inst = cbp.cbp_instrument.CBP(altaz=False, filter_wheel=True, keithley=True, flipper=True, spectrograph=True, laser=False)
-    components = {'keithley': (Keithley.Keithley(resnum=0), 1),
+    components = {'keithley': (Keithley.Keithley(resnum=4), 1),
                   'spectro': (cbp.spectrograph.Spectrograph(), 2),
                   'filterwheel': (cbp.filter_wheel.FilterWheel(), 4),
-                  'laser': (Laser.LaserSerialInterface(port='/dev/ttyUSB2'), 3),
-                  'ndfilter': (cbp.newportrotator.NSR1(port='/dev/ttyUSB3'), 5), 
+                  'laser': (Laser.LaserSerialInterface(port='/dev/ttyUSB0'), 3),
+                  'ndfilter': (cbp.newportrotator.NSR1(port='/dev/ttyUSB1'), 5), 
     }
     servers = [daemon_servers.BasicServer((SERVER_HOSTNAME, SERVER_PORT+components[name][1]), name, components[name][0]) for name in components]
     
