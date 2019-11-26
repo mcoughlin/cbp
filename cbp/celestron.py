@@ -26,6 +26,7 @@ class Telescope:
     """
     def __init__(self, device='/dev/ttyUSB0'):
         self.status = None
+        self.device = device
         self.celestron_nexstar = self.initialize_connection()
         self.alt = None
         self.az = None
@@ -50,7 +51,7 @@ class Telescope:
         """
         if self.alt > 90 or self.alt < -90:
             raise Exception("Altitude outside of limits...")
-        elif self.az > 0 or self.az < 360:
+        elif self.az < 0 or self.az > 360:
             raise Exception("Azimuth outside of limits..")
         return False
 
@@ -62,8 +63,8 @@ class Telescope:
         :return: sets the position of the telecope.
         """
         if self.status != "not connected":
-            self.az = alt
-            self.alt = az
+            self.alt = alt
+            self.az = az
             if not self.error_raised():
                 self.celestron_nexstar.goto_azalt(az, alt)
                 while self.celestron_nexstar.goto_in_progress():
@@ -106,8 +107,8 @@ def parse_commandline():
     """
     parser = optparse.OptionParser()
 
-    parser.add_option("-a","--alt",default=0,type=int)
-    parser.add_option("-z","--azimuth",default=0,type=int)
+    parser.add_option("-a","--altitude",default=0,type=float)
+    parser.add_option("-z","--azimuth",default=0,type=float)
     parser.add_option("--doPosition", action="store_true",default=False)
     parser.add_option("--doGetPosition", action="store_true",default=False)
 
@@ -118,7 +119,7 @@ def parse_commandline():
 
 def main(runtype = "position", alt = 0, az = 0):
 
-    ns = FilterWheel()
+    ns = Telescope()
 
     if runtype == "position":
         ns.do_position(alt, az)
@@ -132,6 +133,6 @@ if __name__ == "__main__":
     opts = parse_commandline()
 
     if opts.doPosition:
-        main(runtype="position", alt=opts.alt, az=opts.az)
+        main(runtype="position", alt=opts.altitude, az=opts.azimuth)
     if opts.doGetPosition:
         main(runtype="getposition")
