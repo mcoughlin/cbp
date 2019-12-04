@@ -44,12 +44,17 @@ class Keithley:
         try:
             self.rm = visa.ResourceManager('@py')
             devtty = self.rm.list_resources(query='?*/dev/ttyUSB{:d}'.format(resnum))[0]
-            
             self.ins = self.rm.open_resource(devtty)
             self.resnum = resnum
         except Exception as e:
-            logging.exception(e)
-            print(e)
+            print('Error opening Keithley on /dev/ttyUSB{:d}.  Trying /dev/ttyUSB.KEITHLEY1'.format(resnum))
+            try:
+                devtty = self.rm.list_resources(query='?*/dev/ttyUSB.KEITHLEY1')[0]
+                self.ins = self.rm.open_resource(devtty)
+            except:            
+                print('Failed to open on /dev/ttyUSB.KEITHLEY1... Aborting')
+                raise
+
 
         self.ins.write_termination = '\n'
         self.ins.read_termination = '\n'
